@@ -1,0 +1,169 @@
+import '../models/cotisation_model.dart';
+
+class MockCotisationService {
+  static final MockCotisationService _instance =
+      MockCotisationService._internal();
+  factory MockCotisationService() => _instance;
+  MockCotisationService._internal() {
+    _generateMockData();
+  }
+
+  final List<CotisationModel> _cotisations = [];
+
+  List<CotisationModel> get cotisations => List.unmodifiable(_cotisations);
+
+  void _generateMockData() {
+    int idCounter = 1;
+
+    // Cotisations pour l'adhérent approuvé (userId: '2' - Jean Dupont)
+    // 2025 : Janvier à Juin payés, Juillet à Octobre impayés
+    for (final month in CotisationModel.cotisableMonths) {
+      _cotisations.add(CotisationModel(
+        id: (idCounter++).toString(),
+        userId: '2',
+        month: month,
+        year: 2025,
+        status: month <= 6 ? CotisationStatus.paid : CotisationStatus.unpaid,
+        paidAt: month <= 6 ? DateTime(2025, month, 15) : null,
+      ));
+    }
+
+    // 2024 : Tout payé pour Jean Dupont
+    for (final month in CotisationModel.cotisableMonths) {
+      _cotisations.add(CotisationModel(
+        id: (idCounter++).toString(),
+        userId: '2',
+        month: month,
+        year: 2024,
+        status: CotisationStatus.paid,
+        paidAt: DateTime(2024, month, 10),
+      ));
+    }
+
+    // Cotisations pour l'adhérent en attente (userId: '3' - Marie Kamga)
+    // 2025 : Janvier à Mars payés, reste impayé
+    for (final month in CotisationModel.cotisableMonths) {
+      _cotisations.add(CotisationModel(
+        id: (idCounter++).toString(),
+        userId: '3',
+        month: month,
+        year: 2025,
+        status: month <= 3 ? CotisationStatus.paid : CotisationStatus.unpaid,
+        paidAt: month <= 3 ? DateTime(2025, month, 5) : null,
+      ));
+    }
+  }
+
+  /// Récupérer les cotisations d'un adhérent pour une année
+  /// Génère automatiquement les cotisations si elles n'existent pas
+  Future<List<CotisationModel>> getCotisationsByUserAndYear(
+    String userId,
+    int year,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final existing = _cotisations
+        .where((c) => c.userId == userId && c.year == year)
+        .toList();
+
+    if (existing.isEmpty) {
+      await generateCotisationsForUser(userId, year);
+    }
+
+    return _cotisations
+        .where((c) => c.userId == userId && c.year == year)
+        .toList()
+      ..sort((a, b) => a.month.compareTo(b.month));
+  }
+
+  /// Récupérer toutes les cotisations d'un adhérent
+  Future<List<CotisationModel>> getCotisationsByUser(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return _cotisations.where((c) => c.userId == userId).toList()
+      ..sort((a, b) {
+        final yearCmp = b.year.compareTo(a.year);
+        if (yearCmp != 0) return yearCmp;
+        return a.month.compareTo(b.month);
+      });
+  }
+
+  /// Marquer une cotisation comme payée (admin)
+  Future<bool> markAsPaid(String cotisationId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _cotisations.indexWhere((c) => c.id == cotisationId);
+    if (index == -1) return false;
+    _cotisations[index] = _cotisations[index].copyWith(
+      status: CotisationStatus.paid,
+      paidAt: DateTime.now(),
+    );
+    return true;
+  }
+
+  /// Marquer une cotisation comme impayée (admin)
+  Future<bool> markAsUnpaid(String cotisationId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _cotisations.indexWhere((c) => c.id == cotisationId);
+    if (index == -1) return false;
+    _cotisations[index] = _cotisations[index].copyWith(
+      status: CotisationStatus.unpaid,
+    );
+    return true;
+  }
+
+  /// Générer les cotisations pour un nouvel adhérent pour l'année en cours
+  Future<void> generateCotisationsForUser(String userId, int year) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final existing = _cotisations
+        .where((c) => c.userId == userId && c.year == year)
+        .toList();
+
+    if (existing.isNotEmpty) return;
+
+    int idCounter = DateTime.now().millisecondsSinceEpoch;
+    for (final month in CotisationModel.cotisableMonths) {
+      _cotisations.add(CotisationModel(
+        id: (idCounter++).toString(),
+        userId: userId,
+        month: month,
+        year: year,
+      ));
+    }
+  }
+
+  /// Résumé des cotisations d'un adhérent pour une année
+  Future<Map<String, dynamic>> getUserYearlySummary(
+    String userId,
+    int year,
+  ) async {
+    final cotisations = await getCotisationsByUserAndYear(userId, year);
+    final paid = cotisations.where((c) => c.isPaid).length;
+    final unpaid = cotisations.where((c) => !c.isPaid).length;
+    final totalPaid = paid * CotisationModel.monthlyAmount;
+    final totalDue = CotisationModel.yearlyTotal;
+
+    return {
+      'paid': paid,
+      'unpaid': unpaid,
+      'totalPaid': totalPaid,
+      'totalDue': totalDue,
+      'remaining': totalDue - totalPaid,
+      'percentage': totalDue > 0 ? (totalPaid / totalDue) : 0.0,
+    };
+  }
+
+  /// Résumé global pour l'admin (tous les adhérents, année donnée)
+  Future<List<Map<String, dynamic>>> getAllMembersSummary(int year) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final userIds = _cotisations.map((c) => c.userId).toSet();
+    final summaries = <Map<String, dynamic>>[];
+
+    for (final userId in userIds) {
+      final summary = await getUserYearlySummary(userId, year);
+      summary['userId'] = userId;
+      summaries.add(summary);
+    }
+
+    return summaries;
+  }
+}

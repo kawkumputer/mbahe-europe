@@ -150,7 +150,9 @@ class MemberHomeScreen extends StatelessWidget {
                   title: 'Mes cotisations',
                   subtitle: 'Consulter',
                   color: AppColors.primary,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(context, '/member-cotisations');
+                  },
                 ),
                 _buildFeatureCard(
                   icon: Icons.event_rounded,
