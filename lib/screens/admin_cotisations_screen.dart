@@ -6,6 +6,7 @@ import '../providers/cotisation_provider.dart';
 import '../models/user_model.dart';
 import '../models/cotisation_model.dart';
 import '../theme/app_theme.dart';
+import '../widgets/search_bar_widget.dart';
 
 class AdminCotisationsScreen extends StatefulWidget {
   const AdminCotisationsScreen({super.key});
@@ -17,13 +18,34 @@ class AdminCotisationsScreen extends StatefulWidget {
 class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
   UserModel? _selectedMember;
   int _selectedYear = DateTime.now().year;
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<UserModel> _filterMembers(List<UserModel> members) {
+    if (_searchQuery.isEmpty) return members;
+    final query = _searchQuery.toLowerCase();
+    return members.where((u) {
+      return u.firstName.toLowerCase().contains(query) ||
+          u.lastName.toLowerCase().contains(query) ||
+          u.fullName.toLowerCase().contains(query) ||
+          u.phone.contains(query);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    final members = authProvider.getAllMembers().where(
-      (m) => m.status == AccountStatus.approved,
-    ).toList();
+    final members = _filterMembers(
+      authProvider.getAllMembers().where(
+        (m) => m.status == AccountStatus.approved,
+      ).toList(),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -57,7 +79,18 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // Barre de recherche
+          SearchBarWidget(
+            controller: _searchController,
+            hint: 'Rechercher par nom, prénom ou téléphone...',
+            onChanged: (value) {
+              setState(() => _searchQuery = value);
+            },
+          ),
+
+          const SizedBox(height: 16),
           if (members.isEmpty)
             Container(
               width: double.infinity,

@@ -4,9 +4,35 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/user_model.dart';
 import '../theme/app_theme.dart';
+import '../widgets/search_bar_widget.dart';
 
-class AdminHomeScreen extends StatelessWidget {
+class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
+
+  @override
+  State<AdminHomeScreen> createState() => _AdminHomeScreenState();
+}
+
+class _AdminHomeScreenState extends State<AdminHomeScreen> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<UserModel> _filterUsers(List<UserModel> users) {
+    if (_searchQuery.isEmpty) return users;
+    final query = _searchQuery.toLowerCase();
+    return users.where((u) {
+      return u.firstName.toLowerCase().contains(query) ||
+          u.lastName.toLowerCase().contains(query) ||
+          u.fullName.toLowerCase().contains(query) ||
+          u.phone.contains(query);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +51,8 @@ class AdminHomeScreen extends StatelessWidget {
       ),
       body: Consumer<AuthProvider>(
         builder: (context, auth, _) {
-          final pendingUsers = auth.getPendingUsers();
-          final allMembers = auth.getAllMembers();
+          final pendingUsers = _filterUsers(auth.getPendingUsers());
+          final allMembers = _filterUsers(auth.getAllMembers());
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(20),
@@ -160,7 +186,18 @@ class AdminHomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
+
+                // Barre de recherche
+                SearchBarWidget(
+                  controller: _searchController,
+                  hint: 'Rechercher par nom, prénom ou téléphone...',
+                  onChanged: (value) {
+                    setState(() => _searchQuery = value);
+                  },
+                ),
+
+                const SizedBox(height: 24),
 
                 // Section demandes en attente
                 Row(
