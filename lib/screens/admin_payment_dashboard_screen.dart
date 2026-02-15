@@ -19,11 +19,13 @@ class _ReunionSummary {
   final CompteRenduModel reunion;
   final String periodLabel;
   final Map<String, dynamic> paymentData;
+  final double cumulativeTotal;
 
   _ReunionSummary({
     required this.reunion,
     required this.periodLabel,
     required this.paymentData,
+    required this.cumulativeTotal,
   });
 
   double get totalPaid => (paymentData['totalPaid'] ?? 0.0).toDouble();
@@ -91,7 +93,20 @@ class _AdminPaymentDashboardScreenState
         reunion: reunion,
         periodLabel: periodLabel,
         paymentData: paymentData,
+        cumulativeTotal: 0,
       ));
+    }
+
+    // Calculer le total général cumulé (ordre chronologique)
+    double cumul = 0;
+    for (int i = 0; i < summaries.length; i++) {
+      cumul += summaries[i].totalPaid;
+      summaries[i] = _ReunionSummary(
+        reunion: summaries[i].reunion,
+        periodLabel: summaries[i].periodLabel,
+        paymentData: summaries[i].paymentData,
+        cumulativeTotal: cumul,
+      );
     }
 
     // Afficher de la plus récente à la plus ancienne
@@ -311,6 +326,39 @@ class _AdminPaymentDashboardScreenState
               const Color(0xFF6A1B9A),
               summary.totalCheque,
               summary.countCheque,
+            ),
+          ),
+
+          // Total général cumulé
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Total général (cumulé)',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                Text(
+                  '${summary.cumulativeTotal.toStringAsFixed(0)}€',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
             ),
           ),
 
