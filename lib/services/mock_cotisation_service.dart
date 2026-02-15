@@ -185,6 +185,91 @@ class MockCotisationService {
     };
   }
 
+  /// Résumé des paiements par mode pour une année donnée
+  Future<Map<String, dynamic>> getPaymentSummaryByYear(int year) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final paidCotisations = _cotisations
+        .where((c) => c.year == year && c.isPaid)
+        .toList();
+
+    return _computePaymentBreakdown(paidCotisations);
+  }
+
+  /// Résumé des paiements par mode pour une période donnée (mois spécifiques d'une année)
+  Future<Map<String, dynamic>> getPaymentSummaryForPeriod(
+    int year,
+    List<int> months,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    final paidCotisations = _cotisations
+        .where((c) => c.year == year && c.isPaid && months.contains(c.month))
+        .toList();
+
+    return _computePaymentBreakdown(paidCotisations);
+  }
+
+  Map<String, dynamic> _computePaymentBreakdown(List<CotisationModel> paidCotisations) {
+    double totalEspece = 0;
+    double totalVirement = 0;
+    double totalCheque = 0;
+    int countEspece = 0;
+    int countVirement = 0;
+    int countCheque = 0;
+
+    for (final c in paidCotisations) {
+      switch (c.paymentMethod) {
+        case PaymentMethod.espece:
+          totalEspece += c.amount;
+          countEspece++;
+          break;
+        case PaymentMethod.virement:
+          totalVirement += c.amount;
+          countVirement++;
+          break;
+        case PaymentMethod.cheque:
+          totalCheque += c.amount;
+          countCheque++;
+          break;
+        case null:
+          break;
+      }
+    }
+
+    final totalPaid = totalEspece + totalVirement + totalCheque;
+
+    return {
+      'totalPaid': totalPaid,
+      'totalEspece': totalEspece,
+      'totalVirement': totalVirement,
+      'totalCheque': totalCheque,
+      'countEspece': countEspece,
+      'countVirement': countVirement,
+      'countCheque': countCheque,
+      'countTotal': paidCotisations.length,
+    };
+  }
+
+  /// Résumé des paiements effectués entre deux dates (basé sur paidAt)
+  /// Capture les paiements anticipés : un adhérent qui paie en février pour mars/avril
+  Future<Map<String, dynamic>> getPaymentSummaryByDateRange(
+    DateTime from,
+    DateTime to,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    final paidCotisations = _cotisations
+        .where((c) =>
+            c.isPaid &&
+            c.paidAt != null &&
+            !c.paidAt!.isBefore(from) &&
+            c.paidAt!.isBefore(to.add(const Duration(days: 1))))
+        .toList();
+
+    return _computePaymentBreakdown(paidCotisations);
+  }
+
   /// Résumé global pour l'admin (tous les adhérents, année donnée)
   Future<List<Map<String, dynamic>>> getAllMembersSummary(int year) async {
     await Future.delayed(const Duration(milliseconds: 300));

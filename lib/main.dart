@@ -15,6 +15,7 @@ import 'screens/admin_cotisations_screen.dart';
 import 'screens/comptes_rendus_list_screen.dart';
 import 'screens/compte_rendu_detail_screen.dart';
 import 'screens/create_compte_rendu_screen.dart';
+import 'screens/admin_payment_dashboard_screen.dart';
 
 void main() {
   runApp(const MbaheEuropeApp());
@@ -48,6 +49,7 @@ class MbaheEuropeApp extends StatelessWidget {
           '/comptes-rendus': (context) => const ComptesRendusListScreen(),
           '/compte-rendu-detail': (context) => const CompteRenduDetailScreen(),
           '/create-compte-rendu': (context) => const CreateCompteRenduScreen(),
+          '/admin-payment-dashboard': (context) => const AdminPaymentDashboardScreen(),
         },
       ),
     );

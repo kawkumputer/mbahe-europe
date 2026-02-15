@@ -454,6 +454,14 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                     color: isExempted ? const Color(0xFF1976D2) : AppColors.textSecondary,
                   ),
                 ),
+                if (isPaid && cotisation.paidAt != null)
+                  Text(
+                    'Payé le ${cotisation.paidAt!.day}/${cotisation.paidAt!.month}/${cotisation.paidAt!.year}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
               ],
             ),
           ),

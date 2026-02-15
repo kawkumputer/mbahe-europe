@@ -7,11 +7,13 @@ class CotisationProvider extends ChangeNotifier {
 
   List<CotisationModel> _cotisations = [];
   Map<String, dynamic> _summary = {};
+  Map<String, dynamic> _paymentSummary = {};
   bool _isLoading = false;
   int _selectedYear = DateTime.now().year;
 
   List<CotisationModel> get cotisations => _cotisations;
   Map<String, dynamic> get summary => _summary;
+  Map<String, dynamic> get paymentSummary => _paymentSummary;
   bool get isLoading => _isLoading;
   int get selectedYear => _selectedYear;
 
@@ -66,4 +68,31 @@ class CotisationProvider extends ChangeNotifier {
     await _service.generateCotisationsForUser(userId, year);
     await loadCotisations(userId);
   }
+
+  Future<void> loadPaymentSummary(int year) async {
+    _isLoading = true;
+    notifyListeners();
+
+    _paymentSummary = await _service.getPaymentSummaryByYear(year);
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<Map<String, dynamic>> getPaymentSummaryForPeriod(int year, List<int> months) async {
+    return await _service.getPaymentSummaryForPeriod(year, months);
+  }
+
+  Future<Map<String, dynamic>> getPaymentSummaryByDateRange(DateTime from, DateTime to) async {
+    return await _service.getPaymentSummaryByDateRange(from, to);
+  }
+
+  double get paymentTotalPaid => (_paymentSummary['totalPaid'] ?? 0.0).toDouble();
+  double get paymentTotalEspece => (_paymentSummary['totalEspece'] ?? 0.0).toDouble();
+  double get paymentTotalVirement => (_paymentSummary['totalVirement'] ?? 0.0).toDouble();
+  double get paymentTotalCheque => (_paymentSummary['totalCheque'] ?? 0.0).toDouble();
+  int get paymentCountEspece => _paymentSummary['countEspece'] ?? 0;
+  int get paymentCountVirement => _paymentSummary['countVirement'] ?? 0;
+  int get paymentCountCheque => _paymentSummary['countCheque'] ?? 0;
+  int get paymentCountTotal => _paymentSummary['countTotal'] ?? 0;
 }
