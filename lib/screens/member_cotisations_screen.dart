@@ -253,6 +253,8 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
         const SizedBox(width: 16),
         _buildLegendItem(AppColors.rejected, 'Impayé'),
         const SizedBox(width: 16),
+        _buildLegendItem(const Color(0xFF1976D2), 'Exempté'),
+        const SizedBox(width: 16),
         _buildLegendItem(Colors.grey.shade400, 'Vacances'),
       ],
     );
@@ -283,7 +285,15 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
 
   Widget _buildMonthCard(CotisationModel cotisation) {
     final isPaid = cotisation.isPaid;
-    final statusColor = isPaid ? AppColors.approved : AppColors.rejected;
+    final isExempted = cotisation.isExempted;
+    final Color statusColor;
+    if (isExempted) {
+      statusColor = const Color(0xFF1976D2);
+    } else if (isPaid) {
+      statusColor = AppColors.approved;
+    } else {
+      statusColor = AppColors.rejected;
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -312,7 +322,9 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
-              isPaid ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              isExempted
+                  ? Icons.work_off_rounded
+                  : (isPaid ? Icons.check_circle_rounded : Icons.cancel_rounded),
               color: statusColor,
               size: 24,
             ),
@@ -330,7 +342,15 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                if (isPaid && cotisation.paidAt != null)
+                if (isExempted)
+                  Text(
+                    'Exempté — Chômage',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: const Color(0xFF1976D2),
+                    ),
+                  )
+                else if (isPaid && cotisation.paidAt != null)
                   Text(
                     'Payé le ${cotisation.paidAt!.day}/${cotisation.paidAt!.month}/${cotisation.paidAt!.year}',
                     style: GoogleFonts.poppins(
@@ -345,7 +365,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${cotisation.amount.toStringAsFixed(0)}€',
+                isExempted ? '0€' : '${cotisation.amount.toStringAsFixed(0)}€',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,

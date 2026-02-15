@@ -17,6 +17,7 @@ class CotisationProvider extends ChangeNotifier {
 
   int get paidCount => _summary['paid'] ?? 0;
   int get unpaidCount => _summary['unpaid'] ?? 0;
+  int get exemptedCount => _summary['exempted'] ?? 0;
   double get totalPaid => (_summary['totalPaid'] ?? 0.0).toDouble();
   double get totalDue => (_summary['totalDue'] ?? 0.0).toDouble();
   double get remaining => (_summary['remaining'] ?? 0.0).toDouble();
@@ -48,6 +49,16 @@ class CotisationProvider extends ChangeNotifier {
 
   Future<void> markAsUnpaid(String cotisationId, String userId) async {
     await _service.markAsUnpaid(cotisationId);
+    await loadCotisations(userId);
+  }
+
+  Future<void> markAsExempted(String cotisationId, String userId) async {
+    await _service.markAsExempted(cotisationId);
+    await loadCotisations(userId);
+  }
+
+  Future<void> removeExemption(String cotisationId, String userId) async {
+    await _service.removeExemption(cotisationId);
     await loadCotisations(userId);
   }
 

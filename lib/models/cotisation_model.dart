@@ -1,4 +1,4 @@
-enum CotisationStatus { paid, unpaid }
+enum CotisationStatus { paid, unpaid, exempted }
 
 class CotisationModel {
   final String id;
@@ -56,6 +56,7 @@ class CotisationModel {
   static const List<int> assemblyMonths = [4, 8, 12];
 
   bool get isPaid => status == CotisationStatus.paid;
+  bool get isExempted => status == CotisationStatus.exempted;
 
   String get monthName {
     const months = [
@@ -65,7 +66,16 @@ class CotisationModel {
     return months[month];
   }
 
-  String get statusLabel => isPaid ? 'Payé' : 'Impayé';
+  String get statusLabel {
+    switch (status) {
+      case CotisationStatus.paid:
+        return 'Payé';
+      case CotisationStatus.unpaid:
+        return 'Impayé';
+      case CotisationStatus.exempted:
+        return 'Exempté';
+    }
+  }
 
   String get period => '$monthName $year';
 }

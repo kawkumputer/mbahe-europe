@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cotisation_provider.dart';
+import 'providers/compte_rendu_provider.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
@@ -11,6 +12,9 @@ import 'screens/member_home_screen.dart';
 import 'screens/admin_home_screen.dart';
 import 'screens/member_cotisations_screen.dart';
 import 'screens/admin_cotisations_screen.dart';
+import 'screens/comptes_rendus_list_screen.dart';
+import 'screens/compte_rendu_detail_screen.dart';
+import 'screens/create_compte_rendu_screen.dart';
 
 void main() {
   runApp(const MbaheEuropeApp());
@@ -25,6 +29,7 @@ class MbaheEuropeApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CotisationProvider()),
+        ChangeNotifierProvider(create: (_) => CompteRenduProvider()),
       ],
       child: MaterialApp(
         title: 'MBAHE Europe',
@@ -40,6 +45,9 @@ class MbaheEuropeApp extends StatelessWidget {
           '/admin-home': (context) => const AdminHomeScreen(),
           '/member-cotisations': (context) => const MemberCotisationsScreen(),
           '/admin-cotisations': (context) => const AdminCotisationsScreen(),
+          '/comptes-rendus': (context) => const ComptesRendusListScreen(),
+          '/compte-rendu-detail': (context) => const CompteRenduDetailScreen(),
+          '/create-compte-rendu': (context) => const CreateCompteRenduScreen(),
         },
       ),
     );

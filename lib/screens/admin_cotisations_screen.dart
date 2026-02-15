@@ -388,7 +388,15 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
 
   Widget _buildCotisationTile(CotisationModel cotisation, String userId) {
     final isPaid = cotisation.isPaid;
-    final statusColor = isPaid ? AppColors.approved : AppColors.rejected;
+    final isExempted = cotisation.isExempted;
+    final Color statusColor;
+    if (isExempted) {
+      statusColor = const Color(0xFF1976D2);
+    } else if (isPaid) {
+      statusColor = AppColors.approved;
+    } else {
+      statusColor = AppColors.rejected;
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -415,7 +423,9 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
-              isPaid ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              isExempted
+                  ? Icons.work_off_rounded
+                  : (isPaid ? Icons.check_circle_rounded : Icons.cancel_rounded),
               color: statusColor,
               size: 22,
             ),
@@ -434,47 +444,83 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                   ),
                 ),
                 Text(
-                  '${cotisation.amount.toStringAsFixed(0)}€ — ${cotisation.statusLabel}',
+                  isExempted
+                      ? 'Exempté — Chômage'
+                      : '${cotisation.amount.toStringAsFixed(0)}€ — ${cotisation.statusLabel}',
                   style: GoogleFonts.poppins(
                     fontSize: 11,
-                    color: AppColors.textSecondary,
+                    color: isExempted ? const Color(0xFF1976D2) : AppColors.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
-          // Bouton toggle payé/impayé
-          GestureDetector(
-            onTap: () async {
-              final provider = context.read<CotisationProvider>();
-              if (isPaid) {
-                await provider.markAsUnpaid(cotisation.id, userId);
-              } else {
-                await provider.markAsPaid(cotisation.id, userId);
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: isPaid
-                    ? AppColors.rejected.withValues(alpha: 0.1)
-                    : AppColors.approved.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isPaid
-                      ? AppColors.rejected.withValues(alpha: 0.3)
-                      : AppColors.approved.withValues(alpha: 0.3),
+          // Boutons d'action
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Bouton chômage
+              GestureDetector(
+                onTap: () async {
+                  final provider = context.read<CotisationProvider>();
+                  if (isExempted) {
+                    await provider.removeExemption(cotisation.id, userId);
+                  } else {
+                    await provider.markAsExempted(cotisation.id, userId);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1976D2).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xFF1976D2).withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Icon(
+                    isExempted ? Icons.work_rounded : Icons.work_off_rounded,
+                    size: 16,
+                    color: const Color(0xFF1976D2),
+                  ),
                 ),
               ),
-              child: Text(
-                isPaid ? 'Annuler' : 'Marquer payé',
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: isPaid ? AppColors.rejected : AppColors.approved,
+              const SizedBox(width: 6),
+              // Bouton toggle payé/impayé
+              if (!isExempted)
+                GestureDetector(
+                  onTap: () async {
+                    final provider = context.read<CotisationProvider>();
+                    if (isPaid) {
+                      await provider.markAsUnpaid(cotisation.id, userId);
+                    } else {
+                      await provider.markAsPaid(cotisation.id, userId);
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isPaid
+                          ? AppColors.rejected.withValues(alpha: 0.1)
+                          : AppColors.approved.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isPaid
+                            ? AppColors.rejected.withValues(alpha: 0.3)
+                            : AppColors.approved.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Text(
+                      isPaid ? 'Annuler' : 'Marquer payé',
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isPaid ? AppColors.rejected : AppColors.approved,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
+            ],
           ),
         ],
       ),

@@ -155,16 +155,18 @@ class MemberHomeScreen extends StatelessWidget {
                   },
                 ),
                 _buildFeatureCard(
+                  icon: Icons.description_rounded,
+                  title: 'Comptes rendus',
+                  subtitle: 'Réunions',
+                  color: const Color(0xFF1976D2),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/comptes-rendus');
+                  },
+                ),
+                _buildFeatureCard(
                   icon: Icons.event_rounded,
                   title: 'Événements',
                   subtitle: 'À venir',
-                  color: const Color(0xFF1976D2),
-                  onTap: () {},
-                ),
-                _buildFeatureCard(
-                  icon: Icons.newspaper_rounded,
-                  title: 'Actualités',
-                  subtitle: 'Dernières nouvelles',
                   color: const Color(0xFF7B1FA2),
                   onTap: () {},
                 ),

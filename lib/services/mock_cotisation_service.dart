@@ -110,6 +110,28 @@ class MockCotisationService {
     return true;
   }
 
+  /// Marquer une cotisation comme exemptée (chômage)
+  Future<bool> markAsExempted(String cotisationId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _cotisations.indexWhere((c) => c.id == cotisationId);
+    if (index == -1) return false;
+    _cotisations[index] = _cotisations[index].copyWith(
+      status: CotisationStatus.exempted,
+    );
+    return true;
+  }
+
+  /// Retirer l'exemption chômage (remettre en impayé)
+  Future<bool> removeExemption(String cotisationId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _cotisations.indexWhere((c) => c.id == cotisationId);
+    if (index == -1) return false;
+    _cotisations[index] = _cotisations[index].copyWith(
+      status: CotisationStatus.unpaid,
+    );
+    return true;
+  }
+
   /// Générer les cotisations pour un nouvel adhérent pour l'année en cours
   Future<void> generateCotisationsForUser(String userId, int year) async {
     await Future.delayed(const Duration(milliseconds: 200));
@@ -131,19 +153,22 @@ class MockCotisationService {
   }
 
   /// Résumé des cotisations d'un adhérent pour une année
+  /// Les mois exemptés (chômage) sont exclus du total dû
   Future<Map<String, dynamic>> getUserYearlySummary(
     String userId,
     int year,
   ) async {
     final cotisations = await getCotisationsByUserAndYear(userId, year);
     final paid = cotisations.where((c) => c.isPaid).length;
-    final unpaid = cotisations.where((c) => !c.isPaid).length;
+    final exempted = cotisations.where((c) => c.isExempted).length;
+    final unpaid = cotisations.where((c) => c.status == CotisationStatus.unpaid).length;
     final totalPaid = paid * CotisationModel.monthlyAmount;
-    final totalDue = CotisationModel.yearlyTotal;
+    final totalDue = (CotisationModel.cotisableMonths.length - exempted) * CotisationModel.monthlyAmount;
 
     return {
       'paid': paid,
       'unpaid': unpaid,
+      'exempted': exempted,
       'totalPaid': totalPaid,
       'totalDue': totalDue,
       'remaining': totalDue - totalPaid,
