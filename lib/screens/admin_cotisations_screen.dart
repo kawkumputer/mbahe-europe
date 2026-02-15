@@ -446,7 +446,9 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                 Text(
                   isExempted
                       ? 'Exempté — Chômage'
-                      : '${cotisation.amount.toStringAsFixed(0)}€ — ${cotisation.statusLabel}',
+                      : isPaid
+                          ? '${cotisation.amount.toStringAsFixed(0)}€ — ${cotisation.statusLabel} (${cotisation.paymentMethodLabel})'
+                          : '${cotisation.amount.toStringAsFixed(0)}€ — ${cotisation.statusLabel}',
                   style: GoogleFonts.poppins(
                     fontSize: 11,
                     color: isExempted ? const Color(0xFF1976D2) : AppColors.textSecondary,
@@ -494,7 +496,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                     if (isPaid) {
                       await provider.markAsUnpaid(cotisation.id, userId);
                     } else {
-                      await provider.markAsPaid(cotisation.id, userId);
+                      _showPaymentMethodDialog(cotisation, userId);
                     }
                   },
                   child: Container(
@@ -523,6 +525,105 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _showPaymentMethodDialog(CotisationModel cotisation, String userId) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Mode de paiement',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${cotisation.monthName} ${cotisation.year} — ${cotisation.amount.toStringAsFixed(0)}€',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildPaymentOption(
+              ctx,
+              cotisation,
+              userId,
+              PaymentMethod.espece,
+              Icons.money_rounded,
+              'Espèce',
+              const Color(0xFF2E7D32),
+            ),
+            const SizedBox(height: 8),
+            _buildPaymentOption(
+              ctx,
+              cotisation,
+              userId,
+              PaymentMethod.virement,
+              Icons.account_balance_rounded,
+              'Virement',
+              const Color(0xFF1565C0),
+            ),
+            const SizedBox(height: 8),
+            _buildPaymentOption(
+              ctx,
+              cotisation,
+              userId,
+              PaymentMethod.cheque,
+              Icons.receipt_long_rounded,
+              'Chèque',
+              const Color(0xFF6A1B9A),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentOption(
+    BuildContext ctx,
+    CotisationModel cotisation,
+    String userId,
+    PaymentMethod method,
+    IconData icon,
+    String label,
+    Color color,
+  ) {
+    return GestureDetector(
+      onTap: () async {
+        Navigator.pop(ctx);
+        await context.read<CotisationProvider>().markAsPaid(
+              cotisation.id,
+              userId,
+              method,
+            );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

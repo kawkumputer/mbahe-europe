@@ -352,7 +352,8 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                   )
                 else if (isPaid && cotisation.paidAt != null)
                   Text(
-                    'Payé le ${cotisation.paidAt!.day}/${cotisation.paidAt!.month}/${cotisation.paidAt!.year}',
+                    'Payé le ${cotisation.paidAt!.day}/${cotisation.paidAt!.month}/${cotisation.paidAt!.year}'
+                    '${cotisation.paymentMethod != null ? ' — ${cotisation.paymentMethodLabel}' : ''}',
                     style: GoogleFonts.poppins(
                       fontSize: 11,
                       color: AppColors.textSecondary,

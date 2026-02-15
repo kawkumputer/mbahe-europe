@@ -1,5 +1,7 @@
 enum CotisationStatus { paid, unpaid, exempted }
 
+enum PaymentMethod { espece, virement, cheque }
+
 class CotisationModel {
   final String id;
   final String userId;
@@ -8,6 +10,7 @@ class CotisationModel {
   final double amount;
   final CotisationStatus status;
   final DateTime? paidAt;
+  final PaymentMethod? paymentMethod;
 
   CotisationModel({
     required this.id,
@@ -17,6 +20,7 @@ class CotisationModel {
     this.amount = 10.0,
     this.status = CotisationStatus.unpaid,
     this.paidAt,
+    this.paymentMethod,
   });
 
   CotisationModel copyWith({
@@ -27,6 +31,8 @@ class CotisationModel {
     double? amount,
     CotisationStatus? status,
     DateTime? paidAt,
+    PaymentMethod? paymentMethod,
+    bool clearPaymentMethod = false,
   }) {
     return CotisationModel(
       id: id ?? this.id,
@@ -36,6 +42,7 @@ class CotisationModel {
       amount: amount ?? this.amount,
       status: status ?? this.status,
       paidAt: paidAt ?? this.paidAt,
+      paymentMethod: clearPaymentMethod ? null : (paymentMethod ?? this.paymentMethod),
     );
   }
 
@@ -78,4 +85,16 @@ class CotisationModel {
   }
 
   String get period => '$monthName $year';
+
+  String get paymentMethodLabel {
+    if (paymentMethod == null) return '';
+    switch (paymentMethod!) {
+      case PaymentMethod.espece:
+        return 'Espèce';
+      case PaymentMethod.virement:
+        return 'Virement';
+      case PaymentMethod.cheque:
+        return 'Chèque';
+    }
+  }
 }

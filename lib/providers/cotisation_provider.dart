@@ -42,8 +42,8 @@ class CotisationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> markAsPaid(String cotisationId, String userId) async {
-    await _service.markAsPaid(cotisationId);
+  Future<void> markAsPaid(String cotisationId, String userId, PaymentMethod method) async {
+    await _service.markAsPaid(cotisationId, method);
     await loadCotisations(userId);
   }
 

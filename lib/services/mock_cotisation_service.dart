@@ -25,6 +25,9 @@ class MockCotisationService {
         year: 2025,
         status: month <= 6 ? CotisationStatus.paid : CotisationStatus.unpaid,
         paidAt: month <= 6 ? DateTime(2025, month, 15) : null,
+        paymentMethod: month <= 6
+            ? (month % 3 == 0 ? PaymentMethod.cheque : (month % 2 == 0 ? PaymentMethod.virement : PaymentMethod.espece))
+            : null,
       ));
     }
 
@@ -37,6 +40,7 @@ class MockCotisationService {
         year: 2024,
         status: CotisationStatus.paid,
         paidAt: DateTime(2024, month, 10),
+        paymentMethod: month <= 5 ? PaymentMethod.espece : PaymentMethod.virement,
       ));
     }
 
@@ -50,6 +54,7 @@ class MockCotisationService {
         year: 2025,
         status: month <= 3 ? CotisationStatus.paid : CotisationStatus.unpaid,
         paidAt: month <= 3 ? DateTime(2025, month, 5) : null,
+        paymentMethod: month <= 3 ? PaymentMethod.espece : null,
       ));
     }
   }
@@ -87,14 +92,15 @@ class MockCotisationService {
       });
   }
 
-  /// Marquer une cotisation comme payée (admin)
-  Future<bool> markAsPaid(String cotisationId) async {
+  /// Marquer une cotisation comme payée (admin) avec mode de paiement
+  Future<bool> markAsPaid(String cotisationId, PaymentMethod method) async {
     await Future.delayed(const Duration(milliseconds: 300));
     final index = _cotisations.indexWhere((c) => c.id == cotisationId);
     if (index == -1) return false;
     _cotisations[index] = _cotisations[index].copyWith(
       status: CotisationStatus.paid,
       paidAt: DateTime.now(),
+      paymentMethod: method,
     );
     return true;
   }
@@ -106,6 +112,7 @@ class MockCotisationService {
     if (index == -1) return false;
     _cotisations[index] = _cotisations[index].copyWith(
       status: CotisationStatus.unpaid,
+      clearPaymentMethod: true,
     );
     return true;
   }
@@ -117,6 +124,7 @@ class MockCotisationService {
     if (index == -1) return false;
     _cotisations[index] = _cotisations[index].copyWith(
       status: CotisationStatus.exempted,
+      clearPaymentMethod: true,
     );
     return true;
   }
@@ -128,6 +136,7 @@ class MockCotisationService {
     if (index == -1) return false;
     _cotisations[index] = _cotisations[index].copyWith(
       status: CotisationStatus.unpaid,
+      clearPaymentMethod: true,
     );
     return true;
   }
