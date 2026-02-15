@@ -164,11 +164,13 @@ class MemberHomeScreen extends StatelessWidget {
                   },
                 ),
                 _buildFeatureCard(
-                  icon: Icons.event_rounded,
-                  title: 'Événements',
-                  subtitle: 'À venir',
-                  color: const Color(0xFF7B1FA2),
-                  onTap: () {},
+                  icon: Icons.bar_chart_rounded,
+                  title: 'Bilan réunions',
+                  subtitle: 'Cotisations collectées',
+                  color: const Color(0xFF1565C0),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/admin-payment-dashboard');
+                  },
                 ),
                 _buildFeatureCard(
                   icon: Icons.info_outline_rounded,
