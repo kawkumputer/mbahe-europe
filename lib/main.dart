@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cotisation_provider.dart';
 import 'providers/compte_rendu_provider.dart';
+import 'providers/notification_provider.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
@@ -18,6 +19,7 @@ import 'screens/comptes_rendus_list_screen.dart';
 import 'screens/compte_rendu_detail_screen.dart';
 import 'screens/create_compte_rendu_screen.dart';
 import 'screens/admin_payment_dashboard_screen.dart';
+import 'screens/notifications_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +44,7 @@ class MbaheEuropeApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CotisationProvider()),
         ChangeNotifierProvider(create: (_) => CompteRenduProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: MaterialApp(
         title: 'MBAHE Europe',
@@ -61,6 +64,7 @@ class MbaheEuropeApp extends StatelessWidget {
           '/compte-rendu-detail': (context) => const CompteRenduDetailScreen(),
           '/create-compte-rendu': (context) => const CreateCompteRenduScreen(),
           '/admin-payment-dashboard': (context) => const AdminPaymentDashboardScreen(),
+          '/notifications': (context) => const NotificationsScreen(),
         },
       ),
     );

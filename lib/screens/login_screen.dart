@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
 import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_text_field.dart';
@@ -39,6 +40,11 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
+      // Démarrer l'écoute Realtime des notifications
+      final notifProvider = context.read<NotificationProvider>();
+      notifProvider.startListening();
+      notifProvider.refreshUnreadCount();
+
       final user = authProvider.currentUser!;
       if (user.role == UserRole.admin) {
         Navigator.pushReplacementNamed(context, '/admin-home');

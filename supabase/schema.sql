@@ -206,6 +206,45 @@ CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at);
 CREATE INDEX IF NOT EXISTS idx_audit_log_target ON audit_log(target_table, target_id);
 
 -- ============================================================
+-- Table des notifications in-app
+-- ============================================================
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  recipient_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  type TEXT NOT NULL DEFAULT 'info' CHECK (type IN ('info', 'cotisation', 'member', 'compte_rendu', 'role')),
+  is_read BOOLEAN NOT NULL DEFAULT false,
+  data JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+-- Chaque utilisateur ne voit que ses propres notifications
+CREATE POLICY "Notifications: lecture propres notifications"
+  ON notifications FOR SELECT
+  TO authenticated
+  USING (recipient_id = auth.uid());
+
+-- Insertion par admin ou système
+CREATE POLICY "Notifications: insertion par admin"
+  ON notifications FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Mise à jour (marquer comme lue) par le destinataire
+CREATE POLICY "Notifications: mise à jour par destinataire"
+  ON notifications FOR UPDATE
+  TO authenticated
+  USING (recipient_id = auth.uid());
+
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications(recipient_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(recipient_id, is_read) WHERE is_read = false;
+
+-- ============================================================
 -- Index pour les performances
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_cotisations_user_year ON cotisations(user_id, year);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
 import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 import '../widgets/search_bar_widget.dart';
@@ -24,6 +25,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   void initState() {
     super.initState();
     _loadUsers();
+    context.read<NotificationProvider>().refreshUnreadCount();
   }
 
   @override
@@ -65,9 +67,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       appBar: AppBar(
         title: const Text('Administration'),
         actions: [
+          _buildNotificationIcon(),
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             onPressed: () async {
+              context.read<NotificationProvider>().stopListening();
               await context.read<AuthProvider>().logout();
               if (context.mounted) {
                 Navigator.pushReplacementNamed(context, '/login');
@@ -774,6 +778,45 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNotificationIcon() {
+    final unreadCount = context.watch<NotificationProvider>().unreadCount;
+    return Stack(
+      children: [
+        IconButton(
+          icon: const Icon(Icons.notifications_rounded),
+          onPressed: () {
+            final notifProvider = context.read<NotificationProvider>();
+            Navigator.pushNamed(context, '/notifications').then((_) {
+              notifProvider.refreshUnreadCount();
+            });
+          },
+        ),
+        if (unreadCount > 0)
+          Positioned(
+            right: 6,
+            top: 6,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: AppColors.rejected,
+                shape: BoxShape.circle,
+              ),
+              constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+              child: Text(
+                unreadCount > 9 ? '9+' : '$unreadCount',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
     );
   }
 

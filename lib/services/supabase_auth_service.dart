@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/notification_model.dart';
 import '../models/user_model.dart';
+import 'supabase_notification_service.dart';
 
 class SupabaseAuthService {
   final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseNotificationService _notifService = SupabaseNotificationService();
 
   /// Connexion avec téléphone + mot de passe
   /// On utilise le téléphone comme email fictif pour Supabase Auth
@@ -51,6 +54,19 @@ class SupabaseAuthService {
       await Future.delayed(const Duration(milliseconds: 500));
 
       final profile = await _getProfile(response.user!.id);
+
+      // Notifier les admins d'une nouvelle inscription
+      if (profile != null) {
+        try {
+          await _notifService.notifyAllAdmins(
+            title: 'Nouvelle inscription',
+            body: '${profile.fullName} demande à rejoindre l\'association.',
+            type: NotificationType.member,
+            data: {'user_id': profile.id},
+          );
+        } catch (_) {}
+      }
+
       return profile;
     } catch (e) {
       debugPrint('Register error: $e');
@@ -154,6 +170,23 @@ class SupabaseAuthService {
         targetTable: 'profiles',
         targetId: userId,
       );
+
+      // Notifier le membre approuvé
+      await _notifService.notifyUser(
+        recipientId: userId,
+        title: 'Compte approuvé',
+        body: 'Votre compte a été approuvé par ${admin['name']}. Bienvenue !',
+        type: NotificationType.member,
+      );
+      // Notifier les autres admins
+      await _notifService.notifyAllAdmins(
+        title: 'Membre approuvé',
+        body: '${admin['name']} a approuvé un nouveau membre.',
+        type: NotificationType.member,
+        data: {'user_id': userId},
+        excludeAdminId: admin['id'],
+      );
+
       return true;
     } catch (e) {
       return false;
@@ -174,6 +207,15 @@ class SupabaseAuthService {
         action: 'reject_user',
         targetTable: 'profiles',
         targetId: userId,
+      );
+
+      // Notifier les autres admins
+      await _notifService.notifyAllAdmins(
+        title: 'Membre rejeté',
+        body: '${admin['name']} a rejeté une demande d\'inscription.',
+        type: NotificationType.member,
+        data: {'user_id': userId},
+        excludeAdminId: admin['id'],
       );
       return true;
     } catch (e) {
@@ -197,6 +239,24 @@ class SupabaseAuthService {
         targetId: userId,
         details: {'new_role': role},
       );
+
+      // Notifier l'utilisateur concerné
+      final roleLabel = role == 'admin' ? 'Admin' : 'Membre';
+      await _notifService.notifyUser(
+        recipientId: userId,
+        title: 'Changement de rôle',
+        body: 'Vous êtes maintenant $roleLabel.',
+        type: NotificationType.role,
+      );
+      // Notifier les autres admins
+      await _notifService.notifyAllAdmins(
+        title: 'Changement de rôle',
+        body: '${admin['name']} a changé le rôle d\'un membre en $roleLabel.',
+        type: NotificationType.role,
+        data: {'user_id': userId, 'new_role': role},
+        excludeAdminId: admin['id'],
+      );
+
       return true;
     } catch (e) {
       debugPrint('updateUserRole error: $e');

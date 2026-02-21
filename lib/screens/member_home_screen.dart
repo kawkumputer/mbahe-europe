@@ -2,10 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
 
 class MemberHomeScreen extends StatelessWidget {
   const MemberHomeScreen({super.key});
+
+  Widget _buildNotificationIcon(BuildContext context) {
+    // Charger le compteur au premier build
+    context.read<NotificationProvider>().refreshUnreadCount();
+    final unreadCount = context.watch<NotificationProvider>().unreadCount;
+    return Stack(
+      children: [
+        IconButton(
+          icon: const Icon(Icons.notifications_rounded),
+          onPressed: () {
+            final notifProvider = context.read<NotificationProvider>();
+            Navigator.pushNamed(context, '/notifications').then((_) {
+              notifProvider.refreshUnreadCount();
+            });
+          },
+        ),
+        if (unreadCount > 0)
+          Positioned(
+            right: 6,
+            top: 6,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: AppColors.rejected,
+                shape: BoxShape.circle,
+              ),
+              constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+              child: Text(
+                unreadCount > 9 ? '9+' : '$unreadCount',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +57,11 @@ class MemberHomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('MBAHE Europe'),
         actions: [
+          _buildNotificationIcon(context),
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             onPressed: () async {
+              context.read<NotificationProvider>().stopListening();
               await context.read<AuthProvider>().logout();
               if (context.mounted) {
                 Navigator.pushReplacementNamed(context, '/login');

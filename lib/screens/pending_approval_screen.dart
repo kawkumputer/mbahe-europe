@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_button.dart';
 
@@ -99,6 +100,7 @@ class PendingApprovalScreen extends StatelessWidget {
                 isOutlined: true,
                 icon: Icons.logout_rounded,
                 onPressed: () async {
+                  context.read<NotificationProvider>().stopListening();
                   await context.read<AuthProvider>().logout();
                   if (context.mounted) {
                     Navigator.pushReplacementNamed(context, '/login');

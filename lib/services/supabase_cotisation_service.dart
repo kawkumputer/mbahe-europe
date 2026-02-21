@@ -1,8 +1,11 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/cotisation_model.dart';
+import '../models/notification_model.dart';
+import 'supabase_notification_service.dart';
 
 class SupabaseCotisationService {
   final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseNotificationService _notifService = SupabaseNotificationService();
 
   /// Helper: récupérer l'admin courant (id + nom)
   Future<Map<String, String>> _getCurrentAdmin() async {
@@ -96,6 +99,16 @@ class SupabaseCotisationService {
         targetId: cotisationId,
         details: {'payment_method': method.name},
       );
+
+      // Notifier les autres admins
+      await _notifService.notifyAllAdmins(
+        title: 'Cotisation marquée payée',
+        body: '${admin['name']} a enregistré un paiement (${method.name}).',
+        type: NotificationType.cotisation,
+        data: {'cotisation_id': cotisationId},
+        excludeAdminId: admin['id'],
+      );
+
       return true;
     } catch (e) {
       return false;

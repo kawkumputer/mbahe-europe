@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
 import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 
@@ -47,6 +48,13 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
     if (auth.isLoggedIn) {
+      // Démarrer l'écoute Realtime des notifications
+      if (mounted) {
+        final notifProvider = context.read<NotificationProvider>();
+        notifProvider.startListening();
+        notifProvider.refreshUnreadCount();
+      }
+
       if (auth.currentUser!.status != AccountStatus.approved) {
         Navigator.pushReplacementNamed(context, '/pending-approval');
       } else if (auth.isAdmin) {
