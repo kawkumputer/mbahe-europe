@@ -111,6 +111,22 @@ class AboutScreen extends StatelessWidget {
                     'les administrateurs de l\'association via l\'application.',
               ),
 
+              // Documents officiels
+              _buildDocumentLink(
+                context,
+                icon: Icons.gavel_rounded,
+                title: 'Statuts de l\'association',
+                subtitle: 'Organisation, fonctionnement et gouvernance',
+                onTap: () => Navigator.pushNamed(context, '/statuts'),
+              ),
+              _buildDocumentLink(
+                context,
+                icon: Icons.menu_book_rounded,
+                title: 'Règlement intérieur',
+                subtitle: 'Droits, devoirs et règles de vie',
+                onTap: () => Navigator.pushNamed(context, '/reglement'),
+              ),
+
               const SizedBox(height: 20),
 
               // Version
@@ -139,6 +155,74 @@ class AboutScreen extends StatelessWidget {
               const SizedBox(height: 20),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDocumentLink(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: AppColors.primary, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.primary.withValues(alpha: 0.5),
+            ),
+          ],
         ),
       ),
     );

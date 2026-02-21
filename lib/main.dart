@@ -21,6 +21,8 @@ import 'screens/create_compte_rendu_screen.dart';
 import 'screens/admin_payment_dashboard_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/about_screen.dart';
+import 'screens/statuts_screen.dart';
+import 'screens/reglement_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +69,8 @@ class MbaheEuropeApp extends StatelessWidget {
           '/admin-payment-dashboard': (context) => const AdminPaymentDashboardScreen(),
           '/notifications': (context) => const NotificationsScreen(),
           '/about': (context) => const AboutScreen(),
+          '/statuts': (context) => const StatutsScreen(),
+          '/reglement': (context) => const ReglementScreen(),
         },
       ),
     );
