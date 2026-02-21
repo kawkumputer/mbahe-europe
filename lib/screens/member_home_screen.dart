@@ -9,8 +9,6 @@ class MemberHomeScreen extends StatelessWidget {
   const MemberHomeScreen({super.key});
 
   Widget _buildNotificationIcon(BuildContext context) {
-    // Charger le compteur au premier build
-    context.read<NotificationProvider>().refreshUnreadCount();
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
     return Stack(
       children: [

@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications REPLICA IDENTITY FULL;
 
 -- Chaque utilisateur ne voit que ses propres notifications
 CREATE POLICY "Notifications: lecture propres notifications"

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/notification_model.dart';
 import '../services/supabase_notification_service.dart';
@@ -38,7 +38,9 @@ class NotificationProvider extends ChangeNotifier {
             final newNotif = NotificationModel.fromJson(payload.newRecord);
             _notifications.insert(0, newNotif);
             _unreadCount++;
-            notifyListeners();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              notifyListeners();
+            });
           },
         )
         .subscribe();

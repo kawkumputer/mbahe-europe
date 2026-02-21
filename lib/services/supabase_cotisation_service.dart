@@ -25,19 +25,35 @@ class SupabaseCotisationService {
     try {
       final data = await _client
           .from('cotisations')
-          .select('month, year, user_id, profiles(first_name, last_name)')
+          .select('month, year, user_id')
           .eq('id', cotisationId)
           .single();
-      final profile = data['profiles'] as Map<String, dynamic>;
-      final memberName = '${profile['first_name']} ${profile['last_name']}';
+      final userId = data['user_id'] as String;
+
+      // Récupérer le nom du membre séparément
+      String memberName = 'un membre';
+      try {
+        final profile = await _client
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', userId)
+            .single();
+        memberName = '${profile['first_name']} ${profile['last_name']}';
+      } catch (_) {}
+
       const months = [
         '', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
         'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
       ];
       final monthName = months[data['month'] as int];
-      return {'memberName': memberName, 'monthName': monthName, 'year': '${data['year']}'};
+      return {
+        'userId': userId,
+        'memberName': memberName,
+        'monthName': monthName,
+        'year': '${data['year']}',
+      };
     } catch (_) {
-      return {'memberName': 'un membre', 'monthName': '', 'year': ''};
+      return {'userId': '', 'memberName': 'un membre', 'monthName': '', 'year': ''};
     }
   }
 
@@ -121,11 +137,24 @@ class SupabaseCotisationService {
         details: {'payment_method': method.name},
       );
 
-      // Notifier les autres admins
+      // Récupérer infos cotisation
       final info = await _getCotisationInfo(cotisationId);
+      final period = '${info['monthName']} ${info['year']}';
+
+      // Notifier le membre concerné
+      if (info['userId']!.isNotEmpty) {
+        await _notifService.notifyUser(
+          recipientId: info['userId']!,
+          title: 'Paiement enregistré',
+          body: 'Votre cotisation de $period a été marquée payée par ${admin['name']}.',
+          type: NotificationType.cotisation,
+        );
+      }
+
+      // Notifier les autres admins
       await _notifService.notifyAllAdmins(
         title: 'Cotisation marquée payée',
-        body: '${admin['name']} a enregistré le paiement de ${info['memberName']} pour ${info['monthName']} ${info['year']} (${method.name}).',
+        body: '${admin['name']} a enregistré le paiement de ${info['memberName']} pour $period (${method.name}).',
         type: NotificationType.cotisation,
         data: {'cotisation_id': cotisationId},
         excludeAdminId: admin['id'],
@@ -155,6 +184,29 @@ class SupabaseCotisationService {
         targetTable: 'cotisations',
         targetId: cotisationId,
       );
+
+      final info = await _getCotisationInfo(cotisationId);
+      final period = '${info['monthName']} ${info['year']}';
+
+      // Notifier le membre concerné
+      if (info['userId']!.isNotEmpty) {
+        await _notifService.notifyUser(
+          recipientId: info['userId']!,
+          title: 'Cotisation marquée impayée',
+          body: 'Votre cotisation de $period a été marquée impayée par ${admin['name']}.',
+          type: NotificationType.cotisation,
+        );
+      }
+
+      // Notifier les autres admins
+      await _notifService.notifyAllAdmins(
+        title: 'Cotisation marquée impayée',
+        body: '${admin['name']} a marqué impayée la cotisation de ${info['memberName']} pour $period.',
+        type: NotificationType.cotisation,
+        data: {'cotisation_id': cotisationId},
+        excludeAdminId: admin['id'],
+      );
+
       return true;
     } catch (e) {
       return false;
@@ -179,6 +231,29 @@ class SupabaseCotisationService {
         targetTable: 'cotisations',
         targetId: cotisationId,
       );
+
+      final info = await _getCotisationInfo(cotisationId);
+      final period = '${info['monthName']} ${info['year']}';
+
+      // Notifier le membre concerné
+      if (info['userId']!.isNotEmpty) {
+        await _notifService.notifyUser(
+          recipientId: info['userId']!,
+          title: 'Exemption accordée',
+          body: 'Vous avez été exempté de cotisation pour $period par ${admin['name']}.',
+          type: NotificationType.cotisation,
+        );
+      }
+
+      // Notifier les autres admins
+      await _notifService.notifyAllAdmins(
+        title: 'Exemption accordée',
+        body: '${admin['name']} a exempté ${info['memberName']} pour $period.',
+        type: NotificationType.cotisation,
+        data: {'cotisation_id': cotisationId},
+        excludeAdminId: admin['id'],
+      );
+
       return true;
     } catch (e) {
       return false;
@@ -203,6 +278,29 @@ class SupabaseCotisationService {
         targetTable: 'cotisations',
         targetId: cotisationId,
       );
+
+      final info = await _getCotisationInfo(cotisationId);
+      final period = '${info['monthName']} ${info['year']}';
+
+      // Notifier le membre concerné
+      if (info['userId']!.isNotEmpty) {
+        await _notifService.notifyUser(
+          recipientId: info['userId']!,
+          title: 'Exemption retirée',
+          body: 'Votre exemption pour $period a été retirée par ${admin['name']}.',
+          type: NotificationType.cotisation,
+        );
+      }
+
+      // Notifier les autres admins
+      await _notifService.notifyAllAdmins(
+        title: 'Exemption retirée',
+        body: '${admin['name']} a retiré l\'exemption de ${info['memberName']} pour $period.',
+        type: NotificationType.cotisation,
+        data: {'cotisation_id': cotisationId},
+        excludeAdminId: admin['id'],
+      );
+
       return true;
     } catch (e) {
       return false;
