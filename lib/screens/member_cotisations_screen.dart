@@ -344,15 +344,23 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                if (isExempted)
+                if (isExempted) ...[
                   Text(
                     'Exempté — Chômage',
                     style: GoogleFonts.poppins(
                       fontSize: 11,
                       color: const Color(0xFF1976D2),
                     ),
-                  )
-                else if (isPaid && cotisation.paidAt != null)
+                  ),
+                  if (cotisation.updatedByName != null)
+                    Text(
+                      'Par ${cotisation.updatedByName}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 10,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                ] else if (isPaid && cotisation.paidAt != null) ...[
                   Text(
                     'Payé le ${cotisation.paidAt!.day}/${cotisation.paidAt!.month}/${cotisation.paidAt!.year}'
                     '${cotisation.paymentMethod != null ? ' — ${cotisation.paymentMethodLabel}' : ''}',
@@ -361,6 +369,15 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                       color: AppColors.textSecondary,
                     ),
                   ),
+                  if (cotisation.updatedByName != null)
+                    Text(
+                      'Par ${cotisation.updatedByName}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 10,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                ],
               ],
             ),
           ),
