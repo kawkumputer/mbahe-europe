@@ -222,7 +222,7 @@ class MemberHomeScreen extends StatelessWidget {
                   title: 'À propos',
                   subtitle: 'L\'association',
                   color: const Color(0xFFE64A19),
-                  onTap: () {},
+                  onTap: () => Navigator.pushNamed(context, '/about'),
                 ),
               ],
             ),
