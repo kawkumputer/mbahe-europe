@@ -246,6 +246,48 @@ CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications(recipien
 CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(recipient_id, is_read) WHERE is_read = false;
 
 -- ============================================================
+-- Table des documents officiels (statuts, règlement)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS documents (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_by UUID REFERENCES profiles(id),
+  updated_by_name TEXT
+);
+
+ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
+
+-- Lecture par tous les utilisateurs authentifiés
+CREATE POLICY "Documents: lecture par tous"
+  ON documents FOR SELECT
+  TO authenticated
+  USING (true);
+
+-- Modification par admin uniquement
+CREATE POLICY "Documents: modification par admin"
+  ON documents FOR UPDATE
+  TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Insertion par admin uniquement
+CREATE POLICY "Documents: insertion par admin"
+  ON documents FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Insérer les documents par défaut
+INSERT INTO documents (id, title, content) VALUES
+('statuts', 'Statuts de l''association', ''),
+('reglement', 'Règlement intérieur', '')
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
 -- Index pour les performances
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_cotisations_user_year ON cotisations(user_id, year);
