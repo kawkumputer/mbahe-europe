@@ -209,6 +209,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return Icons.admin_panel_settings_rounded;
       case NotificationType.info:
         return Icons.info_rounded;
+      case NotificationType.actualite:
+        return Icons.newspaper_rounded;
     }
   }
 
@@ -224,6 +226,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return AppColors.pending;
       case NotificationType.info:
         return AppColors.textSecondary;
+      case NotificationType.actualite:
+        return const Color(0xFFD32F2F);
     }
   }
 }

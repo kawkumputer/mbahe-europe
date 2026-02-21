@@ -1,4 +1,4 @@
-enum NotificationType { info, cotisation, member, compteRendu, role }
+enum NotificationType { info, cotisation, member, compteRendu, role, actualite }
 
 class NotificationModel {
   final String id;
@@ -44,6 +44,8 @@ class NotificationModel {
         return NotificationType.compteRendu;
       case 'role':
         return NotificationType.role;
+      case 'actualite':
+        return NotificationType.actualite;
       default:
         return NotificationType.info;
     }
@@ -61,6 +63,8 @@ class NotificationModel {
         return 'role';
       case NotificationType.info:
         return 'info';
+      case NotificationType.actualite:
+        return 'actualite';
     }
   }
 

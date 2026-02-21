@@ -87,6 +87,37 @@ class SupabaseNotificationService {
     }
   }
 
+  /// Envoyer une notification à tous les utilisateurs approuvés (membres + admins)
+  Future<void> notifyAllApprovedUsers({
+    required String title,
+    required String body,
+    required NotificationType type,
+    Map<String, dynamic>? data,
+    String? excludeUserId,
+  }) async {
+    final users = await _client
+        .from('profiles')
+        .select('id')
+        .eq('status', 'approved');
+
+    final notifications = <Map<String, dynamic>>[];
+    for (final user in users) {
+      final userId = user['id'] as String;
+      if (userId == excludeUserId) continue;
+      notifications.add({
+        'recipient_id': userId,
+        'title': title,
+        'body': body,
+        'type': NotificationModel.typeToString(type),
+        'data': data,
+      });
+    }
+
+    if (notifications.isNotEmpty) {
+      await _client.from('notifications').insert(notifications);
+    }
+  }
+
   /// Envoyer une notification à un utilisateur spécifique
   Future<void> notifyUser({
     required String recipientId,

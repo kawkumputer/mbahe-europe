@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS notifications (
   recipient_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   body TEXT NOT NULL,
-  type TEXT NOT NULL DEFAULT 'info' CHECK (type IN ('info', 'cotisation', 'member', 'compte_rendu', 'role')),
+  type TEXT NOT NULL DEFAULT 'info' CHECK (type IN ('info', 'cotisation', 'member', 'compte_rendu', 'role', 'actualite')),
   is_read BOOLEAN NOT NULL DEFAULT false,
   data JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()

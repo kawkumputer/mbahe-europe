@@ -1,8 +1,11 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/actualite_model.dart';
+import '../models/notification_model.dart';
+import 'supabase_notification_service.dart';
 
 class SupabaseActualiteService {
   final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseNotificationService _notifService = SupabaseNotificationService();
 
   /// Récupérer toutes les actualités
   Future<List<ActualiteModel>> getAllActualites() async {
@@ -40,7 +43,20 @@ class SupabaseActualiteService {
         .select()
         .single();
 
-    return ActualiteModel.fromJson(data);
+    final created = ActualiteModel.fromJson(data);
+
+    // Notifier tous les membres et admins
+    try {
+      await _notifService.notifyAllApprovedUsers(
+        title: 'Nouvelle ${created.categoryLabel.toLowerCase()}',
+        body: '$authorName a publié : ${created.title}',
+        type: NotificationType.actualite,
+        data: {'actualite_id': created.id},
+        excludeUserId: authorId,
+      );
+    } catch (_) {}
+
+    return created;
   }
 
   /// Mettre à jour une actualité
