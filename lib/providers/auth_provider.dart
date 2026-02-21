@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
-import '../services/mock_auth_service.dart';
+import '../services/supabase_auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final MockAuthService _authService = MockAuthService();
+  final SupabaseAuthService _authService = SupabaseAuthService();
 
   UserModel? _currentUser;
   bool _isLoading = false;
@@ -64,7 +64,8 @@ class AuthProvider extends ChangeNotifier {
     return true;
   }
 
-  void logout() {
+  Future<void> logout() async {
+    await _authService.logout();
     _currentUser = null;
     _errorMessage = null;
     notifyListeners();
@@ -75,8 +76,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<UserModel> getPendingUsers() => _authService.getPendingUsers();
-  List<UserModel> getAllMembers() => _authService.getAllMembers();
+  Future<List<UserModel>> getPendingUsers() => _authService.getPendingUsers();
+  Future<List<UserModel>> getAllMembers() => _authService.getAllMembers();
 
   Future<void> approveUser(String userId) async {
     await _authService.approveUser(userId);
@@ -86,5 +87,14 @@ class AuthProvider extends ChangeNotifier {
   Future<void> rejectUser(String userId) async {
     await _authService.rejectUser(userId);
     notifyListeners();
+  }
+
+  /// Restaurer la session existante au démarrage
+  Future<void> restoreSession() async {
+    final user = await _authService.getCurrentUser();
+    if (user != null) {
+      _currentUser = user;
+      notifyListeners();
+    }
   }
 }

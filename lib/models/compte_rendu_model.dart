@@ -23,6 +23,47 @@ class CompteRenduModel {
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
+  factory CompteRenduModel.fromJson(Map<String, dynamic> json) {
+    return CompteRenduModel(
+      id: json['id'],
+      title: json['title'],
+      type: _parseType(json['type']),
+      reunionDate: DateTime.parse(json['reunion_date']),
+      authorId: json['author_id'],
+      authorName: json['author_name'] ?? '',
+      points: (json['points'] as List<dynamic>?)?.cast<String>() ?? [],
+      notes: json['notes'],
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'type': type.name,
+      'reunion_date': '${reunionDate.year}-${reunionDate.month.toString().padLeft(2, '0')}-${reunionDate.day.toString().padLeft(2, '0')}',
+      'author_id': authorId,
+      'author_name': authorName,
+      'points': points,
+      'notes': notes,
+    };
+  }
+
+  static ReunionType _parseType(String? type) {
+    switch (type) {
+      case 'assembleeGenerale':
+        return ReunionType.assembleeGenerale;
+      case 'bureau':
+        return ReunionType.bureau;
+      case 'extraordinaire':
+        return ReunionType.extraordinaire;
+      default:
+        return ReunionType.assembleeGenerale;
+    }
+  }
+
   CompteRenduModel copyWith({
     String? id,
     String? title,

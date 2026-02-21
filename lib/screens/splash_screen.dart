@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -30,11 +33,30 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/login');
+    _navigateAfterSplash();
+  }
+
+  Future<void> _navigateAfterSplash() async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return;
+
+    final auth = context.read<AuthProvider>();
+    await auth.restoreSession();
+
+    if (!mounted) return;
+
+    if (auth.isLoggedIn) {
+      if (auth.currentUser!.status != AccountStatus.approved) {
+        Navigator.pushReplacementNamed(context, '/pending-approval');
+      } else if (auth.isAdmin) {
+        Navigator.pushReplacementNamed(context, '/admin-home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/member-home');
       }
-    });
+    } else {
+      Navigator.pushReplacementNamed(context, '/login');
+    }
   }
 
   @override

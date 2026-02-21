@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import '../models/cotisation_model.dart';
-import '../services/mock_cotisation_service.dart';
+import '../services/supabase_cotisation_service.dart';
 
 class CotisationProvider extends ChangeNotifier {
-  final MockCotisationService _service = MockCotisationService();
+  final SupabaseCotisationService _service = SupabaseCotisationService();
 
   List<CotisationModel> _cotisations = [];
   Map<String, dynamic> _summary = {};

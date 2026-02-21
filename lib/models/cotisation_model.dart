@@ -23,6 +23,55 @@ class CotisationModel {
     this.paymentMethod,
   });
 
+  factory CotisationModel.fromJson(Map<String, dynamic> json) {
+    return CotisationModel(
+      id: json['id'],
+      userId: json['user_id'],
+      month: json['month'],
+      year: json['year'],
+      amount: (json['amount'] ?? 10.0).toDouble(),
+      status: _parseStatus(json['status']),
+      paidAt: json['paid_at'] != null ? DateTime.parse(json['paid_at']) : null,
+      paymentMethod: _parsePaymentMethod(json['payment_method']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id': userId,
+      'month': month,
+      'year': year,
+      'amount': amount,
+      'status': status.name,
+      'paid_at': paidAt?.toIso8601String(),
+      'payment_method': paymentMethod?.name,
+    };
+  }
+
+  static CotisationStatus _parseStatus(String? status) {
+    switch (status) {
+      case 'paid':
+        return CotisationStatus.paid;
+      case 'exempted':
+        return CotisationStatus.exempted;
+      default:
+        return CotisationStatus.unpaid;
+    }
+  }
+
+  static PaymentMethod? _parsePaymentMethod(String? method) {
+    switch (method) {
+      case 'espece':
+        return PaymentMethod.espece;
+      case 'virement':
+        return PaymentMethod.virement;
+      case 'cheque':
+        return PaymentMethod.cheque;
+      default:
+        return null;
+    }
+  }
+
   CotisationModel copyWith({
     String? id,
     String? userId,

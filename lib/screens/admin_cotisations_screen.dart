@@ -20,11 +20,32 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
   int _selectedYear = DateTime.now().year;
   final _searchController = TextEditingController();
   String _searchQuery = '';
+  List<UserModel> _approvedMembers = [];
+  bool _isLoadingMembers = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMembers();
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadMembers() async {
+    final authProvider = context.read<AuthProvider>();
+    final allMembers = await authProvider.getAllMembers();
+    if (mounted) {
+      setState(() {
+        _approvedMembers = allMembers
+            .where((m) => m.status == AccountStatus.approved)
+            .toList();
+        _isLoadingMembers = false;
+      });
+    }
   }
 
   List<UserModel> _filterMembers(List<UserModel> members) {
@@ -40,20 +61,17 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-    final members = _filterMembers(
-      authProvider.getAllMembers().where(
-        (m) => m.status == AccountStatus.approved,
-      ).toList(),
-    );
+    final members = _filterMembers(_approvedMembers);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestion cotisations'),
       ),
-      body: _selectedMember == null
-          ? _buildMemberList(members)
-          : _buildMemberCotisations(context),
+      body: _isLoadingMembers
+          ? const Center(child: CircularProgressIndicator())
+          : _selectedMember == null
+              ? _buildMemberList(members)
+              : _buildMemberCotisations(context),
     );
   }
 

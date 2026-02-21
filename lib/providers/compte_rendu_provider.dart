@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import '../models/compte_rendu_model.dart';
-import '../services/mock_compte_rendu_service.dart';
+import '../services/supabase_compte_rendu_service.dart';
 
 class CompteRenduProvider extends ChangeNotifier {
-  final MockCompteRenduService _service = MockCompteRenduService();
+  final SupabaseCompteRenduService _service = SupabaseCompteRenduService();
 
   List<CompteRenduModel> _comptesRendus = [];
   bool _isLoading = false;

@@ -16,11 +16,33 @@ class AdminHomeScreen extends StatefulWidget {
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
+  List<UserModel> _pendingUsers = [];
+  List<UserModel> _allMembers = [];
+  bool _isLoadingUsers = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsers();
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadUsers() async {
+    final auth = context.read<AuthProvider>();
+    final pending = await auth.getPendingUsers();
+    final members = await auth.getAllMembers();
+    if (mounted) {
+      setState(() {
+        _pendingUsers = pending;
+        _allMembers = members;
+        _isLoadingUsers = false;
+      });
+    }
   }
 
   List<UserModel> _filterUsers(List<UserModel> users) {
@@ -36,25 +58,34 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final pendingUsers = _filterUsers(_pendingUsers);
+    final allMembers = _filterUsers(_allMembers);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Administration'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout_rounded),
-            onPressed: () {
-              context.read<AuthProvider>().logout();
-              Navigator.pushReplacementNamed(context, '/login');
+            onPressed: () async {
+              await context.read<AuthProvider>().logout();
+              if (context.mounted) {
+                Navigator.pushReplacementNamed(context, '/login');
+              }
             },
           ),
         ],
       ),
-      body: Consumer<AuthProvider>(
-        builder: (context, auth, _) {
-          final pendingUsers = _filterUsers(auth.getPendingUsers());
-          final allMembers = _filterUsers(auth.getAllMembers());
+      body: _isLoadingUsers
+          ? const Center(child: CircularProgressIndicator())
+          : Builder(
+        builder: (context) {
+          final auth = context.watch<AuthProvider>();
 
-          return SingleChildScrollView(
+          return RefreshIndicator(
+            onRefresh: _loadUsers,
+            child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,6 +483,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 ...allMembers.map((user) => _buildMemberCard(user)),
               ],
             ),
+          ),
           );
         },
       ),
@@ -566,6 +598,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () async {
                     await auth.rejectUser(user.id);
+                    await _loadUsers();
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -592,6 +625,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () async {
                     await auth.approveUser(user.id);
+                    await _loadUsers();
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
