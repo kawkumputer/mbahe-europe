@@ -29,6 +29,10 @@ import 'screens/actualite_detail_screen.dart';
 import 'screens/create_actualite_screen.dart';
 import 'screens/edit_actualite_screen.dart';
 import 'providers/actualite_provider.dart';
+import 'providers/bureau_provider.dart';
+import 'screens/bureau_screen.dart';
+import 'screens/manage_mandats_screen.dart';
+import 'screens/manage_bureau_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +59,7 @@ class MbaheEuropeApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CompteRenduProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => ActualiteProvider()),
+        ChangeNotifierProvider(create: (_) => BureauProvider()),
       ],
       child: MaterialApp(
         title: 'MBAHE Europe',
@@ -83,6 +88,9 @@ class MbaheEuropeApp extends StatelessWidget {
           '/actualite-detail': (context) => const ActualiteDetailScreen(),
           '/create-actualite': (context) => const CreateActualiteScreen(),
           '/edit-actualite': (context) => const EditActualiteScreen(),
+          '/bureau': (context) => const BureauScreen(),
+          '/manage-mandats': (context) => const ManageMandatsScreen(),
+          '/manage-bureau': (context) => const ManageBureauScreen(),
         },
       ),
     );

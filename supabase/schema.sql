@@ -336,6 +336,90 @@ CREATE POLICY "Actualites: suppression par admin"
 CREATE INDEX IF NOT EXISTS idx_actualites_published ON actualites(published_at DESC);
 
 -- ============================================================
+-- Table des mandats du bureau
+-- ============================================================
+CREATE TABLE IF NOT EXISTS mandats (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  label TEXT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE mandats ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Mandats: lecture par tous"
+  ON mandats FOR SELECT
+  TO authenticated
+  USING (true);
+
+CREATE POLICY "Mandats: insertion par admin"
+  ON mandats FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE POLICY "Mandats: modification par admin"
+  ON mandats FOR UPDATE
+  TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE POLICY "Mandats: suppression par admin"
+  ON mandats FOR DELETE
+  TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- ============================================================
+-- Table des membres du bureau
+-- ============================================================
+CREATE TABLE IF NOT EXISTS bureau_membres (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  mandat_id UUID NOT NULL REFERENCES mandats(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id),
+  user_name TEXT NOT NULL,
+  poste TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(mandat_id, poste)
+);
+
+ALTER TABLE bureau_membres ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Bureau: lecture par tous"
+  ON bureau_membres FOR SELECT
+  TO authenticated
+  USING (true);
+
+CREATE POLICY "Bureau: insertion par admin"
+  ON bureau_membres FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE POLICY "Bureau: modification par admin"
+  ON bureau_membres FOR UPDATE
+  TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE POLICY "Bureau: suppression par admin"
+  ON bureau_membres FOR DELETE
+  TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE INDEX IF NOT EXISTS idx_bureau_membres_mandat ON bureau_membres(mandat_id);
+CREATE INDEX IF NOT EXISTS idx_mandats_active ON mandats(is_active) WHERE is_active = true;
+
+-- ============================================================
 -- Index pour les performances
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_cotisations_user_year ON cotisations(user_id, year);

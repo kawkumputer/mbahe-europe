@@ -225,6 +225,13 @@ class MemberHomeScreen extends StatelessWidget {
                   onTap: () => Navigator.pushNamed(context, '/actualites'),
                 ),
                 _buildFeatureCard(
+                  icon: Icons.groups_rounded,
+                  title: 'Bureau',
+                  subtitle: 'Composition',
+                  color: const Color(0xFF0D47A1),
+                  onTap: () => Navigator.pushNamed(context, '/bureau'),
+                ),
+                _buildFeatureCard(
                   icon: Icons.gavel_rounded,
                   title: 'Statuts',
                   subtitle: 'De l\'association',
