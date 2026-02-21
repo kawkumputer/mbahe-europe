@@ -20,6 +20,27 @@ class SupabaseCotisationService {
     return {'id': user.id, 'name': name};
   }
 
+  /// Helper: récupérer les infos d'une cotisation (nom membre + mois)
+  Future<Map<String, String>> _getCotisationInfo(String cotisationId) async {
+    try {
+      final data = await _client
+          .from('cotisations')
+          .select('month, year, user_id, profiles(first_name, last_name)')
+          .eq('id', cotisationId)
+          .single();
+      final profile = data['profiles'] as Map<String, dynamic>;
+      final memberName = '${profile['first_name']} ${profile['last_name']}';
+      const months = [
+        '', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+      ];
+      final monthName = months[data['month'] as int];
+      return {'memberName': memberName, 'monthName': monthName, 'year': '${data['year']}'};
+    } catch (_) {
+      return {'memberName': 'un membre', 'monthName': '', 'year': ''};
+    }
+  }
+
   /// Helper: enregistrer une action dans audit_log
   Future<void> _logAction({
     required String adminId,
@@ -101,9 +122,10 @@ class SupabaseCotisationService {
       );
 
       // Notifier les autres admins
+      final info = await _getCotisationInfo(cotisationId);
       await _notifService.notifyAllAdmins(
         title: 'Cotisation marquée payée',
-        body: '${admin['name']} a enregistré un paiement (${method.name}).',
+        body: '${admin['name']} a enregistré le paiement de ${info['memberName']} pour ${info['monthName']} ${info['year']} (${method.name}).',
         type: NotificationType.cotisation,
         data: {'cotisation_id': cotisationId},
         excludeAdminId: admin['id'],

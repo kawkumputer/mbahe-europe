@@ -155,10 +155,25 @@ class SupabaseAuthService {
     } catch (_) {}
   }
 
+  /// Récupérer le nom complet d'un utilisateur par son id
+  Future<String> _getUserName(String userId) async {
+    try {
+      final data = await _client
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', userId)
+          .single();
+      return '${data['first_name']} ${data['last_name']}';
+    } catch (_) {
+      return 'un membre';
+    }
+  }
+
   /// Approuver un utilisateur
   Future<bool> approveUser(String userId) async {
     try {
       final admin = await _getCurrentAdmin();
+      final memberName = await _getUserName(userId);
       await _client
           .from('profiles')
           .update({'status': 'approved'})
@@ -181,7 +196,7 @@ class SupabaseAuthService {
       // Notifier les autres admins
       await _notifService.notifyAllAdmins(
         title: 'Membre approuvé',
-        body: '${admin['name']} a approuvé un nouveau membre.',
+        body: '${admin['name']} a approuvé $memberName.',
         type: NotificationType.member,
         data: {'user_id': userId},
         excludeAdminId: admin['id'],
@@ -197,6 +212,7 @@ class SupabaseAuthService {
   Future<bool> rejectUser(String userId) async {
     try {
       final admin = await _getCurrentAdmin();
+      final memberName = await _getUserName(userId);
       await _client
           .from('profiles')
           .update({'status': 'rejected'})
@@ -212,7 +228,7 @@ class SupabaseAuthService {
       // Notifier les autres admins
       await _notifService.notifyAllAdmins(
         title: 'Membre rejeté',
-        body: '${admin['name']} a rejeté une demande d\'inscription.',
+        body: '${admin['name']} a rejeté $memberName.',
         type: NotificationType.member,
         data: {'user_id': userId},
         excludeAdminId: admin['id'],
@@ -227,6 +243,7 @@ class SupabaseAuthService {
   Future<bool> updateUserRole(String userId, String role) async {
     try {
       final admin = await _getCurrentAdmin();
+      final memberName = await _getUserName(userId);
       await _client
           .from('profiles')
           .update({'role': role})
@@ -251,7 +268,7 @@ class SupabaseAuthService {
       // Notifier les autres admins
       await _notifService.notifyAllAdmins(
         title: 'Changement de rôle',
-        body: '${admin['name']} a changé le rôle d\'un membre en $roleLabel.',
+        body: '${admin['name']} a promu $memberName en $roleLabel.',
         type: NotificationType.role,
         data: {'user_id': userId, 'new_role': role},
         excludeAdminId: admin['id'],
