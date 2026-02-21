@@ -135,7 +135,8 @@ class _AdminPaymentDashboardScreenState
       appBar: AppBar(
         title: const Text('Bilan par réunion'),
       ),
-      body: _isLoading
+      body: SafeArea(
+        child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _reunionSummaries.isEmpty
               ? _buildEmpty()
@@ -149,6 +150,7 @@ class _AdminPaymentDashboardScreenState
                     },
                   ),
                 ),
+      ),
     );
   }
 

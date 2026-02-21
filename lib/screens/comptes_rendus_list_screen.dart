@@ -46,7 +46,8 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
               ),
             )
           : null,
-      body: provider.isLoading
+      body: SafeArea(
+        child: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : provider.comptesRendus.isEmpty
               ? _buildEmptyState()
@@ -61,6 +62,7 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
                     );
                   },
                 ),
+      ),
     );
   }
 

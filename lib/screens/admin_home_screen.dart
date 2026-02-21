@@ -76,7 +76,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ),
         ],
       ),
-      body: _isLoadingUsers
+      body: SafeArea(
+        child: _isLoadingUsers
           ? const Center(child: CircularProgressIndicator())
           : Builder(
         builder: (context) {
@@ -481,11 +482,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 const SizedBox(height: 12),
 
                 ...allMembers.map((user) => _buildMemberCard(user)),
+
+                const SizedBox(height: 40),
               ],
             ),
           ),
           );
         },
+      ),
       ),
     );
   }

@@ -26,7 +26,8 @@ class MemberHomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: SafeArea(
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,6 +233,7 @@ class MemberHomeScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

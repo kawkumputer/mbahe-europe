@@ -40,7 +40,8 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
       appBar: AppBar(
         title: const Text('Mes cotisations'),
       ),
-      body: cotisationProvider.isLoading
+      body: SafeArea(
+        child: cotisationProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(20),
@@ -75,6 +76,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                 ],
               ),
             ),
+      ),
     );
   }
 

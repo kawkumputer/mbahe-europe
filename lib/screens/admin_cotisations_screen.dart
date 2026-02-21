@@ -67,11 +67,13 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
       appBar: AppBar(
         title: const Text('Gestion cotisations'),
       ),
-      body: _isLoadingMembers
+      body: SafeArea(
+        child: _isLoadingMembers
           ? const Center(child: CircularProgressIndicator())
           : _selectedMember == null
               ? _buildMemberList(members)
               : _buildMemberCotisations(context),
+      ),
     );
   }
 

@@ -122,7 +122,8 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
       appBar: AppBar(
         title: const Text('Nouveau compte rendu'),
       ),
-      body: SingleChildScrollView(
+      body: SafeArea(
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
@@ -411,6 +412,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
