@@ -288,6 +288,54 @@ INSERT INTO documents (id, title, content) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================
+-- Table des actualités
+-- ============================================================
+CREATE TABLE IF NOT EXISTS actualites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'actualite',
+  author_id UUID NOT NULL REFERENCES profiles(id),
+  author_name TEXT NOT NULL,
+  published_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE actualites ENABLE ROW LEVEL SECURITY;
+
+-- Lecture par tous les utilisateurs authentifiés
+CREATE POLICY "Actualites: lecture par tous"
+  ON actualites FOR SELECT
+  TO authenticated
+  USING (true);
+
+-- Insertion par admin uniquement
+CREATE POLICY "Actualites: insertion par admin"
+  ON actualites FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Modification par admin uniquement
+CREATE POLICY "Actualites: modification par admin"
+  ON actualites FOR UPDATE
+  TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Suppression par admin uniquement
+CREATE POLICY "Actualites: suppression par admin"
+  ON actualites FOR DELETE
+  TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE INDEX IF NOT EXISTS idx_actualites_published ON actualites(published_at DESC);
+
+-- ============================================================
 -- Index pour les performances
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_cotisations_user_year ON cotisations(user_id, year);

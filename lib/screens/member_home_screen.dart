@@ -218,6 +218,13 @@ class MemberHomeScreen extends StatelessWidget {
                   },
                 ),
                 _buildFeatureCard(
+                  icon: Icons.newspaper_rounded,
+                  title: 'Actualités',
+                  subtitle: 'Infos & événements',
+                  color: const Color(0xFFD32F2F),
+                  onTap: () => Navigator.pushNamed(context, '/actualites'),
+                ),
+                _buildFeatureCard(
                   icon: Icons.gavel_rounded,
                   title: 'Statuts',
                   subtitle: 'De l\'association',

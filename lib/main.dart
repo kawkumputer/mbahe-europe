@@ -24,6 +24,11 @@ import 'screens/about_screen.dart';
 import 'screens/statuts_screen.dart';
 import 'screens/reglement_screen.dart';
 import 'screens/admin_members_screen.dart';
+import 'screens/actualites_list_screen.dart';
+import 'screens/actualite_detail_screen.dart';
+import 'screens/create_actualite_screen.dart';
+import 'screens/edit_actualite_screen.dart';
+import 'providers/actualite_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +54,7 @@ class MbaheEuropeApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CotisationProvider()),
         ChangeNotifierProvider(create: (_) => CompteRenduProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => ActualiteProvider()),
       ],
       child: MaterialApp(
         title: 'MBAHE Europe',
@@ -73,6 +79,10 @@ class MbaheEuropeApp extends StatelessWidget {
           '/statuts': (context) => const StatutsScreen(),
           '/reglement': (context) => const ReglementScreen(),
           '/admin-members': (context) => const AdminMembersScreen(),
+          '/actualites': (context) => const ActualitesListScreen(),
+          '/actualite-detail': (context) => const ActualiteDetailScreen(),
+          '/create-actualite': (context) => const CreateActualiteScreen(),
+          '/edit-actualite': (context) => const EditActualiteScreen(),
         },
       ),
     );
