@@ -482,6 +482,15 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                       color: Colors.grey.shade500,
                     ),
                   ),
+                if (cotisation.updatedByName != null)
+                  Text(
+                    'Par ${cotisation.updatedByName}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
               ],
             ),
           ),

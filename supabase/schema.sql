@@ -164,6 +164,48 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ============================================================
+-- Migration: Traçabilité des actions admin
+-- ============================================================
+
+-- Ajouter les colonnes de traçabilité sur cotisations
+ALTER TABLE cotisations ADD COLUMN IF NOT EXISTS updated_by UUID REFERENCES profiles(id);
+ALTER TABLE cotisations ADD COLUMN IF NOT EXISTS updated_by_name TEXT;
+
+-- Table d'audit pour tracer toutes les actions admin
+CREATE TABLE IF NOT EXISTS audit_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id UUID NOT NULL REFERENCES profiles(id),
+  admin_name TEXT NOT NULL,
+  action TEXT NOT NULL,
+  target_table TEXT NOT NULL,
+  target_id TEXT,
+  details JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+
+-- Audit: lecture par admin uniquement
+CREATE POLICY "Audit: lecture par admin"
+  ON audit_log FOR SELECT
+  TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Audit: insertion par admin
+CREATE POLICY "Audit: insertion par admin"
+  ON audit_log FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_admin ON audit_log(admin_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_log_target ON audit_log(target_table, target_id);
+
+-- ============================================================
 -- Index pour les performances
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_cotisations_user_year ON cotisations(user_id, year);

@@ -4,6 +4,40 @@ import '../models/cotisation_model.dart';
 class SupabaseCotisationService {
   final SupabaseClient _client = Supabase.instance.client;
 
+  /// Helper: récupérer l'admin courant (id + nom)
+  Future<Map<String, String>> _getCurrentAdmin() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return {'id': '', 'name': ''};
+    final profile = await _client
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .eq('id', user.id)
+        .single();
+    final name = '${profile['first_name']} ${profile['last_name']}';
+    return {'id': user.id, 'name': name};
+  }
+
+  /// Helper: enregistrer une action dans audit_log
+  Future<void> _logAction({
+    required String adminId,
+    required String adminName,
+    required String action,
+    required String targetTable,
+    String? targetId,
+    Map<String, dynamic>? details,
+  }) async {
+    try {
+      await _client.from('audit_log').insert({
+        'admin_id': adminId,
+        'admin_name': adminName,
+        'action': action,
+        'target_table': targetTable,
+        'target_id': targetId,
+        'details': details,
+      });
+    } catch (_) {}
+  }
+
   /// Récupérer les cotisations d'un adhérent pour une année
   /// Génère automatiquement les cotisations si elles n'existent pas
   Future<List<CotisationModel>> getCotisationsByUserAndYear(
@@ -46,11 +80,22 @@ class SupabaseCotisationService {
   /// Marquer une cotisation comme payée avec mode de paiement
   Future<bool> markAsPaid(String cotisationId, PaymentMethod method) async {
     try {
+      final admin = await _getCurrentAdmin();
       await _client.from('cotisations').update({
         'status': 'paid',
         'paid_at': DateTime.now().toIso8601String(),
         'payment_method': method.name,
+        'updated_by': admin['id'],
+        'updated_by_name': admin['name'],
       }).eq('id', cotisationId);
+      await _logAction(
+        adminId: admin['id']!,
+        adminName: admin['name']!,
+        action: 'mark_paid',
+        targetTable: 'cotisations',
+        targetId: cotisationId,
+        details: {'payment_method': method.name},
+      );
       return true;
     } catch (e) {
       return false;
@@ -60,11 +105,21 @@ class SupabaseCotisationService {
   /// Marquer une cotisation comme impayée
   Future<bool> markAsUnpaid(String cotisationId) async {
     try {
+      final admin = await _getCurrentAdmin();
       await _client.from('cotisations').update({
         'status': 'unpaid',
         'paid_at': null,
         'payment_method': null,
+        'updated_by': admin['id'],
+        'updated_by_name': admin['name'],
       }).eq('id', cotisationId);
+      await _logAction(
+        adminId: admin['id']!,
+        adminName: admin['name']!,
+        action: 'mark_unpaid',
+        targetTable: 'cotisations',
+        targetId: cotisationId,
+      );
       return true;
     } catch (e) {
       return false;
@@ -74,11 +129,21 @@ class SupabaseCotisationService {
   /// Marquer une cotisation comme exemptée (chômage)
   Future<bool> markAsExempted(String cotisationId) async {
     try {
+      final admin = await _getCurrentAdmin();
       await _client.from('cotisations').update({
         'status': 'exempted',
         'paid_at': null,
         'payment_method': null,
+        'updated_by': admin['id'],
+        'updated_by_name': admin['name'],
       }).eq('id', cotisationId);
+      await _logAction(
+        adminId: admin['id']!,
+        adminName: admin['name']!,
+        action: 'mark_exempted',
+        targetTable: 'cotisations',
+        targetId: cotisationId,
+      );
       return true;
     } catch (e) {
       return false;
@@ -88,11 +153,21 @@ class SupabaseCotisationService {
   /// Retirer l'exemption chômage
   Future<bool> removeExemption(String cotisationId) async {
     try {
+      final admin = await _getCurrentAdmin();
       await _client.from('cotisations').update({
         'status': 'unpaid',
         'paid_at': null,
         'payment_method': null,
+        'updated_by': admin['id'],
+        'updated_by_name': admin['name'],
       }).eq('id', cotisationId);
+      await _logAction(
+        adminId: admin['id']!,
+        adminName: admin['name']!,
+        action: 'remove_exemption',
+        targetTable: 'cotisations',
+        targetId: cotisationId,
+      );
       return true;
     } catch (e) {
       return false;

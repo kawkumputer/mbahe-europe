@@ -89,6 +89,12 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> updateUserRole(String userId, String role) async {
+    final success = await _authService.updateUserRole(userId, role);
+    if (success) notifyListeners();
+    return success;
+  }
+
   /// Restaurer la session existante au démarrage
   Future<void> restoreSession() async {
     final user = await _authService.getCurrentUser();

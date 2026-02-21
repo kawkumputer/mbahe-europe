@@ -95,23 +95,65 @@ class SupabaseAuthService {
     return data.map<UserModel>((json) => UserModel.fromJson(json)).toList();
   }
 
-  /// Récupérer tous les membres
+  /// Récupérer tous les membres (admins inclus, car ils cotisent aussi)
   Future<List<UserModel>> getAllMembers() async {
     final data = await _client
         .from('profiles')
         .select()
-        .eq('role', 'member')
+        .eq('status', 'approved')
         .order('last_name', ascending: true);
     return data.map<UserModel>((json) => UserModel.fromJson(json)).toList();
+  }
+
+  /// Helper: récupérer l'admin courant (id + nom)
+  Future<Map<String, String>> _getCurrentAdmin() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return {'id': '', 'name': ''};
+    final profile = await _client
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .eq('id', user.id)
+        .single();
+    final name = '${profile['first_name']} ${profile['last_name']}';
+    return {'id': user.id, 'name': name};
+  }
+
+  /// Helper: enregistrer une action dans audit_log
+  Future<void> _logAction({
+    required String adminId,
+    required String adminName,
+    required String action,
+    required String targetTable,
+    String? targetId,
+    Map<String, dynamic>? details,
+  }) async {
+    try {
+      await _client.from('audit_log').insert({
+        'admin_id': adminId,
+        'admin_name': adminName,
+        'action': action,
+        'target_table': targetTable,
+        'target_id': targetId,
+        'details': details,
+      });
+    } catch (_) {}
   }
 
   /// Approuver un utilisateur
   Future<bool> approveUser(String userId) async {
     try {
+      final admin = await _getCurrentAdmin();
       await _client
           .from('profiles')
           .update({'status': 'approved'})
           .eq('id', userId);
+      await _logAction(
+        adminId: admin['id']!,
+        adminName: admin['name']!,
+        action: 'approve_user',
+        targetTable: 'profiles',
+        targetId: userId,
+      );
       return true;
     } catch (e) {
       return false;
@@ -121,12 +163,43 @@ class SupabaseAuthService {
   /// Rejeter un utilisateur
   Future<bool> rejectUser(String userId) async {
     try {
+      final admin = await _getCurrentAdmin();
       await _client
           .from('profiles')
           .update({'status': 'rejected'})
           .eq('id', userId);
+      await _logAction(
+        adminId: admin['id']!,
+        adminName: admin['name']!,
+        action: 'reject_user',
+        targetTable: 'profiles',
+        targetId: userId,
+      );
       return true;
     } catch (e) {
+      return false;
+    }
+  }
+
+  /// Mettre à jour le rôle d'un utilisateur (admin/member)
+  Future<bool> updateUserRole(String userId, String role) async {
+    try {
+      final admin = await _getCurrentAdmin();
+      await _client
+          .from('profiles')
+          .update({'role': role})
+          .eq('id', userId);
+      await _logAction(
+        adminId: admin['id']!,
+        adminName: admin['name']!,
+        action: 'update_role',
+        targetTable: 'profiles',
+        targetId: userId,
+        details: {'new_role': role},
+      );
+      return true;
+    } catch (e) {
+      debugPrint('updateUserRole error: $e');
       return false;
     }
   }

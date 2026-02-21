@@ -11,6 +11,8 @@ class CotisationModel {
   final CotisationStatus status;
   final DateTime? paidAt;
   final PaymentMethod? paymentMethod;
+  final String? updatedBy;
+  final String? updatedByName;
 
   CotisationModel({
     required this.id,
@@ -21,6 +23,8 @@ class CotisationModel {
     this.status = CotisationStatus.unpaid,
     this.paidAt,
     this.paymentMethod,
+    this.updatedBy,
+    this.updatedByName,
   });
 
   factory CotisationModel.fromJson(Map<String, dynamic> json) {
@@ -33,6 +37,8 @@ class CotisationModel {
       status: _parseStatus(json['status']),
       paidAt: json['paid_at'] != null ? DateTime.parse(json['paid_at']) : null,
       paymentMethod: _parsePaymentMethod(json['payment_method']),
+      updatedBy: json['updated_by'],
+      updatedByName: json['updated_by_name'],
     );
   }
 
@@ -82,6 +88,8 @@ class CotisationModel {
     DateTime? paidAt,
     PaymentMethod? paymentMethod,
     bool clearPaymentMethod = false,
+    String? updatedBy,
+    String? updatedByName,
   }) {
     return CotisationModel(
       id: id ?? this.id,
@@ -92,6 +100,8 @@ class CotisationModel {
       status: status ?? this.status,
       paidAt: paidAt ?? this.paidAt,
       paymentMethod: clearPaymentMethod ? null : (paymentMethod ?? this.paymentMethod),
+      updatedBy: updatedBy ?? this.updatedBy,
+      updatedByName: updatedByName ?? this.updatedByName,
     );
   }
 
