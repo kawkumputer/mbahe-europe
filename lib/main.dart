@@ -23,6 +23,7 @@ import 'screens/notifications_screen.dart';
 import 'screens/about_screen.dart';
 import 'screens/statuts_screen.dart';
 import 'screens/reglement_screen.dart';
+import 'screens/admin_members_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,6 +72,7 @@ class MbaheEuropeApp extends StatelessWidget {
           '/about': (context) => const AboutScreen(),
           '/statuts': (context) => const StatutsScreen(),
           '/reglement': (context) => const ReglementScreen(),
+          '/admin-members': (context) => const AdminMembersScreen(),
         },
       ),
     );
