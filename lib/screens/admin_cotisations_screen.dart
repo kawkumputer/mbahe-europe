@@ -7,6 +7,9 @@ import '../models/user_model.dart';
 import '../models/cotisation_model.dart';
 import '../theme/app_theme.dart';
 import '../widgets/search_bar_widget.dart';
+import '../l10n/app_localizations.dart';
+import '../services/pdf_export_service.dart';
+import '../services/supabase_cotisation_service.dart';
 
 class AdminCotisationsScreen extends StatefulWidget {
   const AdminCotisationsScreen({super.key});
@@ -65,7 +68,21 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestion cotisations'),
+        title: Text(AppLocalizations.get('cotisations_admin_title')),
+        actions: [
+          if (_selectedMember != null)
+            IconButton(
+              icon: const Icon(Icons.picture_as_pdf_rounded),
+              tooltip: AppLocalizations.get('pdf_export_member'),
+              onPressed: () => _exportMemberPdf(context),
+            )
+          else if (_approvedMembers.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.picture_as_pdf_rounded),
+              tooltip: AppLocalizations.get('pdf_export_all'),
+              onPressed: () => _exportAllPdf(context),
+            ),
+        ],
       ),
       body: SafeArea(
         child: _isLoadingMembers
@@ -84,7 +101,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Sélectionnez un adhérent',
+            AppLocalizations.get('cotis_admin_select'),
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -93,7 +110,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Pour consulter et gérer ses cotisations',
+            AppLocalizations.get('cotis_admin_select_desc'),
             style: GoogleFonts.poppins(
               fontSize: 13,
               color: AppColors.textSecondary,
@@ -104,7 +121,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
           // Barre de recherche
           SearchBarWidget(
             controller: _searchController,
-            hint: 'Rechercher par nom, prénom ou téléphone...',
+            hint: AppLocalizations.get('members_search'),
             onChanged: (value) {
               setState(() => _searchQuery = value);
             },
@@ -125,7 +142,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                       size: 48, color: Colors.grey.shade400),
                   const SizedBox(height: 12),
                   Text(
-                    'Aucun adhérent approuvé',
+                    AppLocalizations.get('cotis_admin_no_member'),
                     style: GoogleFonts.poppins(
                       color: AppColors.textSecondary,
                       fontSize: 14,
@@ -364,19 +381,19 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
         children: [
           _buildSummaryItem(
             '${provider.totalPaid.toStringAsFixed(0)}€',
-            'Payé',
+            AppLocalizations.get('cotis_admin_paid'),
             AppColors.approved,
           ),
           Container(width: 1, height: 30, color: AppColors.divider),
           _buildSummaryItem(
             '${provider.remaining.toStringAsFixed(0)}€',
-            'Restant',
+            AppLocalizations.get('cotis_admin_remaining'),
             AppColors.rejected,
           ),
           Container(width: 1, height: 30, color: AppColors.divider),
           _buildSummaryItem(
             '${(provider.percentage * 100).toInt()}%',
-            'Progression',
+            AppLocalizations.get('cotis_admin_progress'),
             AppColors.primary,
           ),
         ],
@@ -465,7 +482,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                 ),
                 Text(
                   isExempted
-                      ? 'Exempté — Chômage'
+                      ? AppLocalizations.get('cotis_exempted_label')
                       : isPaid
                           ? '${cotisation.amount.toStringAsFixed(0)}€ — ${cotisation.statusLabel} (${cotisation.paymentMethodLabel})'
                           : '${cotisation.amount.toStringAsFixed(0)}€ — ${cotisation.statusLabel}',
@@ -476,7 +493,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                 ),
                 if (isPaid && cotisation.paidAt != null)
                   Text(
-                    'Payé le ${cotisation.paidAt!.day}/${cotisation.paidAt!.month}/${cotisation.paidAt!.year}',
+                    '${AppLocalizations.get('cotis_paid_on')} ${cotisation.paidAt!.day}/${cotisation.paidAt!.month}/${cotisation.paidAt!.year}',
                     style: GoogleFonts.poppins(
                       fontSize: 10,
                       color: Colors.grey.shade500,
@@ -484,7 +501,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                   ),
                 if (cotisation.updatedByName != null)
                   Text(
-                    'Par ${cotisation.updatedByName}',
+                    '${AppLocalizations.get('cotis_by')} ${cotisation.updatedByName}',
                     style: GoogleFonts.poppins(
                       fontSize: 10,
                       fontStyle: FontStyle.italic,
@@ -550,7 +567,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                       ),
                     ),
                     child: Text(
-                      isPaid ? 'Annuler' : 'Marquer payé',
+                      isPaid ? AppLocalizations.get('cotis_admin_cancel') : AppLocalizations.get('cotis_admin_mark_paid'),
                       style: GoogleFonts.poppins(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -572,7 +589,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Mode de paiement',
+          AppLocalizations.get('cotis_admin_payment_method'),
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
         ),
         content: Column(
@@ -592,7 +609,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
               userId,
               PaymentMethod.espece,
               Icons.money_rounded,
-              'Espèce',
+              AppLocalizations.get('payment_cash'),
               const Color(0xFF2E7D32),
             ),
             const SizedBox(height: 8),
@@ -602,7 +619,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
               userId,
               PaymentMethod.virement,
               Icons.account_balance_rounded,
-              'Virement',
+              AppLocalizations.get('payment_transfer'),
               const Color(0xFF1565C0),
             ),
             const SizedBox(height: 8),
@@ -612,7 +629,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
               userId,
               PaymentMethod.cheque,
               Icons.receipt_long_rounded,
-              'Chèque',
+              AppLocalizations.get('payment_check'),
               const Color(0xFF6A1B9A),
             ),
           ],
@@ -665,6 +682,67 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
     );
   }
 
+  Future<void> _exportMemberPdf(BuildContext context) async {
+    final provider = context.read<CotisationProvider>();
+    final member = _selectedMember!;
+
+    await PdfExportService.exportMemberCotisations(
+      member: member,
+      cotisations: provider.cotisations,
+      year: _selectedYear,
+      summary: provider.summary,
+    );
+  }
+
+  Future<void> _exportAllPdf(BuildContext context) async {
+    final nav = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final service = SupabaseCotisationService();
+      final cotisationsByUser = <String, List<CotisationModel>>{};
+      final summariesByUser = <String, Map<String, dynamic>>{};
+
+      for (final member in _approvedMembers) {
+        final cotisations = await service.getCotisationsByUserAndYear(
+          member.id,
+          _selectedYear,
+        );
+        final summary = await service.getUserYearlySummary(
+          member.id,
+          _selectedYear,
+        );
+        cotisationsByUser[member.id] = cotisations;
+        summariesByUser[member.id] = summary;
+      }
+
+      if (mounted) nav.pop();
+
+      await PdfExportService.exportAllCotisations(
+        members: _approvedMembers,
+        cotisationsByUser: cotisationsByUser,
+        summariesByUser: summariesByUser,
+        year: _selectedYear,
+      );
+    } catch (e) {
+      if (mounted) {
+        nav.pop();
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.get('error_generic')),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
   Widget _buildVacationInfo() {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -680,7 +758,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Nov. & Déc. — Mois de vacances (pas de cotisation)',
+              AppLocalizations.get('cotis_admin_vacation'),
               style: GoogleFonts.poppins(
                 fontSize: 12,
                 color: AppColors.textSecondary,

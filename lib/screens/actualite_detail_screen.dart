@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/actualite_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class ActualiteDetailScreen extends StatelessWidget {
   const ActualiteDetailScreen({super.key});
@@ -36,7 +37,7 @@ class ActualiteDetailScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Actualité'),
+        title: Text(AppLocalizations.get('actu_detail_title')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

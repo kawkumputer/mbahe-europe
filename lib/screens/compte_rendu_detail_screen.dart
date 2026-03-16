@@ -5,6 +5,8 @@ import '../providers/auth_provider.dart';
 import '../providers/compte_rendu_provider.dart';
 import '../models/compte_rendu_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
+import '../services/pdf_export_service.dart';
 
 class CompteRenduDetailScreen extends StatelessWidget {
   const CompteRenduDetailScreen({super.key});
@@ -33,8 +35,13 @@ class CompteRenduDetailScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Compte rendu'),
+        title: Text(AppLocalizations.get('cr_detail_title')),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf_rounded),
+            tooltip: AppLocalizations.get('pdf_export_cr'),
+            onPressed: () => PdfExportService.exportCompteRendu(cr: cr),
+          ),
           if (isAdmin)
             IconButton(
               icon: const Icon(Icons.delete_outline_rounded),
@@ -146,7 +153,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'Points discutés',
+                  AppLocalizations.get('cr_points'),
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -249,7 +256,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'Notes',
+                    AppLocalizations.get('cr_notes'),
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -295,18 +302,18 @@ class CompteRenduDetailScreen extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Supprimer ce compte rendu ?',
+          AppLocalizations.get('cr_delete_title'),
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
         ),
         content: Text(
-          'Cette action est irréversible.',
+          AppLocalizations.get('cr_delete_irreversible'),
           style: GoogleFonts.poppins(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              'Annuler',
+              AppLocalizations.get('cancel'),
               style: GoogleFonts.poppins(color: AppColors.textSecondary),
             ),
           ),
@@ -322,7 +329,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
               backgroundColor: AppColors.rejected,
             ),
             child: Text(
-              'Supprimer',
+              AppLocalizations.get('delete'),
               style: GoogleFonts.poppins(color: Colors.white),
             ),
           ),

@@ -8,11 +8,11 @@ class SupabaseAuthService {
   final SupabaseClient _client = Supabase.instance.client;
   final SupabaseNotificationService _notifService = SupabaseNotificationService();
 
-  /// Connexion avec téléphone + mot de passe
-  /// On utilise le téléphone comme email fictif pour Supabase Auth
-  Future<UserModel?> login(String phone, String password) async {
+  /// Connexion avec username + mot de passe
+  /// On utilise le username comme email fictif pour Supabase Auth
+  Future<UserModel?> login(String username, String password) async {
     try {
-      final email = _phoneToEmail(phone);
+      final email = _usernameToEmail(username);
       final response = await _client.auth.signInWithPassword(
         email: email,
         password: password,
@@ -32,10 +32,11 @@ class SupabaseAuthService {
     required String firstName,
     required String lastName,
     required String phone,
+    required String username,
     required String password,
   }) async {
     try {
-      final email = _phoneToEmail(phone);
+      final email = _usernameToEmail(username);
       final response = await _client.auth.signUp(
         email: email,
         password: password,
@@ -43,6 +44,7 @@ class SupabaseAuthService {
           'first_name': firstName,
           'last_name': lastName,
           'phone': phone,
+          'username': username,
           'role': 'member',
         },
       );
@@ -281,10 +283,22 @@ class SupabaseAuthService {
     }
   }
 
-  /// Convertir un numéro de téléphone en email fictif pour Supabase Auth
-  /// Ex: +33600000000 -> 33600000000@mbahe.app
-  String _phoneToEmail(String phone) {
-    final cleaned = phone.replaceAll(RegExp(r'[^0-9]'), '');
-    return '$cleaned@mbahe.app';
+  /// Convertir un username en email fictif
+  /// Ex: kane_92 -> kane_92@mbahe.app
+  String _usernameToEmail(String username) {
+    return '$username@mbahe.app';
+  }
+
+  /// Vérifier si un username existe déjà
+  Future<bool> checkUsernameExists(String username) async {
+    try {
+      final result = await _client.rpc('check_username_exists', params: {
+        'p_username': username,
+      });
+      return result as bool;
+    } catch (e) {
+      debugPrint('checkUsernameExists error: $e');
+      return false;
+    }
   }
 }

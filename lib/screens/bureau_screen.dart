@@ -7,6 +7,7 @@ import '../models/user_model.dart';
 import '../models/mandat_model.dart';
 import '../models/bureau_membre_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class BureauScreen extends StatefulWidget {
   const BureauScreen({super.key});
@@ -43,12 +44,12 @@ class _BureauScreenState extends State<BureauScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bureau'),
+        title: Text(AppLocalizations.get('bureau_title')),
         actions: isAdmin
             ? [
                 IconButton(
                   icon: const Icon(Icons.settings_rounded),
-                  tooltip: 'Gérer les mandats',
+                  tooltip: AppLocalizations.get('bureau_manage_mandats'),
                   onPressed: () {
                     Navigator.pushNamed(context, '/manage-mandats').then((_) => _loadData());
                   },
@@ -83,7 +84,7 @@ class _BureauScreenState extends State<BureauScreen> {
 
                           // Composition du bureau
                           Text(
-                            'Composition du bureau',
+                            AppLocalizations.get('bureau_composition'),
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -116,7 +117,7 @@ class _BureauScreenState extends State<BureauScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Aucun mandat défini',
+            AppLocalizations.get('bureau_no_mandat'),
             style: GoogleFonts.poppins(
               fontSize: 16,
               color: AppColors.textSecondary,
@@ -124,7 +125,7 @@ class _BureauScreenState extends State<BureauScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Le bureau sera affiché ici',
+            AppLocalizations.get('bureau_no_mandat_desc'),
             style: GoogleFonts.poppins(
               fontSize: 13,
               color: AppColors.textSecondary.withValues(alpha: 0.7),
@@ -155,7 +156,7 @@ class _BureauScreenState extends State<BureauScreen> {
           Icon(Icons.person_off_rounded, size: 40, color: AppColors.textSecondary.withValues(alpha: 0.4)),
           const SizedBox(height: 8),
           Text(
-            'Aucun membre assigné',
+            AppLocalizations.get('bureau_no_members'),
             style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textSecondary),
           ),
         ],
@@ -191,7 +192,7 @@ class _BureauScreenState extends State<BureauScreen> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        'Actif',
+                        AppLocalizations.get('mandat_active'),
                         style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.approved),
                       ),
                     ),
@@ -251,7 +252,7 @@ class _BureauScreenState extends State<BureauScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    'En cours',
+                    AppLocalizations.get('bureau_active'),
                     style: GoogleFonts.poppins(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,

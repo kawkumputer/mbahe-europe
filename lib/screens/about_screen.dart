@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -9,7 +10,7 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('À propos'),
+        title: Text(AppLocalizations.get('about_title')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -49,7 +50,7 @@ class AboutScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                'Ensemble, construisons l\'avenir',
+                AppLocalizations.get('about_slogan'),
                 style: GoogleFonts.poppins(
                   fontSize: 13,
                   color: AppColors.textSecondary,
@@ -62,68 +63,54 @@ class AboutScreen extends StatelessWidget {
               // Présentation
               _buildSection(
                 icon: Icons.people_rounded,
-                title: 'Qui sommes-nous ?',
-                content:
-                    'MBAHE Europe est une association qui regroupe les ressortissants '
-                    'de MBAHE vivant en Europe. Notre mission est de renforcer les liens '
-                    'entre les membres de notre communauté, de promouvoir l\'entraide '
-                    'et de contribuer au développement de notre village d\'origine.',
+                title: AppLocalizations.get('about_who'),
+                content: AppLocalizations.get('about_who_content'),
               ),
 
               _buildSection(
                 icon: Icons.flag_rounded,
-                title: 'Nos objectifs',
+                title: AppLocalizations.get('about_objectives'),
                 content: null,
                 bullets: [
-                  'Renforcer la solidarité entre les membres',
-                  'Contribuer au développement de MBAHE',
-                  'Organiser des événements culturels et sociaux',
-                  'Soutenir les membres en difficulté',
-                  'Préserver et promouvoir notre culture',
+                  AppLocalizations.get('about_obj_solidarity'),
+                  AppLocalizations.get('about_obj_development'),
+                  AppLocalizations.get('about_obj_events'),
+                  AppLocalizations.get('about_obj_support'),
+                  AppLocalizations.get('about_obj_culture'),
                 ],
               ),
 
               _buildSection(
                 icon: Icons.payments_rounded,
-                title: 'Les cotisations',
-                content:
-                    'Chaque membre cotise mensuellement de Janvier à Octobre. '
-                    'Les mois de Novembre et Décembre sont des mois de vacances. '
-                    'Les cotisations permettent de financer les projets de l\'association '
-                    'et d\'assurer l\'entraide entre les membres.',
+                title: AppLocalizations.get('about_cotisations'),
+                content: AppLocalizations.get('about_cotisations_content'),
               ),
 
               _buildSection(
                 icon: Icons.calendar_month_rounded,
-                title: 'Les réunions',
-                content:
-                    'L\'association organise des réunions régulières pour discuter '
-                    'des projets en cours, prendre des décisions collectives et '
-                    'maintenir le lien entre les membres. Les comptes rendus sont '
-                    'disponibles dans l\'application.',
+                title: AppLocalizations.get('about_reunions'),
+                content: AppLocalizations.get('about_reunions_content'),
               ),
 
               _buildSection(
                 icon: Icons.phone_rounded,
-                title: 'Contact',
-                content:
-                    'Pour toute question ou suggestion, n\'hésitez pas à contacter '
-                    'les administrateurs de l\'association via l\'application.',
+                title: AppLocalizations.get('about_contact'),
+                content: AppLocalizations.get('about_contact_content'),
               ),
 
               // Documents officiels
               _buildDocumentLink(
                 context,
                 icon: Icons.gavel_rounded,
-                title: 'Statuts de l\'association',
-                subtitle: 'Organisation, fonctionnement et gouvernance',
+                title: AppLocalizations.get('about_statuts_doc'),
+                subtitle: AppLocalizations.get('about_statuts_desc'),
                 onTap: () => Navigator.pushNamed(context, '/statuts'),
               ),
               _buildDocumentLink(
                 context,
                 icon: Icons.menu_book_rounded,
-                title: 'Règlement intérieur',
-                subtitle: 'Droits, devoirs et règles de vie',
+                title: AppLocalizations.get('about_reglement_doc'),
+                subtitle: AppLocalizations.get('about_reglement_desc'),
                 onTap: () => Navigator.pushNamed(context, '/reglement'),
               ),
 

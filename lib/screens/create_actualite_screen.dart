@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/actualite_provider.dart';
 import '../models/actualite_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class CreateActualiteScreen extends StatefulWidget {
   const CreateActualiteScreen({super.key});
@@ -50,16 +51,16 @@ class _CreateActualiteScreenState extends State<CreateActualiteScreen> {
       setState(() => _isSaving = false);
       if (success) {
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Actualité publiée'),
+          SnackBar(
+            content: Text(AppLocalizations.get('actu_published')),
             backgroundColor: AppColors.approved,
           ),
         );
         nav.pop();
       } else {
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Erreur lors de la publication'),
+          SnackBar(
+            content: Text(AppLocalizations.get('actu_publish_error')),
             backgroundColor: AppColors.rejected,
           ),
         );
@@ -71,7 +72,7 @@ class _CreateActualiteScreenState extends State<CreateActualiteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Publier une actualité'),
+        title: Text(AppLocalizations.get('actu_create')),
         actions: [
           _isSaving
               ? const Padding(
@@ -98,7 +99,7 @@ class _CreateActualiteScreenState extends State<CreateActualiteScreen> {
               children: [
                 // Catégorie
                 Text(
-                  'Catégorie',
+                  AppLocalizations.get('actu_category'),
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -157,7 +158,7 @@ class _CreateActualiteScreenState extends State<CreateActualiteScreen> {
                   controller: _titleController,
                   style: GoogleFonts.poppins(fontSize: 14),
                   decoration: InputDecoration(
-                    labelText: 'Titre',
+                    labelText: AppLocalizations.get('actu_title_field'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     enabledBorder: OutlineInputBorder(
@@ -169,7 +170,7 @@ class _CreateActualiteScreenState extends State<CreateActualiteScreen> {
                       borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     ),
                   ),
-                  validator: (v) => v == null || v.trim().isEmpty ? 'Le titre est requis' : null,
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.get('actu_title_required') : null,
                 ),
 
                 const SizedBox(height: 16),
@@ -180,7 +181,7 @@ class _CreateActualiteScreenState extends State<CreateActualiteScreen> {
                   maxLines: 10,
                   style: GoogleFonts.poppins(fontSize: 13, height: 1.6),
                   decoration: InputDecoration(
-                    labelText: 'Contenu',
+                    labelText: AppLocalizations.get('actu_content'),
                     alignLabelWithHint: true,
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -193,7 +194,7 @@ class _CreateActualiteScreenState extends State<CreateActualiteScreen> {
                       borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     ),
                   ),
-                  validator: (v) => v == null || v.trim().isEmpty ? 'Le contenu est requis' : null,
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.get('actu_content_required') : null,
                 ),
 
                 const SizedBox(height: 24),
@@ -206,7 +207,7 @@ class _CreateActualiteScreenState extends State<CreateActualiteScreen> {
                     onPressed: _isSaving ? null : _save,
                     icon: const Icon(Icons.send_rounded, size: 20),
                     label: Text(
-                      'Publier',
+                      AppLocalizations.get('actu_publish'),
                       style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 15),
                     ),
                     style: ElevatedButton.styleFrom(
@@ -251,11 +252,11 @@ class _CreateActualiteScreenState extends State<CreateActualiteScreen> {
   String _catLabel(ActualiteCategory cat) {
     switch (cat) {
       case ActualiteCategory.actualite:
-        return 'Actualité';
+        return AppLocalizations.get('actu_cat_actualite');
       case ActualiteCategory.evenement:
-        return 'Événement';
+        return AppLocalizations.get('actu_cat_evenement');
       case ActualiteCategory.annonce:
-        return 'Annonce';
+        return AppLocalizations.get('actu_cat_annonce');
     }
   }
 }

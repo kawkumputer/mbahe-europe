@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../models/user_model.dart';
 import '../services/supabase_document_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class ReglementScreen extends StatefulWidget {
   const ReglementScreen({super.key});
@@ -79,7 +80,7 @@ class _ReglementScreenState extends State<ReglementScreen> {
 
   void _addArticle() {
     _showArticleDialog(
-      dialogTitle: 'Ajouter un article',
+      dialogTitle: AppLocalizations.get('doc_add_article'),
       onSave: (title, content) {
         setState(() => _articles.add({'title': title, 'content': content}));
         _saveArticles();
@@ -89,7 +90,7 @@ class _ReglementScreenState extends State<ReglementScreen> {
 
   void _editArticle(int index) {
     _showArticleDialog(
-      dialogTitle: 'Modifier l\'article',
+      dialogTitle: AppLocalizations.get('doc_edit_article'),
       initialTitle: _articles[index]['title']!,
       initialContent: _articles[index]['content']!,
       onSave: (title, content) {
@@ -103,17 +104,17 @@ class _ReglementScreenState extends State<ReglementScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer'),
+        title: Text(AppLocalizations.get('delete')),
         content: Text('Supprimer "${_articles[index]['title']}" ?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.get('cancel'))),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               setState(() => _articles.removeAt(index));
               _saveArticles();
             },
-            child: const Text('Supprimer', style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.get('delete'), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -140,7 +141,7 @@ class _ReglementScreenState extends State<ReglementScreen> {
                 controller: titleCtrl,
                 style: GoogleFonts.poppins(fontSize: 14),
                 decoration: InputDecoration(
-                  labelText: 'Titre',
+                  labelText: AppLocalizations.get('doc_article_title'),
                   labelStyle: GoogleFonts.poppins(fontSize: 13),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
@@ -151,7 +152,7 @@ class _ReglementScreenState extends State<ReglementScreen> {
                 maxLines: 8,
                 style: GoogleFonts.poppins(fontSize: 13),
                 decoration: InputDecoration(
-                  labelText: 'Contenu',
+                  labelText: AppLocalizations.get('doc_article_content'),
                   labelStyle: GoogleFonts.poppins(fontSize: 13),
                   alignLabelWithHint: true,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
@@ -161,7 +162,7 @@ class _ReglementScreenState extends State<ReglementScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.get('cancel'))),
           ElevatedButton(
             onPressed: () {
               if (titleCtrl.text.trim().isNotEmpty) {
@@ -170,7 +171,7 @@ class _ReglementScreenState extends State<ReglementScreen> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-            child: const Text('Enregistrer', style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.get('save'), style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -183,7 +184,7 @@ class _ReglementScreenState extends State<ReglementScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Règlement intérieur'),
+        title: Text(AppLocalizations.get('reglement_title')),
       ),
       floatingActionButton: isAdmin
           ? FloatingActionButton(

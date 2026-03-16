@@ -5,6 +5,7 @@ import '../models/compte_rendu_model.dart';
 import '../providers/cotisation_provider.dart';
 import '../providers/compte_rendu_provider.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class AdminPaymentDashboardScreen extends StatefulWidget {
   const AdminPaymentDashboardScreen({super.key});
@@ -133,7 +134,7 @@ class _AdminPaymentDashboardScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bilan par réunion'),
+        title: Text(AppLocalizations.get('payment_title')),
       ),
       body: SafeArea(
         child: _isLoading
@@ -162,7 +163,7 @@ class _AdminPaymentDashboardScreenState
           Icon(Icons.event_busy_rounded, size: 64, color: Colors.grey.shade400),
           const SizedBox(height: 16),
           Text(
-            'Aucune réunion enregistrée',
+            AppLocalizations.get('payment_no_reunion'),
             style: GoogleFonts.poppins(
               fontSize: 16,
               color: AppColors.textSecondary,
@@ -170,7 +171,7 @@ class _AdminPaymentDashboardScreenState
           ),
           const SizedBox(height: 8),
           Text(
-            'Créez un compte rendu pour voir le bilan',
+            AppLocalizations.get('payment_no_reunion_desc'),
             style: GoogleFonts.poppins(
               fontSize: 13,
               color: Colors.grey.shade500,
@@ -271,7 +272,7 @@ class _AdminPaymentDashboardScreenState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total collecté',
+                  AppLocalizations.get('payment_total_collected'),
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -304,7 +305,7 @@ class _AdminPaymentDashboardScreenState
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
             child: _buildPaymentRow(
               Icons.money_rounded,
-              'Espèce',
+              AppLocalizations.get('payment_cash'),
               const Color(0xFF2E7D32),
               summary.totalEspece,
               summary.countEspece,
@@ -314,7 +315,7 @@ class _AdminPaymentDashboardScreenState
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
             child: _buildPaymentRow(
               Icons.account_balance_rounded,
-              'Virement',
+              AppLocalizations.get('payment_transfer'),
               const Color(0xFF1565C0),
               summary.totalVirement,
               summary.countVirement,
@@ -324,7 +325,7 @@ class _AdminPaymentDashboardScreenState
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
             child: _buildPaymentRow(
               Icons.receipt_long_rounded,
-              'Chèque',
+              AppLocalizations.get('payment_check'),
               const Color(0xFF6A1B9A),
               summary.totalCheque,
               summary.countCheque,
@@ -345,7 +346,7 @@ class _AdminPaymentDashboardScreenState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total général (cumulé)',
+                  AppLocalizations.get('payment_total_cumul'),
                   style: GoogleFonts.poppins(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -368,7 +369,7 @@ class _AdminPaymentDashboardScreenState
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: Text(
-              '${summary.countTotal} paiement(s) sur la période',
+              '${summary.countTotal} ${AppLocalizations.get('payment_count')}',
               style: GoogleFonts.poppins(
                 fontSize: 11,
                 color: Colors.grey.shade500,

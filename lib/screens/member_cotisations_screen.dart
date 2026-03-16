@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/cotisation_provider.dart';
 import '../models/cotisation_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class MemberCotisationsScreen extends StatefulWidget {
   const MemberCotisationsScreen({super.key});
@@ -38,7 +39,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mes cotisations'),
+        title: Text(AppLocalizations.get('cotisations_title')),
       ),
       body: SafeArea(
         child: cotisationProvider.isLoading
@@ -103,7 +104,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Année ${provider.selectedYear}',
+            '${AppLocalizations.get('cotis_year')} ${provider.selectedYear}',
             style: GoogleFonts.poppins(
               color: Colors.white.withValues(alpha: 0.8),
               fontSize: 14,
@@ -125,7 +126,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                     ),
                   ),
                   Text(
-                    'sur ${provider.totalDue.toStringAsFixed(0)}€',
+                    '${AppLocalizations.get('cotis_on')} ${provider.totalDue.toStringAsFixed(0)}€',
                     style: GoogleFonts.poppins(
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 14,
@@ -165,19 +166,19 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
             children: [
               _buildMiniStat(
                 '${provider.paidCount}',
-                'Payés',
+                AppLocalizations.get('cotis_paid_label'),
                 Icons.check_circle_rounded,
               ),
               const SizedBox(width: 20),
               _buildMiniStat(
                 '${provider.unpaidCount}',
-                'Impayés',
+                AppLocalizations.get('cotis_unpaid_label'),
                 Icons.cancel_rounded,
               ),
               const SizedBox(width: 20),
               _buildMiniStat(
                 '${provider.remaining.toStringAsFixed(0)}€',
-                'Restant',
+                AppLocalizations.get('cotis_remaining_label'),
                 Icons.account_balance_wallet_rounded,
               ),
             ],
@@ -251,13 +252,13 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
   Widget _buildLegend() {
     return Row(
       children: [
-        _buildLegendItem(AppColors.approved, 'Payé'),
+        _buildLegendItem(AppColors.approved, AppLocalizations.get('cotis_legend_paid')),
         const SizedBox(width: 16),
-        _buildLegendItem(AppColors.rejected, 'Impayé'),
+        _buildLegendItem(AppColors.rejected, AppLocalizations.get('cotis_legend_unpaid')),
         const SizedBox(width: 16),
-        _buildLegendItem(const Color(0xFF1976D2), 'Exempté'),
+        _buildLegendItem(const Color(0xFF1976D2), AppLocalizations.get('cotis_legend_exempted')),
         const SizedBox(width: 16),
-        _buildLegendItem(Colors.grey.shade400, 'Vacances'),
+        _buildLegendItem(Colors.grey.shade400, AppLocalizations.get('cotis_legend_vacation')),
       ],
     );
   }
@@ -346,7 +347,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                 ),
                 if (isExempted) ...[
                   Text(
-                    'Exempté — Chômage',
+                    AppLocalizations.get('cotis_exempted_label'),
                     style: GoogleFonts.poppins(
                       fontSize: 11,
                       color: const Color(0xFF1976D2),
@@ -354,7 +355,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                   ),
                   if (cotisation.updatedByName != null)
                     Text(
-                      'Par ${cotisation.updatedByName}',
+                      '${AppLocalizations.get('cotis_by')} ${cotisation.updatedByName}',
                       style: GoogleFonts.poppins(
                         fontSize: 10,
                         color: AppColors.textSecondary,
@@ -362,7 +363,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                     ),
                 ] else if (isPaid && cotisation.paidAt != null) ...[
                   Text(
-                    'Payé le ${cotisation.paidAt!.day}/${cotisation.paidAt!.month}/${cotisation.paidAt!.year}'
+                    '${AppLocalizations.get('cotis_paid_on')} ${cotisation.paidAt!.day}/${cotisation.paidAt!.month}/${cotisation.paidAt!.year}'
                     '${cotisation.paymentMethod != null ? ' — ${cotisation.paymentMethodLabel}' : ''}',
                     style: GoogleFonts.poppins(
                       fontSize: 11,
@@ -371,7 +372,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                   ),
                   if (cotisation.updatedByName != null)
                     Text(
-                      'Par ${cotisation.updatedByName}',
+                      '${AppLocalizations.get('cotis_by')} ${cotisation.updatedByName}',
                       style: GoogleFonts.poppins(
                         fontSize: 10,
                         color: AppColors.textSecondary,
@@ -443,7 +444,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Novembre - Décembre',
+                  AppLocalizations.get('cotis_vacation_months'),
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
@@ -451,7 +452,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                   ),
                 ),
                 Text(
-                  'Mois de vacances — pas de cotisation',
+                  AppLocalizations.get('cotis_vacation_desc'),
                   style: GoogleFonts.poppins(
                     fontSize: 11,
                     color: Colors.grey.shade500,

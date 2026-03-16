@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 import '../widgets/search_bar_widget.dart';
+import '../l10n/app_localizations.dart';
 
 class AdminMembersScreen extends StatefulWidget {
   const AdminMembersScreen({super.key});
@@ -63,7 +64,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestion des membres'),
+        title: Text(AppLocalizations.get('members_title')),
       ),
       body: SafeArea(
         child: _isLoading
@@ -83,7 +84,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                           // Barre de recherche
                           SearchBarWidget(
                             controller: _searchController,
-                            hint: 'Rechercher par nom, prénom ou téléphone...',
+                            hint: AppLocalizations.get('members_search'),
                             onChanged: (value) {
                               setState(() => _searchQuery = value);
                             },
@@ -108,7 +109,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                'Demandes en attente',
+                                AppLocalizations.get('members_pending'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
@@ -163,7 +164,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Aucune demande en attente',
+                                    AppLocalizations.get('members_no_pending'),
                                     style: GoogleFonts.poppins(
                                       color: AppColors.textSecondary,
                                       fontSize: 14,
@@ -196,7 +197,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                'Tous les membres',
+                                AppLocalizations.get('members_all'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
@@ -294,14 +295,14 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('${user.fullName} a été rejeté'),
+                          content: Text('${user.fullName} ${AppLocalizations.get('members_rejected')}'),
                           backgroundColor: AppColors.rejected,
                         ),
                       );
                     }
                   },
                   icon: const Icon(Icons.close_rounded, size: 18),
-                  label: const Text('Rejeter'),
+                  label: Text(AppLocalizations.get('members_reject')),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.rejected,
                     side: const BorderSide(color: AppColors.rejected),
@@ -321,14 +322,14 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('${user.fullName} a été approuvé'),
+                          content: Text('${user.fullName} ${AppLocalizations.get('members_approved')}'),
                           backgroundColor: AppColors.approved,
                         ),
                       );
                     }
                   },
                   icon: const Icon(Icons.check_rounded, size: 18),
-                  label: const Text('Approuver'),
+                  label: Text(AppLocalizations.get('members_approve')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.approved,
                     foregroundColor: Colors.white,
@@ -423,7 +424,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            'Admin',
+                            AppLocalizations.get('members_role_admin'),
                             style: GoogleFonts.poppins(
                               fontSize: 9,
                               fontWeight: FontWeight.w600,
@@ -509,7 +510,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Rôle actuel : ${isUserAdmin ? "Admin" : "Membre"}',
+                '${AppLocalizations.get('members_change_role')} : ${isUserAdmin ? AppLocalizations.get('members_role_admin') : AppLocalizations.get('members_role_member')}',
                 style: GoogleFonts.poppins(
                   fontSize: 13,
                   color: AppColors.textSecondary,
@@ -533,8 +534,8 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                             SnackBar(
                               content: Text(
                                 success
-                                    ? '${user.fullName} est maintenant ${newRole == 'admin' ? 'Admin' : 'Membre'}'
-                                    : 'Erreur lors du changement de rôle',
+                                    ? '${user.fullName} ${AppLocalizations.get('members_role_changed')} ${newRole == 'admin' ? AppLocalizations.get('members_role_admin') : AppLocalizations.get('members_role_member')}'
+                                    : AppLocalizations.get('error'),
                               ),
                               backgroundColor: success ? AppColors.approved : AppColors.rejected,
                             ),
@@ -547,7 +548,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                       size: 20,
                     ),
                     label: Text(
-                      isUserAdmin ? 'Rétrograder en Membre' : 'Promouvoir Admin',
+                      isUserAdmin ? AppLocalizations.get('members_demote') : AppLocalizations.get('members_promote'),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isUserAdmin ? AppColors.pending : AppColors.primary,
@@ -561,7 +562,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                 )
               else
                 Text(
-                  'Vous ne pouvez pas modifier votre propre rôle',
+                  AppLocalizations.get('members_cannot_change_self'),
                   style: GoogleFonts.poppins(
                     fontSize: 13,
                     color: AppColors.textSecondary,
@@ -576,23 +577,23 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
   }
 
   Future<bool?> _confirmRoleChange(UserModel user, String newRole) {
-    final action = newRole == 'admin' ? 'promouvoir Admin' : 'rétrograder Membre';
+    final action = newRole == 'admin' ? AppLocalizations.get('members_promote') : AppLocalizations.get('members_demote');
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Confirmer le changement',
+          AppLocalizations.get('members_confirm_change'),
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
         ),
         content: Text(
-          'Voulez-vous $action ${user.fullName} ?',
+          '$action ${user.fullName} ?',
           style: GoogleFonts.poppins(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Annuler', style: GoogleFonts.poppins()),
+            child: Text(AppLocalizations.get('cancel'), style: GoogleFonts.poppins()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -600,7 +601,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
               backgroundColor: newRole == 'admin' ? AppColors.primary : AppColors.pending,
             ),
             child: Text(
-              'Confirmer',
+              AppLocalizations.get('confirm'),
               style: GoogleFonts.poppins(color: Colors.white),
             ),
           ),

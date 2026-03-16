@@ -7,6 +7,8 @@ import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../providers/locale_provider.dart';
+import '../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,13 +19,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _phoneController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -33,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final authProvider = context.read<AuthProvider>();
     final success = await authProvider.login(
-      _phoneController.text.trim(),
+      _usernameController.text.trim(),
       _passwordController.text,
     );
 
@@ -67,7 +69,38 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 60),
+                const SizedBox(height: 20),
+                // Language switch
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: () => context.read<LocaleProvider>().toggleLocale(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.language_rounded, size: 16, color: AppColors.primary),
+                          const SizedBox(width: 6),
+                          Text(
+                            context.watch<LocaleProvider>().isFrench ? 'Pulaar' : 'Français',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 // Logo
                 Container(
                   width: 90,
@@ -84,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Bon retour !',
+                  AppLocalizations.get('login_welcome'),
                   style: GoogleFonts.poppins(
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
@@ -94,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Connectez-vous à votre compte\nMBAHE Europe',
+                  AppLocalizations.get('login_subtitle'),
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     color: AppColors.textSecondary,
@@ -106,21 +139,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Champs
                 CustomTextField(
-                  controller: _phoneController,
-                  label: 'Numéro de téléphone',
-                  hint: '+33600000000',
-                  prefixIcon: Icons.phone_outlined,
-                  keyboardType: TextInputType.phone,
+                  controller: _usernameController,
+                  label: AppLocalizations.get('login_username'),
+                  hint: AppLocalizations.get('login_username_hint'),
+                  prefixIcon: Icons.person_outline,
+                  keyboardType: TextInputType.text,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Veuillez entrer votre numéro de téléphone';
+                      return AppLocalizations.get('register_username_required');
                     }
                     return null;
                   },
                 ),
                 CustomTextField(
                   controller: _passwordController,
-                  label: 'Mot de passe',
+                  label: AppLocalizations.get('login_password'),
                   prefixIcon: Icons.lock_outline,
                   obscureText: _obscurePassword,
                   suffixIcon: IconButton(
@@ -136,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer votre mot de passe';
+                      return AppLocalizations.get('login_password_required');
                     }
                     return null;
                   },
@@ -183,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Consumer<AuthProvider>(
                   builder: (context, auth, _) {
                     return CustomButton(
-                      text: 'Se connecter',
+                      text: AppLocalizations.get('login_button'),
                       isLoading: auth.isLoading,
                       onPressed: _handleLogin,
                       icon: Icons.login_rounded,
@@ -198,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Pas encore membre ? ',
+                      AppLocalizations.get('login_no_account'),
                       style: GoogleFonts.poppins(
                         color: AppColors.textSecondary,
                         fontSize: 14,
@@ -210,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushNamed(context, '/register');
                       },
                       child: Text(
-                        'S\'inscrire',
+                        AppLocalizations.get('login_register'),
                         style: GoogleFonts.poppins(
                           color: AppColors.primary,
                           fontSize: 14,
@@ -221,62 +254,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
 
-                const SizedBox(height: 40),
-
-                // Info comptes de test
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.info_outline,
-                              color: AppColors.primary, size: 18),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Comptes de test',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      _buildTestAccount('Admin', '+33600000000', 'admin123'),
-                      _buildTestAccount(
-                          'Membre', '+33611111111', 'member123'),
-                      _buildTestAccount(
-                          'En attente', '+33622222222', 'pending123'),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 32),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTestAccount(String role, String phone, String password) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 4),
-      child: Text(
-        '$role: $phone / $password',
-        style: GoogleFonts.sourceCodePro(
-          fontSize: 11,
-          color: AppColors.textSecondary,
         ),
       ),
     );

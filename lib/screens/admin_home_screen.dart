@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
+import '../providers/locale_provider.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -39,10 +41,47 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthProvider>().currentUser;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Administration'),
+        title: Text(AppLocalizations.get('admin_dashboard')),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.gradientStart, AppColors.gradientEnd],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         actions: [
+          GestureDetector(
+            onTap: () => context.read<LocaleProvider>().toggleLocale(),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.language_rounded, size: 16, color: Colors.white),
+                  const SizedBox(width: 4),
+                  Text(
+                    context.watch<LocaleProvider>().isFrench ? 'Pr' : 'FR',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           _buildNotificationIcon(),
           IconButton(
             icon: const Icon(Icons.logout_rounded),
@@ -67,22 +106,22 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // En-tête admin
+                // En-tête admin avec photo de profil
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [AppColors.primaryDark, AppColors.primary],
+                      colors: [AppColors.gradientStart, AppColors.gradientEnd],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.primary.withValues(alpha: 0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
@@ -91,18 +130,61 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(
-                            Icons.admin_panel_settings_rounded,
-                            color: Colors.white,
-                            size: 28,
+                          GestureDetector(
+                            onTap: () => Navigator.pushNamed(context, '/admin-profile'),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 3,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.2),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                radius: 32,
+                                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                backgroundImage: user?.photoUrl != null && user!.photoUrl!.isNotEmpty
+                                    ? NetworkImage(user.photoUrl!)
+                                    : null,
+                                child: user?.photoUrl == null || user!.photoUrl!.isEmpty
+                                    ? const Icon(
+                                        Icons.admin_panel_settings_rounded,
+                                        color: Colors.white,
+                                        size: 32,
+                                      )
+                                    : null,
+                              ),
+                            ),
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Tableau de bord',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppLocalizations.get('admin_dashboard'),
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  user?.fullName ?? '',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -111,13 +193,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       Row(
                         children: [
                           _buildStatCard(
-                            'Membres',
+                            AppLocalizations.get('admin_members_count'),
                             _membersCount.toString(),
                             Icons.people_rounded,
                           ),
                           const SizedBox(width: 12),
                           _buildStatCard(
-                            'En attente',
+                            AppLocalizations.get('admin_pending_count'),
                             _pendingCount.toString(),
                             Icons.hourglass_top_rounded,
                           ),
@@ -153,12 +235,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.accent.withValues(alpha: 0.15),
+                            color: AppColors.warning.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
                             Icons.payments_rounded,
-                            color: AppColors.accent,
+                            color: AppColors.warning,
                             size: 24,
                           ),
                         ),
@@ -168,7 +250,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Gestion des cotisations',
+                                AppLocalizations.get('admin_cotisations_management'),
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
@@ -176,7 +258,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 ),
                               ),
                               Text(
-                                'Consulter et gérer les paiements',
+                                AppLocalizations.get('admin_cotisations_subtitle'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
@@ -220,12 +302,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF1565C0).withValues(alpha: 0.15),
+                            color: AppColors.accentSecondary.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
                             Icons.bar_chart_rounded,
-                            color: Color(0xFF1565C0),
+                            color: AppColors.accentSecondary,
                             size: 24,
                           ),
                         ),
@@ -235,7 +317,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Bilan des cotisations',
+                                AppLocalizations.get('admin_payment_dashboard'),
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
@@ -243,7 +325,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 ),
                               ),
                               Text(
-                                'Total cotisé et répartition par mode',
+                                AppLocalizations.get('admin_payment_subtitle'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
@@ -287,12 +369,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF1976D2).withValues(alpha: 0.15),
+                            color: AppColors.info.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
                             Icons.description_rounded,
-                            color: Color(0xFF1976D2),
+                            color: AppColors.info,
                             size: 24,
                           ),
                         ),
@@ -302,7 +384,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Comptes rendus',
+                                AppLocalizations.get('admin_comptes_rendus_management'),
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
@@ -310,7 +392,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 ),
                               ),
                               Text(
-                                'Créer et consulter les comptes rendus',
+                                AppLocalizations.get('admin_comptes_rendus_subtitle'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
@@ -354,12 +436,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFD32F2F).withValues(alpha: 0.15),
+                            color: AppColors.error.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
                             Icons.newspaper_rounded,
-                            color: Color(0xFFD32F2F),
+                            color: AppColors.error,
                             size: 24,
                           ),
                         ),
@@ -369,7 +451,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Actualités',
+                                AppLocalizations.get('admin_actualites'),
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
@@ -377,7 +459,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 ),
                               ),
                               Text(
-                                'Publier et gérer les actualités',
+                                AppLocalizations.get('admin_actualites_subtitle'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
@@ -421,12 +503,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0D47A1).withValues(alpha: 0.15),
+                            color: AppColors.primaryDark.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
                             Icons.groups_rounded,
-                            color: Color(0xFF0D47A1),
+                            color: AppColors.primaryDark,
                             size: 24,
                           ),
                         ),
@@ -436,7 +518,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Bureau',
+                                AppLocalizations.get('admin_bureau'),
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
@@ -444,7 +526,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 ),
                               ),
                               Text(
-                                'Mandats et composition',
+                                AppLocalizations.get('admin_bureau_subtitle'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
@@ -503,7 +585,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Gestion des membres',
+                                AppLocalizations.get('admin_members_management'),
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
@@ -511,7 +593,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 ),
                               ),
                               Text(
-                                'Membres, demandes et rôles',
+                                AppLocalizations.get('admin_members_subtitle'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
@@ -588,7 +670,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Statuts',
+                                AppLocalizations.get('admin_statuts'),
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
@@ -596,7 +678,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 ),
                               ),
                               Text(
-                                'Consulter et modifier les statuts',
+                                AppLocalizations.get('admin_statuts_subtitle'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
@@ -640,12 +722,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEF6C00).withValues(alpha: 0.15),
+                            color: AppColors.warning.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
                             Icons.menu_book_rounded,
-                            color: Color(0xFFEF6C00),
+                            color: AppColors.warning,
                             size: 24,
                           ),
                         ),
@@ -655,7 +737,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Règlement intérieur',
+                                AppLocalizations.get('admin_reglement'),
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
@@ -663,7 +745,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 ),
                               ),
                               Text(
-                                'Consulter et modifier le règlement',
+                                AppLocalizations.get('admin_reglement_subtitle'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,

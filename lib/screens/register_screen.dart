@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
@@ -28,6 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _phoneController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -41,6 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
       phone: _phoneController.text.trim(),
+      username: _usernameController.text.trim(),
       password: _passwordController.text,
     );
 
@@ -87,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 24),
 
                 Text(
-                  'Créer un compte',
+                  AppLocalizations.get('register_title'),
                   style: GoogleFonts.poppins(
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
@@ -96,7 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Rejoignez la communauté MBAHE Europe.\nVotre compte sera validé par un administrateur.',
+                  AppLocalizations.get('register_subtitle'),
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     color: AppColors.textSecondary,
@@ -108,47 +112,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Champs du formulaire
                 CustomTextField(
                   controller: _lastNameController,
-                  label: 'Nom',
-                  hint: 'Votre nom de famille',
+                  label: AppLocalizations.get('register_lastname'),
+                  hint: AppLocalizations.get('register_lastname_hint'),
                   prefixIcon: Icons.person_outline,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Veuillez entrer votre nom';
+                      return AppLocalizations.get('register_lastname_required');
                     }
                     return null;
                   },
                 ),
                 CustomTextField(
                   controller: _firstNameController,
-                  label: 'Prénom',
-                  hint: 'Votre prénom',
+                  label: AppLocalizations.get('register_firstname'),
+                  hint: AppLocalizations.get('register_firstname_hint'),
                   prefixIcon: Icons.person_outline,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Veuillez entrer votre prénom';
+                      return AppLocalizations.get('register_firstname_required');
                     }
                     return null;
                   },
                 ),
                 CustomTextField(
                   controller: _phoneController,
-                  label: 'Numéro de téléphone',
-                  hint: '+33612345678',
+                  label: AppLocalizations.get('register_phone'),
+                  hint: AppLocalizations.get('register_phone_hint'),
                   prefixIcon: Icons.phone_outlined,
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Veuillez entrer votre numéro de téléphone';
+                      return AppLocalizations.get('register_phone_required');
                     }
                     if (value.trim().length < 10) {
-                      return 'Numéro de téléphone invalide';
+                      return AppLocalizations.get('register_phone_invalid');
+                    }
+                    return null;
+                  },
+                ),
+                CustomTextField(
+                  controller: _usernameController,
+                  label: AppLocalizations.get('register_username'),
+                  hint: AppLocalizations.get('register_username_hint'),
+                  prefixIcon: Icons.alternate_email_rounded,
+                  keyboardType: TextInputType.text,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return AppLocalizations.get('register_username_required');
+                    }
+                    if (!RegExp(r'^[a-zA-Z0-9_-]{3,20}$').hasMatch(value.trim())) {
+                      return AppLocalizations.get('register_username_invalid');
                     }
                     return null;
                   },
                 ),
                 CustomTextField(
                   controller: _passwordController,
-                  label: 'Mot de passe',
+                  label: AppLocalizations.get('register_password'),
                   prefixIcon: Icons.lock_outline,
                   obscureText: _obscurePassword,
                   suffixIcon: IconButton(
@@ -164,17 +184,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer un mot de passe';
+                      return AppLocalizations.get('register_password_required');
                     }
                     if (value.length < 6) {
-                      return 'Le mot de passe doit contenir au moins 6 caractères';
+                      return AppLocalizations.get('register_password_min');
                     }
                     return null;
                   },
                 ),
                 CustomTextField(
                   controller: _confirmPasswordController,
-                  label: 'Confirmer le mot de passe',
+                  label: AppLocalizations.get('register_confirm_password'),
                   prefixIcon: Icons.lock_outline,
                   obscureText: _obscureConfirm,
                   suffixIcon: IconButton(
@@ -190,10 +210,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Veuillez confirmer votre mot de passe';
+                      return AppLocalizations.get('register_confirm_required');
                     }
                     if (value != _passwordController.text) {
-                      return 'Les mots de passe ne correspondent pas';
+                      return AppLocalizations.get('register_password_mismatch');
                     }
                     return null;
                   },
@@ -240,7 +260,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Consumer<AuthProvider>(
                   builder: (context, auth, _) {
                     return CustomButton(
-                      text: 'Créer mon compte',
+                      text: AppLocalizations.get('register_button'),
                       isLoading: auth.isLoading,
                       onPressed: _handleRegister,
                       icon: Icons.person_add_rounded,
@@ -255,7 +275,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Déjà membre ? ',
+                      AppLocalizations.get('register_already_member'),
                       style: GoogleFonts.poppins(
                         color: AppColors.textSecondary,
                         fontSize: 14,
@@ -267,7 +287,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Navigator.pop(context);
                       },
                       child: Text(
-                        'Se connecter',
+                        AppLocalizations.get('register_login'),
                         style: GoogleFonts.poppins(
                           color: AppColors.primary,
                           fontSize: 14,

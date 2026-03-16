@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
+import '../providers/locale_provider.dart';
 
 class MemberHomeScreen extends StatelessWidget {
   const MemberHomeScreen({super.key});
@@ -53,8 +55,43 @@ class MemberHomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MBAHE Europe'),
+        title: Text(AppLocalizations.get('app_name')),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.gradientStart, AppColors.gradientEnd],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         actions: [
+          GestureDetector(
+            onTap: () => context.read<LocaleProvider>().toggleLocale(),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.language_rounded, size: 16, color: Colors.white),
+                  const SizedBox(width: 4),
+                  Text(
+                    context.watch<LocaleProvider>().isFrench ? 'Pr' : 'FR',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           _buildNotificationIcon(context),
           IconButton(
             icon: const Icon(Icons.logout_rounded),
@@ -74,22 +111,22 @@ class MemberHomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // En-tête bienvenue
+            // En-tête bienvenue avec photo de profil
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [AppColors.primary, AppColors.primaryLight],
+                  colors: [AppColors.gradientStart, AppColors.gradientEnd],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
@@ -98,15 +135,39 @@ class MemberHomeScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.white.withValues(alpha: 0.2),
-                        child: Text(
-                          '${user?.firstName[0] ?? ''}${user?.lastName[0] ?? ''}',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
+                      GestureDetector(
+                        onTap: () => Navigator.pushNamed(context, '/profile'),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 3,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 32,
+                            backgroundColor: Colors.white.withValues(alpha: 0.2),
+                            backgroundImage: user?.photoUrl != null && user!.photoUrl!.isNotEmpty
+                                ? NetworkImage(user.photoUrl!)
+                                : null,
+                            child: user?.photoUrl == null || user!.photoUrl!.isEmpty
+                                ? Text(
+                                    '${user?.firstName[0] ?? ''}${user?.lastName[0] ?? ''}',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  )
+                                : null,
                           ),
                         ),
                       ),
@@ -116,7 +177,7 @@ class MemberHomeScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Bienvenue,',
+                              AppLocalizations.get('home_welcome'),
                               style: GoogleFonts.poppins(
                                 color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 13,
@@ -155,7 +216,7 @@ class MemberHomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Membre actif',
+                          AppLocalizations.get('home_active_member'),
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 12,
@@ -172,7 +233,7 @@ class MemberHomeScreen extends StatelessWidget {
             const SizedBox(height: 28),
 
             Text(
-              'Accès rapide',
+              AppLocalizations.get('home_quick_access'),
               style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -192,8 +253,8 @@ class MemberHomeScreen extends StatelessWidget {
               children: [
                 _buildFeatureCard(
                   icon: Icons.payments_rounded,
-                  title: 'Mes cotisations',
-                  subtitle: 'Consulter',
+                  title: AppLocalizations.get('home_my_cotisations'),
+                  subtitle: AppLocalizations.get('home_cotisations_subtitle'),
                   color: AppColors.primary,
                   onTap: () {
                     Navigator.pushNamed(context, '/member-cotisations');
@@ -201,55 +262,55 @@ class MemberHomeScreen extends StatelessWidget {
                 ),
                 _buildFeatureCard(
                   icon: Icons.description_rounded,
-                  title: 'Comptes rendus',
-                  subtitle: 'Réunions',
-                  color: const Color(0xFF1976D2),
+                  title: AppLocalizations.get('home_comptes_rendus'),
+                  subtitle: AppLocalizations.get('home_comptes_rendus_subtitle'),
+                  color: AppColors.info,
                   onTap: () {
                     Navigator.pushNamed(context, '/comptes-rendus');
                   },
                 ),
                 _buildFeatureCard(
                   icon: Icons.bar_chart_rounded,
-                  title: 'Bilan réunions',
-                  subtitle: 'Cotisations collectées',
-                  color: const Color(0xFF1565C0),
+                  title: AppLocalizations.get('home_bilan'),
+                  subtitle: AppLocalizations.get('home_bilan_subtitle'),
+                  color: AppColors.accentSecondary,
                   onTap: () {
                     Navigator.pushNamed(context, '/admin-payment-dashboard');
                   },
                 ),
                 _buildFeatureCard(
                   icon: Icons.newspaper_rounded,
-                  title: 'Actualités',
-                  subtitle: 'Infos & événements',
-                  color: const Color(0xFFD32F2F),
+                  title: AppLocalizations.get('home_actualites'),
+                  subtitle: AppLocalizations.get('home_actualites_subtitle'),
+                  color: AppColors.error,
                   onTap: () => Navigator.pushNamed(context, '/actualites'),
                 ),
                 _buildFeatureCard(
                   icon: Icons.groups_rounded,
-                  title: 'Bureau',
-                  subtitle: 'Composition',
-                  color: const Color(0xFF0D47A1),
+                  title: AppLocalizations.get('home_bureau'),
+                  subtitle: AppLocalizations.get('home_bureau_subtitle'),
+                  color: AppColors.primaryDark,
                   onTap: () => Navigator.pushNamed(context, '/bureau'),
                 ),
                 _buildFeatureCard(
                   icon: Icons.gavel_rounded,
-                  title: 'Statuts',
-                  subtitle: 'De l\'association',
-                  color: const Color(0xFF6A1B9A),
+                  title: AppLocalizations.get('home_statuts'),
+                  subtitle: AppLocalizations.get('home_statuts_subtitle'),
+                  color: const Color(0xFF8B5CF6),
                   onTap: () => Navigator.pushNamed(context, '/statuts'),
                 ),
                 _buildFeatureCard(
                   icon: Icons.menu_book_rounded,
-                  title: 'Règlement',
-                  subtitle: 'Intérieur',
-                  color: const Color(0xFFEF6C00),
+                  title: AppLocalizations.get('home_reglement'),
+                  subtitle: AppLocalizations.get('home_reglement_subtitle'),
+                  color: AppColors.warning,
                   onTap: () => Navigator.pushNamed(context, '/reglement'),
                 ),
                 _buildFeatureCard(
                   icon: Icons.info_outline_rounded,
-                  title: 'À propos',
-                  subtitle: 'L\'association',
-                  color: const Color(0xFFE64A19),
+                  title: AppLocalizations.get('home_about'),
+                  subtitle: AppLocalizations.get('home_about_subtitle'),
+                  color: const Color(0xFFEC4899),
                   onTap: () => Navigator.pushNamed(context, '/about'),
                 ),
               ],
@@ -281,7 +342,7 @@ class MemberHomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Fonctionnalités à venir',
+                    AppLocalizations.get('home_coming_soon'),
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -290,7 +351,7 @@ class MemberHomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Les modules de cotisations, événements et actualités seront disponibles prochainement.',
+                    AppLocalizations.get('home_coming_soon_desc'),
                     style: GoogleFonts.poppins(
                       fontSize: 13,
                       color: AppColors.textSecondary,

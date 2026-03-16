@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/actualite_provider.dart';
 import '../models/actualite_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class EditActualiteScreen extends StatefulWidget {
   const EditActualiteScreen({super.key});
@@ -60,16 +61,16 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
       setState(() => _isSaving = false);
       if (success) {
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Actualité mise à jour'),
+          SnackBar(
+            content: Text(AppLocalizations.get('actu_updated')),
             backgroundColor: AppColors.approved,
           ),
         );
         nav.pop();
       } else {
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Erreur lors de la mise à jour'),
+          SnackBar(
+            content: Text(AppLocalizations.get('actu_update_error')),
             backgroundColor: AppColors.rejected,
           ),
         );
@@ -81,7 +82,7 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Modifier l\'actualité'),
+        title: Text(AppLocalizations.get('actu_edit')),
         actions: [
           _isSaving
               ? const Padding(
@@ -108,7 +109,7 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
               children: [
                 // Catégorie
                 Text(
-                  'Catégorie',
+                  AppLocalizations.get('actu_category'),
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -167,7 +168,7 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
                   controller: _titleController,
                   style: GoogleFonts.poppins(fontSize: 14),
                   decoration: InputDecoration(
-                    labelText: 'Titre',
+                    labelText: AppLocalizations.get('actu_title_field'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     enabledBorder: OutlineInputBorder(
@@ -179,7 +180,7 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
                       borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     ),
                   ),
-                  validator: (v) => v == null || v.trim().isEmpty ? 'Le titre est requis' : null,
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.get('actu_title_required') : null,
                 ),
 
                 const SizedBox(height: 16),
@@ -190,7 +191,7 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
                   maxLines: 10,
                   style: GoogleFonts.poppins(fontSize: 13, height: 1.6),
                   decoration: InputDecoration(
-                    labelText: 'Contenu',
+                    labelText: AppLocalizations.get('actu_content'),
                     alignLabelWithHint: true,
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -203,7 +204,7 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
                       borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     ),
                   ),
-                  validator: (v) => v == null || v.trim().isEmpty ? 'Le contenu est requis' : null,
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.get('actu_content_required') : null,
                 ),
 
                 const SizedBox(height: 24),
@@ -216,7 +217,7 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
                     onPressed: _isSaving ? null : _save,
                     icon: const Icon(Icons.save_rounded, size: 20),
                     label: Text(
-                      'Enregistrer',
+                      AppLocalizations.get('save'),
                       style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 15),
                     ),
                     style: ElevatedButton.styleFrom(
@@ -261,11 +262,11 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
   String _catLabel(ActualiteCategory cat) {
     switch (cat) {
       case ActualiteCategory.actualite:
-        return 'Actualité';
+        return AppLocalizations.get('actu_cat_actualite');
       case ActualiteCategory.evenement:
-        return 'Événement';
+        return AppLocalizations.get('actu_cat_evenement');
       case ActualiteCategory.annonce:
-        return 'Annonce';
+        return AppLocalizations.get('actu_cat_annonce');
     }
   }
 }

@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/compte_rendu_provider.dart';
 import '../models/compte_rendu_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class ComptesRendusListScreen extends StatefulWidget {
   const ComptesRendusListScreen({super.key});
@@ -30,7 +31,7 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Comptes rendus'),
+        title: Text(AppLocalizations.get('cr_title')),
       ),
       floatingActionButton: isAdmin
           ? FloatingActionButton.extended(
@@ -80,7 +81,7 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Aucun compte rendu',
+              AppLocalizations.get('cr_no_cr'),
               style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -89,7 +90,7 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Les comptes rendus des réunions apparaîtront ici.',
+              AppLocalizations.get('cr_no_cr_desc'),
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 color: AppColors.textSecondary,

@@ -30,9 +30,15 @@ import 'screens/create_actualite_screen.dart';
 import 'screens/edit_actualite_screen.dart';
 import 'providers/actualite_provider.dart';
 import 'providers/bureau_provider.dart';
+import 'providers/locale_provider.dart';
+import 'providers/profile_provider.dart';
 import 'screens/bureau_screen.dart';
 import 'screens/manage_mandats_screen.dart';
 import 'screens/manage_bureau_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/edit_profile_screen.dart';
+
+LocaleProvider? _localeProvider;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +50,9 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
+  _localeProvider = LocaleProvider();
+  await _localeProvider!.loadLocale();
+
   runApp(const MbaheEuropeApp());
 }
 
@@ -54,14 +63,17 @@ class MbaheEuropeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: _localeProvider!),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CotisationProvider()),
         ChangeNotifierProvider(create: (_) => CompteRenduProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => ActualiteProvider()),
         ChangeNotifierProvider(create: (_) => BureauProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
-      child: MaterialApp(
+      child: Consumer<LocaleProvider>(
+        builder: (context, locale, child) => MaterialApp(
         title: 'MBAHE Europe',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
@@ -91,7 +103,11 @@ class MbaheEuropeApp extends StatelessWidget {
           '/bureau': (context) => const BureauScreen(),
           '/manage-mandats': (context) => const ManageMandatsScreen(),
           '/manage-bureau': (context) => const ManageBureauScreen(),
+          '/profile': (context) => const ProfileScreen(),
+          '/admin-profile': (context) => const ProfileScreen(),
+          '/edit-profile': (context) => const EditProfileScreen(),
         },
+      ),
       ),
     );
   }

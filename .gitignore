@@ -42,6 +42,12 @@ app.*.map.json
 # Environment variables
 .env
 
+# Supabase - Fichiers SQL sensibles et données de test
+supabase/insert_*.sql
+supabase/reset_and_seed.sql
+supabase/fix_*.sql
+supabase/*_test_data.sql
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile

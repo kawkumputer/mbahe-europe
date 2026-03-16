@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_button.dart';
+import '../l10n/app_localizations.dart';
 
 class PendingApprovalScreen extends StatelessWidget {
   const PendingApprovalScreen({super.key});
@@ -35,7 +36,7 @@ class PendingApprovalScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
-                'Compte en attente',
+                AppLocalizations.get('pending_title'),
                 style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -45,7 +46,7 @@ class PendingApprovalScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Bonjour ${user?.firstName ?? ''} !',
+                '${AppLocalizations.get('pending_hello')} ${user?.firstName ?? ''} !',
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -55,8 +56,7 @@ class PendingApprovalScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Votre demande d\'adhésion a bien été enregistrée. '
-                'Un administrateur doit valider votre compte avant que vous puissiez accéder à l\'application.',
+                AppLocalizations.get('pending_message'),
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   color: AppColors.textSecondary,
@@ -84,7 +84,7 @@ class PendingApprovalScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Statut : En attente de validation',
+                      AppLocalizations.get('pending_status'),
                       style: GoogleFonts.poppins(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
@@ -96,7 +96,7 @@ class PendingApprovalScreen extends StatelessWidget {
               ),
               const SizedBox(height: 48),
               CustomButton(
-                text: 'Retour à la connexion',
+                text: AppLocalizations.get('pending_back_login'),
                 isOutlined: true,
                 icon: Icons.logout_rounded,
                 onPressed: () async {

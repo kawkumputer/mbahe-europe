@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/bureau_provider.dart';
 import '../models/mandat_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class ManageMandatsScreen extends StatefulWidget {
   const ManageMandatsScreen({super.key});
@@ -25,7 +26,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestion des mandats'),
+        title: Text(AppLocalizations.get('mandat_title')),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateMandatDialog(),
@@ -42,9 +43,9 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                       children: [
                         Icon(Icons.event_note_rounded, size: 60, color: AppColors.textSecondary.withValues(alpha: 0.4)),
                         const SizedBox(height: 16),
-                        Text('Aucun mandat', style: GoogleFonts.poppins(fontSize: 16, color: AppColors.textSecondary)),
+                        Text(AppLocalizations.get('mandat_no_mandat'), style: GoogleFonts.poppins(fontSize: 16, color: AppColors.textSecondary)),
                         const SizedBox(height: 4),
-                        Text('Créez un mandat pour définir le bureau', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary.withValues(alpha: 0.7))),
+                        Text(AppLocalizations.get('mandat_no_mandat_desc'), style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary.withValues(alpha: 0.7))),
                       ],
                     ),
                   )
@@ -127,7 +128,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'Actif',
+                      AppLocalizations.get('mandat_active'),
                       style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.approved),
                     ),
                   ),
@@ -136,8 +137,8 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                   onSelected: (value) => _handleMandatAction(value, mandat, provider),
                   itemBuilder: (ctx) => [
                     if (!mandat.isActive)
-                      const PopupMenuItem(value: 'activate', child: Text('Activer ce mandat')),
-                    const PopupMenuItem(value: 'delete', child: Text('Supprimer', style: TextStyle(color: Colors.red))),
+                      PopupMenuItem(value: 'activate', child: Text(AppLocalizations.get('mandat_activate'))),
+                    PopupMenuItem(value: 'delete', child: Text(AppLocalizations.get('delete'), style: const TextStyle(color: Colors.red))),
                   ],
                 ),
               ],
@@ -148,7 +149,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                 Icon(Icons.people_rounded, size: 14, color: AppColors.textSecondary.withValues(alpha: 0.6)),
                 const SizedBox(width: 4),
                 Text(
-                  'Gérer la composition du bureau',
+                  AppLocalizations.get('mandat_manage_composition'),
                   style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
                 ),
                 const Spacer(),
@@ -167,7 +168,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(success ? 'Mandat activé' : 'Erreur'),
+            content: Text(success ? AppLocalizations.get('mandat_activated') : AppLocalizations.get('error')),
             backgroundColor: success ? AppColors.approved : AppColors.rejected,
           ),
         );
@@ -181,10 +182,10 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Supprimer', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
-        content: Text('Supprimer le mandat "${mandat.label}" et tous ses membres ?', style: GoogleFonts.poppins(fontSize: 14)),
+        title: Text(AppLocalizations.get('delete'), style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
+        content: Text('${AppLocalizations.get('mandat_delete_confirm')} "${mandat.label}" ${AppLocalizations.get('mandat_delete_confirm_desc')}', style: GoogleFonts.poppins(fontSize: 14)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.get('cancel'))),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
@@ -192,13 +193,13 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(success ? 'Mandat supprimé' : 'Erreur'),
+                    content: Text(success ? AppLocalizations.get('mandat_deleted') : AppLocalizations.get('error')),
                     backgroundColor: success ? AppColors.approved : AppColors.rejected,
                   ),
                 );
               }
             },
-            child: const Text('Supprimer', style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.get('delete'), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -215,7 +216,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text('Nouveau mandat', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
+          title: Text(AppLocalizations.get('mandat_create'), style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -224,8 +225,8 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                   controller: labelController,
                   style: GoogleFonts.poppins(fontSize: 14),
                   decoration: InputDecoration(
-                    labelText: 'Nom du mandat',
-                    hintText: 'Ex: Bureau 2024-2026',
+                    labelText: AppLocalizations.get('mandat_name'),
+                    hintText: AppLocalizations.get('mandat_name_hint'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   ),
@@ -246,7 +247,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                         },
                         child: InputDecorator(
                           decoration: InputDecoration(
-                            labelText: 'Début',
+                            labelText: AppLocalizations.get('mandat_start'),
                             labelStyle: GoogleFonts.poppins(fontSize: 12),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -272,7 +273,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                         },
                         child: InputDecorator(
                           decoration: InputDecoration(
-                            labelText: 'Fin',
+                            labelText: AppLocalizations.get('mandat_end'),
                             labelStyle: GoogleFonts.poppins(fontSize: 12),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -288,7 +289,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                 ),
                 const SizedBox(height: 10),
                 SwitchListTile(
-                  title: Text('Mandat actif', style: GoogleFonts.poppins(fontSize: 13)),
+                  title: Text(AppLocalizations.get('mandat_active_switch'), style: GoogleFonts.poppins(fontSize: 13)),
                   value: isActive,
                   onChanged: (v) => setDialogState(() => isActive = v),
                   contentPadding: EdgeInsets.zero,
@@ -298,7 +299,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.get('cancel'))),
             ElevatedButton(
               onPressed: () async {
                 if (labelController.text.trim().isEmpty) return;
@@ -313,14 +314,14 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(success ? 'Mandat créé' : 'Erreur'),
+                      content: Text(success ? AppLocalizations.get('mandat_created') : AppLocalizations.get('error')),
                       backgroundColor: success ? AppColors.approved : AppColors.rejected,
                     ),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-              child: Text('Créer', style: GoogleFonts.poppins(color: Colors.white)),
+              child: Text(AppLocalizations.get('create'), style: GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         ),

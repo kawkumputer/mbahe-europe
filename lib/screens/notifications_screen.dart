@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/notification_model.dart';
 import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -25,13 +26,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text(AppLocalizations.get('notif_title')),
         actions: [
           if (provider.unreadCount > 0)
             TextButton(
               onPressed: () => provider.markAllAsRead(),
               child: Text(
-                'Tout lire',
+                AppLocalizations.get('notif_mark_all_read'),
                 style: GoogleFonts.poppins(
                   color: AppColors.primary,
                   fontWeight: FontWeight.w600,
@@ -75,7 +76,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Aucune notification',
+            AppLocalizations.get('notif_no_notif'),
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -84,7 +85,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Vous serez notifié des actions importantes',
+            AppLocalizations.get('notif_no_notif_desc'),
             style: GoogleFonts.poppins(
               fontSize: 13,
               color: AppColors.textSecondary,

@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
 import '../models/user_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -151,7 +152,7 @@ class _SplashScreenState extends State<SplashScreen>
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        'Ensemble, construisons l\'avenir',
+                        AppLocalizations.get('splash_slogan'),
                         style: GoogleFonts.poppins(
                           fontSize: 13,
                           color: Colors.white.withValues(alpha: 0.9),

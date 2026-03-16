@@ -7,6 +7,7 @@ import '../models/mandat_model.dart';
 import '../models/bureau_membre_model.dart';
 import '../models/user_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class ManageBureauScreen extends StatefulWidget {
   const ManageBureauScreen({super.key});
@@ -65,9 +66,9 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                               children: [
                                 Icon(Icons.person_add_rounded, size: 60, color: AppColors.textSecondary.withValues(alpha: 0.4)),
                                 const SizedBox(height: 16),
-                                Text('Aucun membre dans le bureau', style: GoogleFonts.poppins(fontSize: 16, color: AppColors.textSecondary)),
+                                Text(AppLocalizations.get('bureau_no_bureau_members'), style: GoogleFonts.poppins(fontSize: 16, color: AppColors.textSecondary)),
                                 const SizedBox(height: 4),
-                                Text('Ajoutez des membres avec le bouton +', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary.withValues(alpha: 0.7))),
+                                Text(AppLocalizations.get('bureau_add_hint'), style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary.withValues(alpha: 0.7))),
                               ],
                             ),
                           ),
@@ -151,8 +152,8 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
               }
             },
             itemBuilder: (ctx) => [
-              const PopupMenuItem(value: 'edit', child: Text('Modifier')),
-              const PopupMenuItem(value: 'delete', child: Text('Retirer', style: TextStyle(color: Colors.red))),
+              PopupMenuItem(value: 'edit', child: Text(AppLocalizations.get('edit'))),
+              PopupMenuItem(value: 'delete', child: Text(AppLocalizations.get('bureau_remove_member'), style: const TextStyle(color: Colors.red))),
             ],
           ),
         ],
@@ -168,7 +169,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
 
     if (availablePostes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tous les postes sont déjà attribués'), backgroundColor: AppColors.pending),
+        SnackBar(content: Text(AppLocalizations.get('bureau_all_posts_taken')), backgroundColor: AppColors.pending),
       );
       return;
     }
@@ -177,7 +178,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text('Ajouter un membre', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
+          title: Text(AppLocalizations.get('bureau_add_member'), style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -186,7 +187,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                 DropdownButtonFormField<String>(
                   initialValue: selectedPoste,
                   decoration: InputDecoration(
-                    labelText: 'Poste',
+                    labelText: AppLocalizations.get('bureau_post'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   ),
@@ -199,7 +200,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                 DropdownButtonFormField<String>(
                   initialValue: selectedUserId,
                   decoration: InputDecoration(
-                    labelText: 'Membre',
+                    labelText: AppLocalizations.get('bureau_member'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   ),
@@ -215,7 +216,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.get('cancel'))),
             ElevatedButton(
               onPressed: () async {
                 if (selectedUserId == null || selectedPoste == null) return;
@@ -230,14 +231,14 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(success ? '${user.fullName} ajouté comme $selectedPoste' : 'Erreur'),
+                      content: Text(success ? '${user.fullName} ${AppLocalizations.get('bureau_added')} $selectedPoste' : AppLocalizations.get('error')),
                       backgroundColor: success ? AppColors.approved : AppColors.rejected,
                     ),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-              child: Text('Ajouter', style: GoogleFonts.poppins(color: Colors.white)),
+              child: Text(AppLocalizations.get('add'), style: GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         ),
@@ -258,7 +259,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text('Modifier', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
+          title: Text(AppLocalizations.get('edit'), style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -266,7 +267,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                 DropdownButtonFormField<String>(
                   initialValue: selectedPoste,
                   decoration: InputDecoration(
-                    labelText: 'Poste',
+                    labelText: AppLocalizations.get('bureau_post'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   ),
@@ -278,7 +279,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                 DropdownButtonFormField<String>(
                   initialValue: selectedUserId,
                   decoration: InputDecoration(
-                    labelText: 'Membre',
+                    labelText: AppLocalizations.get('bureau_member'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   ),
@@ -294,7 +295,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.get('cancel'))),
             ElevatedButton(
               onPressed: () async {
                 if (selectedUserId == null || selectedPoste == null) return;
@@ -310,14 +311,14 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(success ? 'Membre mis à jour' : 'Erreur'),
+                      content: Text(success ? AppLocalizations.get('bureau_member_updated') : AppLocalizations.get('error')),
                       backgroundColor: success ? AppColors.approved : AppColors.rejected,
                     ),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-              child: Text('Enregistrer', style: GoogleFonts.poppins(color: Colors.white)),
+              child: Text(AppLocalizations.get('save'), style: GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         ),
@@ -329,10 +330,10 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Retirer', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
-        content: Text('Retirer ${membre.userName} du poste de ${membre.poste} ?', style: GoogleFonts.poppins(fontSize: 14)),
+        title: Text(AppLocalizations.get('bureau_remove_member'), style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
+        content: Text('${AppLocalizations.get('bureau_remove_confirm')} ${membre.userName} ${AppLocalizations.get('bureau_remove_confirm_desc')} ${membre.poste} ?', style: GoogleFonts.poppins(fontSize: 14)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.get('cancel'))),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
@@ -340,13 +341,13 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(success ? 'Membre retiré' : 'Erreur'),
+                    content: Text(success ? AppLocalizations.get('bureau_member_removed') : AppLocalizations.get('error')),
                     backgroundColor: success ? AppColors.approved : AppColors.rejected,
                   ),
                 );
               }
             },
-            child: const Text('Retirer', style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.get('bureau_remove_member'), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

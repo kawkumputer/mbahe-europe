@@ -2,19 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const Color primary = Color(0xFF1B5E20);
-  static const Color primaryLight = Color(0xFF4CAF50);
-  static const Color primaryDark = Color(0xFF0D3B0F);
-  static const Color accent = Color(0xFFFFC107);
-  static const Color background = Color(0xFFF5F5F5);
+  // Palette principale moderne - Bleu/Violet professionnel
+  static const Color primary = Color(0xFF6366F1); // Indigo moderne
+  static const Color primaryLight = Color(0xFF818CF8);
+  static const Color primaryDark = Color(0xFF4F46E5);
+  
+  // Accents dynamiques
+  static const Color accent = Color(0xFFF59E0B); // Amber vibrant
+  static const Color accentSecondary = Color(0xFF10B981); // Emerald
+  
+  // Backgrounds et surfaces
+  static const Color background = Color(0xFFF8FAFC);
   static const Color surface = Colors.white;
-  static const Color error = Color(0xFFD32F2F);
-  static const Color textPrimary = Color(0xFF212121);
-  static const Color textSecondary = Color(0xFF757575);
-  static const Color divider = Color(0xFFE0E0E0);
-  static const Color pending = Color(0xFFFF9800);
-  static const Color approved = Color(0xFF4CAF50);
-  static const Color rejected = Color(0xFFF44336);
+  static const Color surfaceVariant = Color(0xFFF1F5F9);
+  
+  // États et feedbacks
+  static const Color error = Color(0xFFEF4444);
+  static const Color success = Color(0xFF10B981);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color info = Color(0xFF3B82F6);
+  
+  // Textes
+  static const Color textPrimary = Color(0xFF0F172A);
+  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textTertiary = Color(0xFF94A3B8);
+  
+  // Dividers et borders
+  static const Color divider = Color(0xFFE2E8F0);
+  static const Color border = Color(0xFFCBD5E1);
+  
+  // Status colors
+  static const Color pending = Color(0xFFF59E0B);
+  static const Color approved = Color(0xFF10B981);
+  static const Color rejected = Color(0xFFEF4444);
+  
+  // Gradient colors
+  static const Color gradientStart = Color(0xFF6366F1);
+  static const Color gradientEnd = Color(0xFF8B5CF6);
 }
 
 class AppTheme {

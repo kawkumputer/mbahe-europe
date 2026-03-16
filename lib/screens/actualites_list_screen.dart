@@ -6,6 +6,7 @@ import '../providers/actualite_provider.dart';
 import '../models/user_model.dart';
 import '../models/actualite_model.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 class ActualitesListScreen extends StatefulWidget {
   const ActualitesListScreen({super.key});
@@ -50,7 +51,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Actualités'),
+        title: Text(AppLocalizations.get('actu_title')),
       ),
       floatingActionButton: isAdmin
           ? FloatingActionButton(
@@ -82,7 +83,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'Aucune actualité',
+                                  AppLocalizations.get('actu_no_actu'),
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     color: AppColors.textSecondary,
@@ -90,7 +91,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Les actualités publiées apparaîtront ici',
+                                  AppLocalizations.get('actu_no_actu_desc'),
                                   style: GoogleFonts.poppins(
                                     fontSize: 13,
                                     color: AppColors.textSecondary.withValues(alpha: 0.7),

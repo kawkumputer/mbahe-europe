@@ -7,6 +7,7 @@ import '../models/compte_rendu_model.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../l10n/app_localizations.dart';
 
 class CreateCompteRenduScreen extends StatefulWidget {
   const CreateCompteRenduScreen({super.key});
@@ -76,7 +77,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Ajoutez au moins un point discuté',
+            AppLocalizations.get('cr_min_point'),
             style: GoogleFonts.poppins(),
           ),
           backgroundColor: AppColors.error,
@@ -104,7 +105,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Compte rendu créé avec succès',
+            AppLocalizations.get('cr_created_success'),
             style: GoogleFonts.poppins(),
           ),
           backgroundColor: AppColors.approved,
@@ -120,7 +121,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nouveau compte rendu'),
+        title: Text(AppLocalizations.get('cr_new_title')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -133,12 +134,12 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
               // Titre
               CustomTextField(
                 controller: _titleController,
-                label: 'Titre',
-                hint: 'Ex: AG Avril 2026',
+                label: AppLocalizations.get('cr_field_title'),
+                hint: AppLocalizations.get('cr_field_title_hint'),
                 prefixIcon: Icons.title_rounded,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Veuillez entrer un titre';
+                    return AppLocalizations.get('cr_field_title_required');
                   }
                   return null;
                 },
@@ -146,7 +147,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
 
               // Type de réunion
               Text(
-                'Type de réunion',
+                AppLocalizations.get('cr_reunion_type'),
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   color: AppColors.textSecondary,
@@ -160,13 +161,13 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
                   String label;
                   switch (type) {
                     case ReunionType.assembleeGenerale:
-                      label = 'AG';
+                      label = AppLocalizations.get('cr_type_ag');
                       break;
                     case ReunionType.bureau:
-                      label = 'Bureau';
+                      label = AppLocalizations.get('cr_type_bureau');
                       break;
                     case ReunionType.extraordinaire:
-                      label = 'Extraordinaire';
+                      label = AppLocalizations.get('cr_type_extra');
                       break;
                   }
                   return ChoiceChip(
@@ -194,7 +195,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
 
               // Date de la réunion
               Text(
-                'Date de la réunion',
+                AppLocalizations.get('cr_reunion_date_label'),
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   color: AppColors.textSecondary,
@@ -240,7 +241,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
               Row(
                 children: [
                   Text(
-                    'Points discutés',
+                    AppLocalizations.get('cr_points'),
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -279,7 +280,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
                       controller: _pointController,
                       style: GoogleFonts.poppins(fontSize: 14),
                       decoration: InputDecoration(
-                        hintText: 'Ajouter un point...',
+                        hintText: AppLocalizations.get('cr_add_point'),
                         hintStyle: GoogleFonts.poppins(
                           color: AppColors.textSecondary,
                           fontSize: 14,
@@ -377,7 +378,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
 
               // Notes
               Text(
-                'Notes (optionnel)',
+                AppLocalizations.get('cr_notes_optional'),
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   color: AppColors.textSecondary,
@@ -390,7 +391,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
                 style: GoogleFonts.poppins(fontSize: 14),
                 decoration: InputDecoration(
                   hintText:
-                      'Ex: Réunion en visioconférence. 12 membres présents.',
+                      AppLocalizations.get('cr_notes_hint'),
                   hintStyle: GoogleFonts.poppins(
                     color: AppColors.textSecondary,
                     fontSize: 13,
@@ -402,7 +403,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
 
               // Bouton créer
               CustomButton(
-                text: 'Créer le compte rendu',
+                text: AppLocalizations.get('cr_create_button'),
                 isLoading: provider.isLoading,
                 onPressed: _handleSubmit,
                 icon: Icons.save_rounded,

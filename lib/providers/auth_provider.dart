@@ -39,6 +39,7 @@ class AuthProvider extends ChangeNotifier {
     required String firstName,
     required String lastName,
     required String phone,
+    required String username,
     required String password,
   }) async {
     _isLoading = true;
@@ -49,12 +50,13 @@ class AuthProvider extends ChangeNotifier {
       firstName: firstName,
       lastName: lastName,
       phone: phone,
+      username: username,
       password: password,
     );
 
     _isLoading = false;
     if (user == null) {
-      _errorMessage = 'Ce numéro de téléphone est déjà utilisé';
+      _errorMessage = 'Ce nom d\'utilisateur est déjà utilisé';
       notifyListeners();
       return false;
     }
@@ -69,6 +71,14 @@ class AuthProvider extends ChangeNotifier {
     _currentUser = null;
     _errorMessage = null;
     notifyListeners();
+  }
+
+  Future<void> refreshCurrentUser() async {
+    final user = await _authService.getCurrentUser();
+    if (user != null) {
+      _currentUser = user;
+      notifyListeners();
+    }
   }
 
   void clearError() {

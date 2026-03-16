@@ -7,20 +7,28 @@ class UserModel {
   final String firstName;
   final String lastName;
   final String phone;
+  final String username;
   final String? password;
   final UserRole role;
   final AccountStatus status;
   final DateTime createdAt;
+  final String? photoUrl;
+  final String? bio;
+  final DateTime? updatedAt;
 
   UserModel({
     required this.id,
     required this.firstName,
     required this.lastName,
     required this.phone,
+    required this.username,
     this.password,
     this.role = UserRole.member,
     this.status = AccountStatus.pending,
     DateTime? createdAt,
+    this.photoUrl,
+    this.bio,
+    this.updatedAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -29,11 +37,17 @@ class UserModel {
       firstName: json['first_name'] ?? '',
       lastName: json['last_name'] ?? '',
       phone: json['phone'] ?? '',
+      username: json['username'] ?? '',
       role: json['role'] == 'admin' ? UserRole.admin : UserRole.member,
       status: _parseStatus(json['status']),
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
+      photoUrl: json['photo_url'],
+      bio: json['bio'],
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : null,
     );
   }
 
@@ -43,9 +57,23 @@ class UserModel {
       'first_name': firstName,
       'last_name': lastName,
       'phone': phone,
+      'username': username,
       'role': role == UserRole.admin ? 'admin' : 'member',
-      'status': status.name,
+      'status': _statusToString(status),
+      'photo_url': photoUrl,
+      'bio': bio,
     };
+  }
+
+  static String _statusToString(AccountStatus status) {
+    switch (status) {
+      case AccountStatus.approved:
+        return 'approved';
+      case AccountStatus.rejected:
+        return 'rejected';
+      case AccountStatus.pending:
+        return 'pending';
+    }
   }
 
   static AccountStatus _parseStatus(String? status) {
@@ -64,20 +92,28 @@ class UserModel {
     String? firstName,
     String? lastName,
     String? phone,
+    String? username,
     String? password,
     UserRole? role,
     AccountStatus? status,
     DateTime? createdAt,
+    String? photoUrl,
+    String? bio,
+    DateTime? updatedAt,
   }) {
     return UserModel(
       id: id ?? this.id,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       phone: phone ?? this.phone,
+      username: username ?? this.username,
       password: password ?? this.password,
       role: role ?? this.role,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      photoUrl: photoUrl ?? this.photoUrl,
+      bio: bio ?? this.bio,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
