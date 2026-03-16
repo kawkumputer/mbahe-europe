@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   phone TEXT UNIQUE NOT NULL,
-  role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('admin', 'member')),
+  role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('admin', 'member', 'sys_admin')),
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -69,30 +69,28 @@ CREATE POLICY "Profiles: mise à jour par admin"
   ON profiles FOR UPDATE
   TO authenticated
   USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (role = 'admin' OR role = 'sys_admin'))
   );
 
--- Cotisations: membres voient les leurs, admin voit tout
-CREATE POLICY "Cotisations: lecture propres cotisations"
+-- Cotisations: tous les utilisateurs authentifiés peuvent voir toutes les cotisations
+-- (nécessaire pour le bilan des réunions)
+CREATE POLICY "Cotisations: lecture toutes cotisations"
   ON cotisations FOR SELECT
   TO authenticated
-  USING (
-    user_id = auth.uid()
-    OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-  );
+  USING (true);
 
 CREATE POLICY "Cotisations: insertion par admin"
   ON cotisations FOR INSERT
   TO authenticated
   WITH CHECK (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (role = 'admin' OR role = 'sys_admin'))
   );
 
 CREATE POLICY "Cotisations: mise à jour par admin"
   ON cotisations FOR UPDATE
   TO authenticated
   USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (role = 'admin' OR role = 'sys_admin'))
   );
 
 -- Comptes rendus: lecture pour tous, écriture admin
@@ -105,21 +103,21 @@ CREATE POLICY "Comptes rendus: insertion par admin"
   ON comptes_rendus FOR INSERT
   TO authenticated
   WITH CHECK (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (role = 'admin' OR role = 'sys_admin'))
   );
 
 CREATE POLICY "Comptes rendus: mise à jour par admin"
   ON comptes_rendus FOR UPDATE
   TO authenticated
   USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (role = 'admin' OR role = 'sys_admin'))
   );
 
 CREATE POLICY "Comptes rendus: suppression par admin"
   ON comptes_rendus FOR DELETE
   TO authenticated
   USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (role = 'admin' OR role = 'sys_admin'))
   );
 
 -- ============================================================

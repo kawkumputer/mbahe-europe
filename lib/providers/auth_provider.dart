@@ -14,6 +14,8 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _currentUser != null;
   bool get isAdmin => _currentUser?.role == UserRole.admin;
+  bool get isSysAdmin => _currentUser?.role == UserRole.sysAdmin;
+  bool get isAdminOrSysAdmin => isAdmin || isSysAdmin;
   bool get isApproved => _currentUser?.status == AccountStatus.approved;
 
   Future<bool> login(String phone, String password) async {

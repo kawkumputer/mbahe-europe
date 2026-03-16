@@ -58,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
 
       if (auth.currentUser!.status != AccountStatus.approved) {
         Navigator.pushReplacementNamed(context, '/pending-approval');
-      } else if (auth.isAdmin) {
+      } else if (auth.isAdminOrSysAdmin) {
         Navigator.pushReplacementNamed(context, '/admin-home');
       } else {
         Navigator.pushReplacementNamed(context, '/member-home');

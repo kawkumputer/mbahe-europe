@@ -584,55 +584,103 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
   }
 
   void _showPaymentMethodDialog(CotisationModel cotisation, String userId) {
+    DateTime selectedDate = DateTime.now();
+    
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          AppLocalizations.get('cotis_admin_payment_method'),
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '${cotisation.monthName} ${cotisation.year} — ${cotisation.amount.toStringAsFixed(0)}€',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: AppColors.textSecondary,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            AppLocalizations.get('cotis_admin_payment_method'),
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${cotisation.monthName} ${cotisation.year} — ${cotisation.amount.toStringAsFixed(0)}€',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            _buildPaymentOption(
-              ctx,
-              cotisation,
-              userId,
-              PaymentMethod.espece,
-              Icons.money_rounded,
-              AppLocalizations.get('payment_cash'),
-              const Color(0xFF2E7D32),
-            ),
-            const SizedBox(height: 8),
-            _buildPaymentOption(
-              ctx,
-              cotisation,
-              userId,
-              PaymentMethod.virement,
-              Icons.account_balance_rounded,
-              AppLocalizations.get('payment_transfer'),
-              const Color(0xFF1565C0),
-            ),
-            const SizedBox(height: 8),
-            _buildPaymentOption(
-              ctx,
-              cotisation,
-              userId,
-              PaymentMethod.cheque,
-              Icons.receipt_long_rounded,
-              AppLocalizations.get('payment_check'),
-              const Color(0xFF6A1B9A),
-            ),
-          ],
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime.now(),
+                    locale: const Locale('fr', 'FR'),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      selectedDate = picked;
+                    });
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.primary.withOpacity(0.25)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_today_rounded, color: AppColors.primary, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Date de paiement: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildPaymentOption(
+                ctx,
+                cotisation,
+                userId,
+                selectedDate,
+                PaymentMethod.espece,
+                Icons.money_rounded,
+                AppLocalizations.get('payment_cash'),
+                const Color(0xFF2E7D32),
+              ),
+              const SizedBox(height: 8),
+              _buildPaymentOption(
+                ctx,
+                cotisation,
+                userId,
+                selectedDate,
+                PaymentMethod.virement,
+                Icons.account_balance_rounded,
+                AppLocalizations.get('payment_transfer'),
+                const Color(0xFF1565C0),
+              ),
+              const SizedBox(height: 8),
+              _buildPaymentOption(
+                ctx,
+                cotisation,
+                userId,
+                selectedDate,
+                PaymentMethod.cheque,
+                Icons.receipt_long_rounded,
+                AppLocalizations.get('payment_check'),
+                const Color(0xFF6A1B9A),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -642,6 +690,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
     BuildContext ctx,
     CotisationModel cotisation,
     String userId,
+    DateTime paymentDate,
     PaymentMethod method,
     IconData icon,
     String label,
@@ -650,10 +699,11 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
     return GestureDetector(
       onTap: () async {
         Navigator.pop(ctx);
-        await context.read<CotisationProvider>().markAsPaid(
+        await context.read<CotisationProvider>().markAsPaidWithDate(
               cotisation.id,
               userId,
               method,
+              paymentDate,
             );
       },
       child: Container(

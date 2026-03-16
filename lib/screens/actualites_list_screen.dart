@@ -46,7 +46,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<AuthProvider>().currentUser?.role == UserRole.admin;
+    final isAdmin = context.read<AuthProvider>().isAdminOrSysAdmin;
     final provider = context.watch<ActualiteProvider>();
 
     return Scaffold(

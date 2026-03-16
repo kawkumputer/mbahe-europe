@@ -14,7 +14,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cr = ModalRoute.of(context)!.settings.arguments as CompteRenduModel;
-    final isAdmin = context.watch<AuthProvider>().isAdmin;
+    final isAdmin = context.watch<AuthProvider>().isAdminOrSysAdmin;
 
     Color typeColor;
     IconData typeIcon;

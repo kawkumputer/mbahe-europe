@@ -114,11 +114,13 @@ class SupabaseAuthService {
   }
 
   /// Récupérer tous les membres (admins inclus, car ils cotisent aussi)
+  /// Exclut les sys_admin qui ne participent pas aux cotisations
   Future<List<UserModel>> getAllMembers() async {
     final data = await _client
         .from('profiles')
         .select()
         .eq('status', 'approved')
+        .neq('role', 'sys_admin')
         .order('last_name', ascending: true);
     return data.map<UserModel>((json) => UserModel.fromJson(json)).toList();
   }

@@ -26,7 +26,7 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.watch<AuthProvider>().isAdmin;
+    final isAdmin = context.watch<AuthProvider>().isAdminOrSysAdmin;
     final provider = context.watch<CompteRenduProvider>();
 
     return Scaffold(
@@ -223,12 +223,15 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
                   ),
                 ),
                 const Spacer(),
-                Text(
-                  'Par ${cr.authorName}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                    fontStyle: FontStyle.italic,
+                Flexible(
+                  child: Text(
+                    'Par ${cr.authorName}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

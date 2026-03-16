@@ -1,4 +1,4 @@
-enum UserRole { admin, member }
+enum UserRole { admin, member, sysAdmin }
 
 enum AccountStatus { pending, approved, rejected }
 
@@ -38,7 +38,7 @@ class UserModel {
       lastName: json['last_name'] ?? '',
       phone: json['phone'] ?? '',
       username: json['username'] ?? '',
-      role: json['role'] == 'admin' ? UserRole.admin : UserRole.member,
+      role: _parseRole(json['role']),
       status: _parseStatus(json['status']),
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
@@ -58,7 +58,7 @@ class UserModel {
       'last_name': lastName,
       'phone': phone,
       'username': username,
-      'role': role == UserRole.admin ? 'admin' : 'member',
+      'role': _roleToString(role),
       'status': _statusToString(status),
       'photo_url': photoUrl,
       'bio': bio,
@@ -84,6 +84,28 @@ class UserModel {
         return AccountStatus.rejected;
       default:
         return AccountStatus.pending;
+    }
+  }
+
+  static UserRole _parseRole(String? role) {
+    switch (role) {
+      case 'admin':
+        return UserRole.admin;
+      case 'sys_admin':
+        return UserRole.sysAdmin;
+      default:
+        return UserRole.member;
+    }
+  }
+
+  static String _roleToString(UserRole role) {
+    switch (role) {
+      case UserRole.admin:
+        return 'admin';
+      case UserRole.sysAdmin:
+        return 'sys_admin';
+      case UserRole.member:
+        return 'member';
     }
   }
 

@@ -119,11 +119,16 @@ class SupabaseCotisationService {
 
   /// Marquer une cotisation comme payée avec mode de paiement
   Future<bool> markAsPaid(String cotisationId, PaymentMethod method) async {
+    return markAsPaidWithDate(cotisationId, method, DateTime.now());
+  }
+
+  /// Marquer une cotisation comme payée avec mode de paiement et date personnalisée
+  Future<bool> markAsPaidWithDate(String cotisationId, PaymentMethod method, DateTime paymentDate) async {
     try {
       final admin = await _getCurrentAdmin();
       await _client.from('cotisations').update({
         'status': 'paid',
-        'paid_at': DateTime.now().toIso8601String(),
+        'paid_at': paymentDate.toIso8601String(),
         'payment_method': method.name,
         'updated_by': admin['id'],
         'updated_by_name': admin['name'],
@@ -134,7 +139,7 @@ class SupabaseCotisationService {
         action: 'mark_paid',
         targetTable: 'cotisations',
         targetId: cotisationId,
-        details: {'payment_method': method.name},
+        details: {'payment_method': method.name, 'payment_date': paymentDate.toIso8601String()},
       );
 
       // Récupérer infos cotisation

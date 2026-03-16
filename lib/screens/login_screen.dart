@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
       notifProvider.refreshUnreadCount();
 
       final user = authProvider.currentUser!;
-      if (user.role == UserRole.admin) {
+      if (user.role == UserRole.admin || user.role == UserRole.sysAdmin) {
         Navigator.pushReplacementNamed(context, '/admin-home');
       } else if (user.status == AccountStatus.approved) {
         Navigator.pushReplacementNamed(context, '/member-home');

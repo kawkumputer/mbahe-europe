@@ -49,6 +49,11 @@ class CotisationProvider extends ChangeNotifier {
     await loadCotisations(userId);
   }
 
+  Future<void> markAsPaidWithDate(String cotisationId, String userId, PaymentMethod method, DateTime paymentDate) async {
+    await _service.markAsPaidWithDate(cotisationId, method, paymentDate);
+    await loadCotisations(userId);
+  }
+
   Future<void> markAsUnpaid(String cotisationId, String userId) async {
     await _service.markAsUnpaid(cotisationId);
     await loadCotisations(userId);
