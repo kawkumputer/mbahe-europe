@@ -68,7 +68,7 @@ class PdfExportService {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      'MBAHE Europe',
+                      'Mbahe Europe',
                       style: _style(fontSize: 22, color: PdfColors.white, bold: true),
                     ),
                     pw.SizedBox(height: 4),
@@ -256,7 +256,7 @@ class PdfExportService {
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Text(
-                          'MBAHE Europe',
+                          'Mbahe Europe',
                           style: _style(fontSize: 20, color: PdfColors.white, bold: true),
                         ),
                         pw.Text(
@@ -394,7 +394,7 @@ class PdfExportService {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      'MBAHE Europe',
+                      'Mbahe Europe',
                       style: _style(fontSize: 22, color: PdfColors.white, bold: true),
                     ),
                     pw.SizedBox(height: 4),

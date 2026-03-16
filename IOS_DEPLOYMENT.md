@@ -1,6 +1,6 @@
 # Déploiement iOS sur App Store Connect
 
-Ce guide explique comment configurer et déployer l'application MBAHE Europe sur l'App Store via GitHub Actions.
+Ce guide explique comment configurer et déployer l'application Mbahe Europe sur l'App Store via GitHub Actions.
 
 ## 📋 Prérequis
 

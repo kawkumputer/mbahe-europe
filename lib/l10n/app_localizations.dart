@@ -15,7 +15,7 @@ class AppLocalizations {
   // Français
   static const Map<String, String> _fr = {
     // ===== Général =====
-    'app_name': 'MBAHE Europe',
+    'app_name': 'Mbahe Europe',
     'cancel': 'Annuler',
     'save': 'Enregistrer',
     'delete': 'Supprimer',
@@ -418,7 +418,7 @@ class AppLocalizations {
   // Pulaar (Fulfulde)
   static const Map<String, String> _ff = {
     // ===== Général =====
-    'app_name': 'MBAHE Orop',
+    'app_name': 'Mbahe Orop',
     'cancel': 'Haaytu',
     'save': 'Mooftu',
     'delete': 'Momtu',
