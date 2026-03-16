@@ -81,7 +81,6 @@ jobs:
             -archivePath /tmp/Runner.xcarchive \
             archive \
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
-            PROVISIONING_PROFILE_SPECIFIER="$PP_UUID" \
             CODE_SIGN_IDENTITY="Apple Distribution"
           echo "=== Archive created ==="
           ls -la /tmp/Runner.xcarchive/
