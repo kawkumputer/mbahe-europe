@@ -249,7 +249,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         children: [
                           CircleAvatar(
                             radius: 60,
-                            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
                             backgroundImage: _selectedImageBytes != null
                                 ? MemoryImage(_selectedImageBytes!)
                                 : (user?.photoUrl != null && user!.photoUrl!.isNotEmpty
@@ -372,7 +372,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   decoration: InputDecoration(
                     hintText: AppLocalizations.get('profile_bio_hint'),
                     hintStyle: GoogleFonts.poppins(
-                      color: AppColors.textSecondary.withValues(alpha: 0.5),
+                      color: AppColors.textSecondary.withOpacity(0.5),
                     ),
                     filled: true,
                     fillColor: AppColors.background,

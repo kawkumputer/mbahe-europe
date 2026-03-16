@@ -62,7 +62,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               margin: const EdgeInsets.symmetric(vertical: 10),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -119,7 +119,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
+                        color: AppColors.primary.withOpacity(0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -141,7 +141,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.2),
+                                    color: Colors.black.withOpacity(0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
@@ -149,7 +149,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                               ),
                               child: CircleAvatar(
                                 radius: 32,
-                                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                backgroundColor: Colors.white.withOpacity(0.2),
                                 backgroundImage: user?.photoUrl != null && user!.photoUrl!.isNotEmpty
                                     ? NetworkImage(user.photoUrl!)
                                     : null,
@@ -171,7 +171,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 Text(
                                   AppLocalizations.get('admin_dashboard'),
                                   style: GoogleFonts.poppins(
-                                    color: Colors.white.withValues(alpha: 0.9),
+                                    color: Colors.white.withOpacity(0.9),
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -224,7 +224,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -235,7 +235,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.warning.withValues(alpha: 0.15),
+                            color: AppColors.warning.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
@@ -291,7 +291,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -302,7 +302,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.accentSecondary.withValues(alpha: 0.15),
+                            color: AppColors.accentSecondary.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
@@ -358,7 +358,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -369,7 +369,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.info.withValues(alpha: 0.15),
+                            color: AppColors.info.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
@@ -425,7 +425,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -436,7 +436,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.error.withValues(alpha: 0.15),
+                            color: AppColors.error.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
@@ -492,7 +492,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -503,7 +503,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryDark.withValues(alpha: 0.15),
+                            color: AppColors.primaryDark.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
@@ -559,7 +559,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -570,7 +570,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.15),
+                            color: AppColors.primary.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
@@ -644,7 +644,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -655,7 +655,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF6A1B9A).withValues(alpha: 0.15),
+                            color: const Color(0xFF6A1B9A).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
@@ -711,7 +711,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -722,7 +722,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.warning.withValues(alpha: 0.15),
+                            color: AppColors.warning.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
@@ -777,7 +777,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.15),
+          color: Colors.white.withOpacity(0.15),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -798,7 +798,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 Text(
                   label,
                   style: GoogleFonts.poppins(
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: Colors.white.withOpacity(0.8),
                     fontSize: 11,
                   ),
                 ),

@@ -108,7 +108,7 @@ class _SplashScreenState extends State<SplashScreen>
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
+                            color: Colors.black.withOpacity(0.3),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -135,7 +135,7 @@ class _SplashScreenState extends State<SplashScreen>
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.w300,
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: Colors.white.withOpacity(0.9),
                         letterSpacing: 8,
                       ),
                     ),
@@ -147,7 +147,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.5),
+                          color: Colors.white.withOpacity(0.5),
                         ),
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -155,7 +155,7 @@ class _SplashScreenState extends State<SplashScreen>
                         AppLocalizations.get('splash_slogan'),
                         style: GoogleFonts.poppins(
                           fontSize: 13,
-                          color: Colors.white.withValues(alpha: 0.9),
+                          color: Colors.white.withOpacity(0.9),
                           fontWeight: FontWeight.w400,
                         ),
                       ),

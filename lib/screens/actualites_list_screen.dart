@@ -79,7 +79,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
                                 Icon(
                                   Icons.newspaper_rounded,
                                   size: 60,
-                                  color: AppColors.textSecondary.withValues(alpha: 0.4),
+                                  color: AppColors.textSecondary.withOpacity(0.4),
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
@@ -94,7 +94,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
                                   AppLocalizations.get('actu_no_actu_desc'),
                                   style: GoogleFonts.poppins(
                                     fontSize: 13,
-                                    color: AppColors.textSecondary.withValues(alpha: 0.7),
+                                    color: AppColors.textSecondary.withOpacity(0.7),
                                   ),
                                 ),
                               ],
@@ -130,7 +130,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -143,7 +143,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.08),
+                color: color.withOpacity(0.08),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
               ),
               child: Row(
@@ -153,7 +153,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.15),
+                      color: color.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -206,7 +206,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.person_rounded, size: 14, color: AppColors.textSecondary.withValues(alpha: 0.6)),
+                      Icon(Icons.person_rounded, size: 14, color: AppColors.textSecondary.withOpacity(0.6)),
                       const SizedBox(width: 4),
                       Text(
                         actu.authorName,
@@ -225,7 +225,7 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(4),
-                            child: Icon(Icons.edit_rounded, size: 18, color: AppColors.textSecondary.withValues(alpha: 0.6)),
+                            child: Icon(Icons.edit_rounded, size: 18, color: AppColors.textSecondary.withOpacity(0.6)),
                           ),
                         ),
                         const SizedBox(width: 8),

@@ -64,11 +64,11 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                           Center(
                             child: Column(
                               children: [
-                                Icon(Icons.person_add_rounded, size: 60, color: AppColors.textSecondary.withValues(alpha: 0.4)),
+                                Icon(Icons.person_add_rounded, size: 60, color: AppColors.textSecondary.withOpacity(0.4)),
                                 const SizedBox(height: 16),
                                 Text(AppLocalizations.get('bureau_no_bureau_members'), style: GoogleFonts.poppins(fontSize: 16, color: AppColors.textSecondary)),
                                 const SizedBox(height: 4),
-                                Text(AppLocalizations.get('bureau_add_hint'), style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary.withValues(alpha: 0.7))),
+                                Text(AppLocalizations.get('bureau_add_hint'), style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary.withOpacity(0.7))),
                               ],
                             ),
                           ),
@@ -97,7 +97,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -109,7 +109,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
+              color: color.withOpacity(0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
@@ -132,7 +132,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
+                    color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(

@@ -115,16 +115,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         decoration: BoxDecoration(
           color: notification.isRead
               ? Colors.white
-              : color.withValues(alpha: 0.05),
+              : color.withOpacity(0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: notification.isRead
                 ? Colors.grey.shade200
-                : color.withValues(alpha: 0.2),
+                : color.withOpacity(0.2),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: Colors.black.withOpacity(0.03),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -137,7 +137,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, color: color, size: 20),

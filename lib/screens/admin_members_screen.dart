@@ -98,7 +98,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: AppColors.pending.withValues(alpha: 0.1),
+                                  color: AppColors.pending.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
@@ -149,7 +149,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.05),
+                                    color: Colors.black.withOpacity(0.05),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -160,7 +160,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                                   Icon(
                                     Icons.check_circle_outline_rounded,
                                     size: 40,
-                                    color: AppColors.approved.withValues(alpha: 0.6),
+                                    color: AppColors.approved.withOpacity(0.6),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
@@ -186,7 +186,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.1),
+                                  color: AppColors.primary.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
@@ -233,11 +233,11 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: AppColors.pending.withValues(alpha: 0.3),
+          color: AppColors.pending.withOpacity(0.3),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -249,7 +249,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: AppColors.pending.withValues(alpha: 0.15),
+                backgroundColor: AppColors.pending.withOpacity(0.15),
                 child: Text(
                   '${user.firstName[0]}${user.lastName[0]}',
                   style: GoogleFonts.poppins(
@@ -372,11 +372,11 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: isUserAdmin
-              ? Border.all(color: AppColors.primary.withValues(alpha: 0.3))
+              ? Border.all(color: AppColors.primary.withOpacity(0.3))
               : null,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withOpacity(0.04),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -387,8 +387,8 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
             CircleAvatar(
               radius: 20,
               backgroundColor: isUserAdmin
-                  ? AppColors.primary.withValues(alpha: 0.2)
-                  : AppColors.primary.withValues(alpha: 0.1),
+                  ? AppColors.primary.withOpacity(0.2)
+                  : AppColors.primary.withOpacity(0.1),
               child: Text(
                 '${user.firstName[0]}${user.lastName[0]}',
                 style: GoogleFonts.poppins(
@@ -420,7 +420,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.15),
+                            color: AppColors.primary.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -448,7 +448,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: statusColor.withValues(alpha: 0.1),
+                color: statusColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

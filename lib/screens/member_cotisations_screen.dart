@@ -94,7 +94,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
+            color: AppColors.primary.withOpacity(0.3),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -106,7 +106,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
           Text(
             '${AppLocalizations.get('cotis_year')} ${provider.selectedYear}',
             style: GoogleFonts.poppins(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withOpacity(0.8),
               fontSize: 14,
             ),
           ),
@@ -128,7 +128,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                   Text(
                     '${AppLocalizations.get('cotis_on')} ${provider.totalDue.toStringAsFixed(0)}€',
                     style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.8),
+                      color: Colors.white.withOpacity(0.8),
                       fontSize: 14,
                     ),
                   ),
@@ -143,7 +143,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
                     CircularProgressIndicator(
                       value: provider.percentage,
                       strokeWidth: 8,
-                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      backgroundColor: Colors.white.withOpacity(0.2),
                       valueColor: const AlwaysStoppedAnimation<Color>(
                         Colors.white,
                       ),
@@ -191,7 +191,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
   Widget _buildMiniStat(String value, String label, IconData icon) {
     return Row(
       children: [
-        Icon(icon, color: Colors.white.withValues(alpha: 0.8), size: 16),
+        Icon(icon, color: Colors.white.withOpacity(0.8), size: 16),
         const SizedBox(width: 4),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +207,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
             Text(
               label,
               style: GoogleFonts.poppins(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: Colors.white.withOpacity(0.7),
                 fontSize: 10,
               ),
             ),
@@ -305,11 +305,11 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: statusColor.withValues(alpha: 0.2),
+          color: statusColor.withOpacity(0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -321,7 +321,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.1),
+              color: statusColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -396,7 +396,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.1),
+                  color: statusColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(

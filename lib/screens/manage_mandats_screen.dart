@@ -41,11 +41,11 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.event_note_rounded, size: 60, color: AppColors.textSecondary.withValues(alpha: 0.4)),
+                        Icon(Icons.event_note_rounded, size: 60, color: AppColors.textSecondary.withOpacity(0.4)),
                         const SizedBox(height: 16),
                         Text(AppLocalizations.get('mandat_no_mandat'), style: GoogleFonts.poppins(fontSize: 16, color: AppColors.textSecondary)),
                         const SizedBox(height: 4),
-                        Text(AppLocalizations.get('mandat_no_mandat_desc'), style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary.withValues(alpha: 0.7))),
+                        Text(AppLocalizations.get('mandat_no_mandat_desc'), style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary.withOpacity(0.7))),
                       ],
                     ),
                   )
@@ -81,7 +81,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
               : null,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -95,7 +95,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D47A1).withValues(alpha: 0.12),
+                    color: const Color(0xFF0D47A1).withOpacity(0.12),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(Icons.event_note_rounded, color: Color(0xFF0D47A1), size: 22),
@@ -124,7 +124,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: AppColors.approved.withValues(alpha: 0.15),
+                      color: AppColors.approved.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -146,7 +146,7 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
             const SizedBox(height: 10),
             Row(
               children: [
-                Icon(Icons.people_rounded, size: 14, color: AppColors.textSecondary.withValues(alpha: 0.6)),
+                Icon(Icons.people_rounded, size: 14, color: AppColors.textSecondary.withOpacity(0.6)),
                 const SizedBox(width: 4),
                 Text(
                   AppLocalizations.get('mandat_manage_composition'),

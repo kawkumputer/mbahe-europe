@@ -113,7 +113,7 @@ class _BureauScreenState extends State<BureauScreen> {
           Icon(
             Icons.groups_rounded,
             size: 60,
-            color: AppColors.textSecondary.withValues(alpha: 0.4),
+            color: AppColors.textSecondary.withOpacity(0.4),
           ),
           const SizedBox(height: 16),
           Text(
@@ -128,7 +128,7 @@ class _BureauScreenState extends State<BureauScreen> {
             AppLocalizations.get('bureau_no_mandat_desc'),
             style: GoogleFonts.poppins(
               fontSize: 13,
-              color: AppColors.textSecondary.withValues(alpha: 0.7),
+              color: AppColors.textSecondary.withOpacity(0.7),
             ),
           ),
         ],
@@ -145,7 +145,7 @@ class _BureauScreenState extends State<BureauScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -153,7 +153,7 @@ class _BureauScreenState extends State<BureauScreen> {
       ),
       child: Column(
         children: [
-          Icon(Icons.person_off_rounded, size: 40, color: AppColors.textSecondary.withValues(alpha: 0.4)),
+          Icon(Icons.person_off_rounded, size: 40, color: AppColors.textSecondary.withOpacity(0.4)),
           const SizedBox(height: 8),
           Text(
             AppLocalizations.get('bureau_no_members'),
@@ -188,7 +188,7 @@ class _BureauScreenState extends State<BureauScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                       decoration: BoxDecoration(
-                        color: AppColors.approved.withValues(alpha: 0.15),
+                        color: AppColors.approved.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -220,7 +220,7 @@ class _BureauScreenState extends State<BureauScreen> {
         gradient: LinearGradient(
           colors: [
             const Color(0xFF0D47A1),
-            const Color(0xFF1565C0).withValues(alpha: 0.8),
+            const Color(0xFF1565C0).withOpacity(0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -248,7 +248,7 @@ class _BureauScreenState extends State<BureauScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -289,7 +289,7 @@ class _BureauScreenState extends State<BureauScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -301,7 +301,7 @@ class _BureauScreenState extends State<BureauScreen> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
+              color: color.withOpacity(0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
@@ -332,7 +332,7 @@ class _BureauScreenState extends State<BureauScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
+                    color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(

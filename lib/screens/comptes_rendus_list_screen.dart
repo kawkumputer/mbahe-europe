@@ -141,7 +141,7 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -155,7 +155,7 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: typeColor.withValues(alpha: 0.1),
+                    color: typeColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(typeIcon, color: typeColor, size: 22),
@@ -199,7 +199,7 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: typeColor.withValues(alpha: 0.1),
+                    color: typeColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(

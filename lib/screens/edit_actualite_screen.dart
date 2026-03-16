@@ -130,7 +130,7 @@ class _EditActualiteScreenState extends State<EditActualiteScreen> {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: selected ? color.withValues(alpha: 0.15) : Colors.grey.shade100,
+                            color: selected ? color.withOpacity(0.15) : Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: selected ? color : Colors.grey.shade300,

@@ -256,7 +256,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
+                        color: AppColors.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -328,7 +328,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.2),
+                      color: AppColors.primary.withOpacity(0.2),
                     ),
                   ),
                   child: Row(
@@ -337,7 +337,7 @@ class _CreateCompteRenduScreenState extends State<CreateCompteRenduScreen> {
                         width: 24,
                         height: 24,
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
+                          color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Center(

@@ -173,7 +173,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withOpacity(0.04),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -183,7 +183,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
           children: [
             CircleAvatar(
               radius: 24,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              backgroundColor: AppColors.primary.withOpacity(0.1),
               child: Text(
                 '${member.firstName[0]}${member.lastName[0]}',
                 style: GoogleFonts.poppins(
@@ -236,7 +236,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
-          color: AppColors.primary.withValues(alpha: 0.05),
+          color: AppColors.primary.withOpacity(0.05),
           child: Row(
             children: [
               GestureDetector(
@@ -244,7 +244,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -257,7 +257,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
               const SizedBox(width: 12),
               CircleAvatar(
                 radius: 20,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                backgroundColor: AppColors.primary.withOpacity(0.15),
                 child: Text(
                   '${member.firstName[0]}${member.lastName[0]}',
                   style: GoogleFonts.poppins(
@@ -370,7 +370,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -441,10 +441,10 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: statusColor.withValues(alpha: 0.2)),
+        border: Border.all(color: statusColor.withOpacity(0.2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -456,7 +456,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.1),
+              color: statusColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -528,10 +528,10 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1976D2).withValues(alpha: 0.1),
+                    color: const Color(0xFF1976D2).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: const Color(0xFF1976D2).withValues(alpha: 0.3),
+                      color: const Color(0xFF1976D2).withOpacity(0.3),
                     ),
                   ),
                   child: Icon(
@@ -557,13 +557,13 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: isPaid
-                          ? AppColors.rejected.withValues(alpha: 0.1)
-                          : AppColors.approved.withValues(alpha: 0.1),
+                          ? AppColors.rejected.withOpacity(0.1)
+                          : AppColors.approved.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: isPaid
-                            ? AppColors.rejected.withValues(alpha: 0.3)
-                            : AppColors.approved.withValues(alpha: 0.3),
+                            ? AppColors.rejected.withOpacity(0.3)
+                            : AppColors.approved.withOpacity(0.3),
                       ),
                     ),
                     child: Text(
@@ -660,9 +660,9 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.08),
+          color: color.withOpacity(0.08),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withValues(alpha: 0.25)),
+          border: Border.all(color: color.withOpacity(0.25)),
         ),
         child: Row(
           children: [

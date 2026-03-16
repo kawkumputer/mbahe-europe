@@ -61,14 +61,14 @@ class CompteRenduDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [typeColor, typeColor.withValues(alpha: 0.7)],
+                  colors: [typeColor, typeColor.withOpacity(0.7)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: typeColor.withValues(alpha: 0.3),
+                    color: typeColor.withOpacity(0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),
@@ -85,7 +85,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
                         child: Text(
                           cr.typeLabel,
                           style: GoogleFonts.poppins(
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: Colors.white.withOpacity(0.9),
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                           ),
@@ -106,25 +106,25 @@ class CompteRenduDetailScreen extends StatelessWidget {
                   Row(
                     children: [
                       Icon(Icons.calendar_today_rounded,
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: Colors.white.withOpacity(0.8),
                           size: 14),
                       const SizedBox(width: 6),
                       Text(
                         cr.formattedDate,
                         style: GoogleFonts.poppins(
-                          color: Colors.white.withValues(alpha: 0.9),
+                          color: Colors.white.withOpacity(0.9),
                           fontSize: 13,
                         ),
                       ),
                       const SizedBox(width: 16),
                       Icon(Icons.person_outline_rounded,
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: Colors.white.withOpacity(0.8),
                           size: 14),
                       const SizedBox(width: 6),
                       Text(
                         cr.authorName,
                         style: GoogleFonts.poppins(
-                          color: Colors.white.withValues(alpha: 0.9),
+                          color: Colors.white.withOpacity(0.9),
                           fontSize: 13,
                         ),
                       ),
@@ -142,7 +142,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: typeColor.withValues(alpha: 0.1),
+                    color: typeColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -167,7 +167,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: typeColor.withValues(alpha: 0.1),
+                    color: typeColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -194,7 +194,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
+                      color: Colors.black.withOpacity(0.04),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -207,7 +207,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
-                        color: typeColor.withValues(alpha: 0.1),
+                        color: typeColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Center(
@@ -245,7 +245,7 @@ class CompteRenduDetailScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.accent.withValues(alpha: 0.15),
+                      color: AppColors.accent.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -270,10 +270,10 @@ class CompteRenduDetailScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.accent.withValues(alpha: 0.05),
+                  color: AppColors.accent.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: AppColors.accent.withValues(alpha: 0.2),
+                    color: AppColors.accent.withOpacity(0.2),
                   ),
                 ),
                 child: Text(
