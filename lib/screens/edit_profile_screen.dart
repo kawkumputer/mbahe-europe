@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +24,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _phoneController = TextEditingController();
   final _bioController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-  File? _selectedImage;
+  Uint8List? _selectedImageBytes;
+  String? _selectedImageName;
   bool _isLoading = false;
 
   @override
@@ -62,8 +63,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
 
       if (image != null) {
+        final bytes = await image.readAsBytes();
         setState(() {
-          _selectedImage = File(image.path);
+          _selectedImageBytes = bytes;
+          _selectedImageName = image.name;
         });
       }
     } catch (e) {
@@ -116,10 +119,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final profileProvider = context.read<ProfileProvider>();
 
-    if (_selectedImage != null) {
+    if (_selectedImageBytes != null && _selectedImageName != null) {
       final success = await profileProvider.uploadProfilePhoto(
         userId: user.id,
-        imageFile: _selectedImage!,
+        imageBytes: _selectedImageBytes!,
+        fileName: 'profile-${DateTime.now().millisecondsSinceEpoch}-$_selectedImageName',
       );
 
       if (!success) {
@@ -246,12 +250,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           CircleAvatar(
                             radius: 60,
                             backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                            backgroundImage: _selectedImage != null
-                                ? FileImage(_selectedImage!)
+                            backgroundImage: _selectedImageBytes != null
+                                ? MemoryImage(_selectedImageBytes!)
                                 : (user?.photoUrl != null && user!.photoUrl!.isNotEmpty
                                     ? NetworkImage(user.photoUrl!)
                                     : null) as ImageProvider?,
-                            child: _selectedImage == null &&
+                            child: _selectedImageBytes == null &&
                                     (user?.photoUrl == null || user!.photoUrl!.isEmpty)
                                 ? Text(
                                     user != null

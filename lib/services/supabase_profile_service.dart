@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_model.dart';
@@ -46,19 +46,19 @@ class SupabaseProfileService {
 
   Future<String?> uploadProfilePhoto({
     required String userId,
-    required File imageFile,
+    required Uint8List imageBytes,
+    required String fileName,
   }) async {
     try {
-      final fileExt = imageFile.path.split('.').last;
-      final fileName = 'profile-${DateTime.now().millisecondsSinceEpoch}.$fileExt';
       final filePath = '$userId/$fileName';
 
-      await _client.storage.from('profile-photos').upload(
+      await _client.storage.from('profile-photos').uploadBinary(
             filePath,
-            imageFile,
-            fileOptions: const FileOptions(
+            imageBytes,
+            fileOptions: FileOptions(
               cacheControl: '3600',
               upsert: true,
+              contentType: _getContentType(fileName),
             ),
           );
 
@@ -156,6 +156,23 @@ class SupabaseProfileService {
       });
     } catch (e) {
       debugPrint('_logActivity error: $e');
+    }
+  }
+
+  String _getContentType(String fileName) {
+    final ext = fileName.split('.').last.toLowerCase();
+    switch (ext) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'webp':
+        return 'image/webp';
+      default:
+        return 'image/jpeg';
     }
   }
 

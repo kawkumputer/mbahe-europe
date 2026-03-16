@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
 import '../models/activity_history_model.dart';
@@ -102,7 +102,8 @@ class ProfileProvider with ChangeNotifier {
 
   Future<bool> uploadProfilePhoto({
     required String userId,
-    required File imageFile,
+    required Uint8List imageBytes,
+    required String fileName,
   }) async {
     _isLoading = true;
     _error = null;
@@ -111,7 +112,8 @@ class ProfileProvider with ChangeNotifier {
     try {
       final photoUrl = await _profileService.uploadProfilePhoto(
         userId: userId,
-        imageFile: imageFile,
+        imageBytes: imageBytes,
+        fileName: fileName,
       );
 
       if (photoUrl != null) {
