@@ -68,13 +68,20 @@ jobs:
         run: |
           flutter build ios --release --no-codesign
           cd ios
+          
+          # Get provisioning profile UUID
+          PP_PATH=$RUNNER_TEMP/mbahe_europe.mobileprovision
+          PP_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i $PP_PATH))
+          echo "Using provisioning profile UUID: $PP_UUID"
+          
           xcodebuild -workspace Runner.xcworkspace \
             -scheme Runner \
             -sdk iphoneos \
             -configuration Release \
             -archivePath /tmp/Runner.xcarchive \
             archive \
-            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM"
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            PROVISIONING_PROFILE_SPECIFIER="$PP_UUID"
           echo "=== Archive created ==="
           ls -la /tmp/Runner.xcarchive/
 
