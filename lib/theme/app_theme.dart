@@ -123,13 +123,6 @@ class AppTheme {
           fontSize: 14,
         ),
       ),
-      cardTheme: const CardTheme(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-        ),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      ),
     );
   }
 }
