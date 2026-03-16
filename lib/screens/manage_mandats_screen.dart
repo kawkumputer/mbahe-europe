@@ -293,7 +293,6 @@ class _ManageMandatsScreenState extends State<ManageMandatsScreen> {
                   value: isActive,
                   onChanged: (v) => setDialogState(() => isActive = v),
                   contentPadding: EdgeInsets.zero,
-                  activeThumbColor: AppColors.approved,
                 ),
               ],
             ),

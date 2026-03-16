@@ -185,7 +185,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
               children: [
                 // Sélection du poste
                 DropdownButtonFormField<String>(
-                  initialValue: selectedPoste,
+                  value: selectedPoste,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.get('bureau_post'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
@@ -198,7 +198,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                 const SizedBox(height: 14),
                 // Sélection du membre
                 DropdownButtonFormField<String>(
-                  initialValue: selectedUserId,
+                  value: selectedUserId,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.get('bureau_member'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
@@ -265,7 +265,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButtonFormField<String>(
-                  initialValue: selectedPoste,
+                  value: selectedPoste,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.get('bureau_post'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
@@ -277,7 +277,7 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
                 ),
                 const SizedBox(height: 14),
                 DropdownButtonFormField<String>(
-                  initialValue: selectedUserId,
+                  value: selectedUserId,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.get('bureau_member'),
                     labelStyle: GoogleFonts.poppins(fontSize: 13),
