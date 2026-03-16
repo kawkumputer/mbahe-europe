@@ -11,7 +11,7 @@
 	<key>compileBitcode</key>
 	<false/>
 	<key>destination</key>
-	<string>upload</string>
+	<string>export</string>
 	<key>signingStyle</key>
 	<string>manual</string>
 	<key>stripSwiftSymbols</key>
