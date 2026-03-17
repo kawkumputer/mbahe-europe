@@ -44,7 +44,7 @@ class AppLocalizations {
     'login_welcome': 'Bienvenue',
     'login_subtitle': 'Connectez-vous pour accéder à votre espace',
     'login_username': 'Nom d\'utilisateur',
-    'login_username_hint': 'kane_92',
+    'login_username_hint': '',
     'login_password': 'Mot de passe',
     'login_password_hint': 'Votre mot de passe',
     'login_button': 'Se connecter',
@@ -69,6 +69,7 @@ class AppLocalizations {
     'register_username': 'Nom d\'utilisateur',
     'register_username_hint': '',
     'register_password': 'Mot de passe',
+    'register_confirm_password': 'Confirmer le mot de passe',
     'register_password_hint': 'Min. 6 caractères',
     'register_button': 'S\'inscrire',
     'register_has_account': 'Déjà un compte ?',
@@ -86,6 +87,7 @@ class AppLocalizations {
     'register_password_short': 'Le mot de passe doit contenir au moins 6 caractères',
     'register_confirm_required': 'Veuillez confirmer votre mot de passe',
     'register_password_mismatch': 'Les mots de passe ne correspondent pas',
+    'register_already_member': 'Déjà membre ?',
 
     // ===== Pending Approval =====
     'pending_title': 'Compte en attente',
@@ -472,6 +474,7 @@ class AppLocalizations {
     'register_username': 'Innde kuutoro',
     'register_username_hint': '',
     'register_password': 'Finnde',
+    'register_confirm_password': 'Confirmer le mot de passe',
     'register_password_hint': 'Jaaynde 6',
     'register_button': 'Winndito',
     'register_has_account': 'A jogii konte?',
@@ -489,6 +492,7 @@ class AppLocalizations {
     'register_password_short': 'Finnde foti jaaynde 6',
     'register_confirm_required': 'Teeŋtin finnde maa',
     'register_password_mismatch': 'Pinɗe ɗee nannditaani',
+    'register_already_member': 'Déjà membre ?',
 
     // ===== Pending Approval =====
     'pending_title': 'Konte ina fadaa',

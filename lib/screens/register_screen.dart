@@ -98,15 +98,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.get('register_subtitle'),
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                    height: 1.5,
-                  ),
-                ),
                 const SizedBox(height: 32),
 
                 // Champs du formulaire
