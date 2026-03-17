@@ -351,6 +351,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 label: AppLocalizations.get('profile_member_since'),
                 value: _formatDate(user.createdAt),
               ),
+              const Divider(height: 24),
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, '/change-password');
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.lock_reset_rounded,
+                          color: AppColors.accent,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Changer le mot de passe',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.accent,
+                          ),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: AppColors.textSecondary,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

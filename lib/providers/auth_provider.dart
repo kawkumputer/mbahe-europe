@@ -115,4 +115,39 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// Changer le mot de passe de l'utilisateur connecté
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    final success = await _authService.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+
+    _isLoading = false;
+    if (!success) {
+      _errorMessage = 'Mot de passe actuel incorrect';
+    }
+    notifyListeners();
+    return success;
+  }
+
+  /// Réinitialiser le mot de passe d'un utilisateur (admin uniquement)
+  Future<bool> resetUserPassword({
+    required String userId,
+    required String newPassword,
+  }) async {
+    final success = await _authService.resetUserPassword(
+      userId: userId,
+      newPassword: newPassword,
+    );
+    if (success) notifyListeners();
+    return success;
+  }
 }

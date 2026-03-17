@@ -38,6 +38,7 @@ import 'screens/manage_mandats_screen.dart';
 import 'screens/manage_bureau_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/edit_profile_screen.dart';
+import 'screens/change_password_screen.dart';
 
 LocaleProvider? _localeProvider;
 
@@ -117,6 +118,7 @@ class MbaheEuropeApp extends StatelessWidget {
             '/profile': (context) => const ProfileScreen(),
             '/admin-profile': (context) => const ProfileScreen(),
             '/edit-profile': (context) => const EditProfileScreen(),
+            '/change-password': (context) => const ChangePasswordScreen(),
           },
         ),
       ),

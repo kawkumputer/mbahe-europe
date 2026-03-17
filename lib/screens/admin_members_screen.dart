@@ -517,7 +517,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              if (!isSelf)
+              if (!isSelf) ...[
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -559,8 +559,28 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                       minimumSize: const Size(0, 48),
                     ),
                   ),
-                )
-              else
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      Navigator.pop(ctx);
+                      await _showResetPasswordDialog(user);
+                    },
+                    icon: const Icon(Icons.lock_reset_rounded, size: 20),
+                    label: const Text('Réinitialiser le mot de passe'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.accent,
+                      side: const BorderSide(color: AppColors.accent),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      minimumSize: const Size(0, 48),
+                    ),
+                  ),
+                ),
+              ] else
                 Text(
                   AppLocalizations.get('members_cannot_change_self'),
                   style: GoogleFonts.poppins(
@@ -608,5 +628,139 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _showResetPasswordDialog(UserModel user) async {
+    final passwordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool obscurePassword = true;
+    bool obscureConfirm = true;
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Réinitialiser le mot de passe',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Nouveau mot de passe pour ${user.fullName}',
+                  style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textSecondary),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: obscurePassword,
+                  decoration: InputDecoration(
+                    labelText: 'Nouveau mot de passe',
+                    labelStyle: GoogleFonts.poppins(fontSize: 13),
+                    prefixIcon: const Icon(Icons.lock_rounded, size: 20),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        setState(() => obscurePassword = !obscurePassword);
+                      },
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Veuillez entrer un mot de passe';
+                    }
+                    if (value.length < 6) {
+                      return 'Au moins 6 caractères';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  obscureText: obscureConfirm,
+                  decoration: InputDecoration(
+                    labelText: 'Confirmer le mot de passe',
+                    labelStyle: GoogleFonts.poppins(fontSize: 13),
+                    prefixIcon: const Icon(Icons.lock_rounded, size: 20),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        setState(() => obscureConfirm = !obscureConfirm);
+                      },
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  validator: (value) {
+                    if (value != passwordController.text) {
+                      return 'Les mots de passe ne correspondent pas';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(AppLocalizations.get('cancel'), style: GoogleFonts.poppins()),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  Navigator.pop(ctx, true);
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
+              child: Text(
+                'Réinitialiser',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result == true && mounted) {
+      final auth = context.read<AuthProvider>();
+      final success = await auth.resetUserPassword(
+        userId: user.id,
+        newPassword: passwordController.text,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              success
+                  ? 'Mot de passe réinitialisé pour ${user.fullName}'
+                  : 'Erreur lors de la réinitialisation',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: success ? AppColors.approved : AppColors.rejected,
+          ),
+        );
+      }
+    }
+
+    passwordController.dispose();
+    confirmPasswordController.dispose();
   }
 }

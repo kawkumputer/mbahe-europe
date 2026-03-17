@@ -303,4 +303,92 @@ class SupabaseAuthService {
       return false;
     }
   }
+
+  /// Changer le mot de passe de l'utilisateur connecté
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final user = _client.auth.currentUser;
+      if (user == null) return false;
+
+      // Vérifier d'abord que l'ancien mot de passe est correct
+      final email = user.email;
+      if (email == null) return false;
+
+      try {
+        await _client.auth.signInWithPassword(
+          email: email,
+          password: currentPassword,
+        );
+      } catch (e) {
+        debugPrint('Current password verification failed: $e');
+        return false;
+      }
+
+      // Changer le mot de passe
+      await _client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+
+      return true;
+    } catch (e) {
+      debugPrint('changePassword error: $e');
+      return false;
+    }
+  }
+
+  /// Réinitialiser le mot de passe d'un utilisateur (admin uniquement)
+  /// Note: Cette méthode utilise une fonction RPC côté serveur pour la sécurité
+  Future<bool> resetUserPassword({
+    required String userId,
+    required String newPassword,
+  }) async {
+    try {
+      final admin = await _getCurrentAdmin();
+      final memberName = await _getUserName(userId);
+
+      // Appeler une fonction RPC Supabase pour réinitialiser le mot de passe
+      // Cette fonction doit être créée dans Supabase avec les permissions appropriées
+      final result = await _client.rpc('admin_reset_user_password', params: {
+        'target_user_id': userId,
+        'new_password': newPassword,
+      });
+
+      if (result == null || result == false) {
+        throw Exception('Failed to reset password');
+      }
+
+      await _logAction(
+        adminId: admin['id']!,
+        adminName: admin['name']!,
+        action: 'reset_password',
+        targetTable: 'profiles',
+        targetId: userId,
+      );
+
+      // Notifier l'utilisateur
+      await _notifService.notifyUser(
+        recipientId: userId,
+        title: 'Mot de passe réinitialisé',
+        body: 'Votre mot de passe a été réinitialisé par ${admin['name']}. Veuillez contacter un administrateur pour obtenir votre nouveau mot de passe.',
+        type: NotificationType.member,
+      );
+
+      // Notifier les autres admins
+      await _notifService.notifyAllAdmins(
+        title: 'Mot de passe réinitialisé',
+        body: '${admin['name']} a réinitialisé le mot de passe de $memberName.',
+        type: NotificationType.member,
+        data: {'user_id': userId},
+        excludeAdminId: admin['id'],
+      );
+
+      return true;
+    } catch (e) {
+      debugPrint('resetUserPassword error: $e');
+      return false;
+    }
+  }
 }
