@@ -26,6 +26,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   Uint8List? _selectedImageBytes;
   String? _selectedImageName;
+  DateTime? _selectedDateOfBirth;
   bool _isLoading = false;
 
   @override
@@ -41,6 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _lastNameController.text = user.lastName;
       _phoneController.text = user.phone;
       _bioController.text = user.bio ?? '';
+      _selectedDateOfBirth = user.dateOfBirth;
     }
   }
 
@@ -146,6 +148,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       lastName: _lastNameController.text.trim(),
       phone: _phoneController.text.trim(),
       bio: _bioController.text.trim(),
+      dateOfBirth: _selectedDateOfBirth,
     );
 
     setState(() => _isLoading = false);
@@ -354,6 +357,77 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     }
                     return null;
                   },
+                ),
+                const SizedBox(height: 16),
+                InkWell(
+                  onTap: () async {
+                    final date = await showDatePicker(
+                      context: context,
+                      initialDate: _selectedDateOfBirth ?? DateTime(2000),
+                      firstDate: DateTime(1940),
+                      lastDate: DateTime.now(),
+                      locale: const Locale('fr', 'FR'),
+                    );
+                    if (date != null) {
+                      setState(() => _selectedDateOfBirth = date);
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.background,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.cake_rounded,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Date de naissance',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _selectedDateOfBirth != null
+                                    ? '${_selectedDateOfBirth!.day.toString().padLeft(2, '0')}/${_selectedDateOfBirth!.month.toString().padLeft(2, '0')}/${_selectedDateOfBirth!.year}'
+                                    : 'Non renseignée',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: _selectedDateOfBirth != null
+                                      ? AppColors.textPrimary
+                                      : AppColors.textSecondary.withOpacity(0.5),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.calendar_today_rounded,
+                          color: AppColors.textSecondary,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Text(

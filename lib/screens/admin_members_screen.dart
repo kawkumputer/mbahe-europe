@@ -250,14 +250,19 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
               CircleAvatar(
                 radius: 22,
                 backgroundColor: AppColors.pending.withOpacity(0.15),
-                child: Text(
-                  '${user.firstName[0]}${user.lastName[0]}',
-                  style: GoogleFonts.poppins(
-                    color: AppColors.pending,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
+                backgroundImage: user.photoUrl != null && user.photoUrl!.isNotEmpty
+                    ? NetworkImage(user.photoUrl!)
+                    : null,
+                child: user.photoUrl == null || user.photoUrl!.isEmpty
+                    ? Text(
+                        '${user.firstName[0]}${user.lastName[0]}',
+                        style: GoogleFonts.poppins(
+                          color: AppColors.pending,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -389,14 +394,19 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
               backgroundColor: isUserAdmin
                   ? AppColors.primary.withOpacity(0.2)
                   : AppColors.primary.withOpacity(0.1),
-              child: Text(
-                '${user.firstName[0]}${user.lastName[0]}',
-                style: GoogleFonts.poppins(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
+              backgroundImage: user.photoUrl != null && user.photoUrl!.isNotEmpty
+                  ? NetworkImage(user.photoUrl!)
+                  : null,
+              child: user.photoUrl == null || user.photoUrl!.isEmpty
+                  ? Text(
+                      '${user.firstName[0]}${user.lastName[0]}',
+                      style: GoogleFonts.poppins(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    )
+                  : null,
             ),
             const SizedBox(width: 12),
             Expanded(

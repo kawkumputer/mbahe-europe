@@ -184,14 +184,19 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
             CircleAvatar(
               radius: 24,
               backgroundColor: AppColors.primary.withOpacity(0.1),
-              child: Text(
-                '${member.firstName[0]}${member.lastName[0]}',
-                style: GoogleFonts.poppins(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
-              ),
+              backgroundImage: member.photoUrl != null && member.photoUrl!.isNotEmpty
+                  ? NetworkImage(member.photoUrl!)
+                  : null,
+              child: member.photoUrl == null || member.photoUrl!.isEmpty
+                  ? Text(
+                      '${member.firstName[0]}${member.lastName[0]}',
+                      style: GoogleFonts.poppins(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    )
+                  : null,
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -258,14 +263,19 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
               CircleAvatar(
                 radius: 20,
                 backgroundColor: AppColors.primary.withOpacity(0.15),
-                child: Text(
-                  '${member.firstName[0]}${member.lastName[0]}',
-                  style: GoogleFonts.poppins(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
-                ),
+                backgroundImage: member.photoUrl != null && member.photoUrl!.isNotEmpty
+                    ? NetworkImage(member.photoUrl!)
+                    : null,
+                child: member.photoUrl == null || member.photoUrl!.isEmpty
+                    ? Text(
+                        '${member.firstName[0]}${member.lastName[0]}',
+                        style: GoogleFonts.poppins(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -330,8 +340,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
   }
 
   Widget _buildYearSelector(CotisationProvider provider, String userId) {
-    final currentYear = DateTime.now().year;
-    final years = [currentYear, currentYear - 1, currentYear - 2];
+    final years = [2026, 2025];
 
     return Row(
       children: years.map((year) {

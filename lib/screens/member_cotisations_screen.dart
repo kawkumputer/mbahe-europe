@@ -219,7 +219,7 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
 
   Widget _buildYearSelector(CotisationProvider provider, String userId) {
     final currentYear = DateTime.now().year;
-    final years = [currentYear, currentYear - 1, currentYear - 2];
+    final years = [currentYear, currentYear - 1];
 
     return Row(
       children: years.map((year) {

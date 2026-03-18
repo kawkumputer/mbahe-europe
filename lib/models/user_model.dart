@@ -15,6 +15,7 @@ class UserModel {
   final String? photoUrl;
   final String? bio;
   final DateTime? updatedAt;
+  final DateTime? dateOfBirth;
 
   UserModel({
     required this.id,
@@ -29,6 +30,7 @@ class UserModel {
     this.photoUrl,
     this.bio,
     this.updatedAt,
+    this.dateOfBirth,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,9 @@ class UserModel {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
           : null,
+      dateOfBirth: json['date_of_birth'] != null
+          ? DateTime.parse(json['date_of_birth'])
+          : null,
     );
   }
 
@@ -62,6 +67,7 @@ class UserModel {
       'status': _statusToString(status),
       'photo_url': photoUrl,
       'bio': bio,
+      'date_of_birth': dateOfBirth?.toIso8601String(),
     };
   }
 
@@ -122,6 +128,7 @@ class UserModel {
     String? photoUrl,
     String? bio,
     DateTime? updatedAt,
+    DateTime? dateOfBirth,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -136,6 +143,7 @@ class UserModel {
       photoUrl: photoUrl ?? this.photoUrl,
       bio: bio ?? this.bio,
       updatedAt: updatedAt ?? this.updatedAt,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
     );
   }
 

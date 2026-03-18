@@ -83,6 +83,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             ),
           ),
           _buildNotificationIcon(),
+          if (context.watch<AuthProvider>().isSysAdmin)
+            IconButton(
+              icon: const Icon(Icons.settings_rounded),
+              onPressed: () {
+                Navigator.pushNamed(context, '/settings');
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             onPressed: () async {

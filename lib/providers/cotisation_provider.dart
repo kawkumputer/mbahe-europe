@@ -92,6 +92,12 @@ class CotisationProvider extends ChangeNotifier {
     return await _service.getPaymentSummaryByDateRange(from, to);
   }
 
+  /// Récupérer le montant total des années précédentes (2022-2024)
+  /// Somme de tous les paiements effectués avant 2025
+  Future<double> getPreviousYearsTotalAmount() async {
+    return await _service.getPreviousYearsTotalAmount();
+  }
+
   double get paymentTotalPaid => (_paymentSummary['totalPaid'] ?? 0.0).toDouble();
   double get paymentTotalEspece => (_paymentSummary['totalEspece'] ?? 0.0).toDouble();
   double get paymentTotalVirement => (_paymentSummary['totalVirement'] ?? 0.0).toDouble();

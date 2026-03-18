@@ -445,8 +445,8 @@ class AppLocalizations {
     'splash_slogan': 'Eɗen nguurda, eɗen mahondira',
 
     // ===== Login =====
-    'login_title': 'Duɗal',
-    'login_welcome': 'A jaaraama',
+    'login_title': 'Login',
+    'login_welcome': 'A jaɓɓaama',
     'login_subtitle': 'Duɗ ngam naatde e nokkuure maa',
     'login_username': 'Innde kuutoro',
     'login_username_hint': '',

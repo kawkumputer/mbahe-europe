@@ -270,6 +270,15 @@ class MemberHomeScreen extends StatelessWidget {
                   },
                 ),
                 _buildFeatureCard(
+                  icon: Icons.people_rounded,
+                  title: 'Membres',
+                  subtitle: 'Liste des membres',
+                  color: AppColors.accent,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/members-list');
+                  },
+                ),
+                _buildFeatureCard(
                   icon: Icons.bar_chart_rounded,
                   title: AppLocalizations.get('home_bilan'),
                   subtitle: AppLocalizations.get('home_bilan_subtitle'),

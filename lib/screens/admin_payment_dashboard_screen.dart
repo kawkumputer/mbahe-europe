@@ -99,7 +99,10 @@ class _AdminPaymentDashboardScreenState
     }
 
     // Calculer le total général cumulé (ordre chronologique)
-    double cumul = 0;
+    // Commencer avec le montant des années précédentes (2022-2024)
+    // Pour l'instant, on utilise une valeur fixe, mais cela pourrait être récupéré de la base de données
+    double cumul = await cotisationProvider.getPreviousYearsTotalAmount();
+    
     for (int i = 0; i < summaries.length; i++) {
       cumul += summaries[i].totalPaid;
       summaries[i] = _ReunionSummary(

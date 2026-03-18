@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_model.dart';
-import '../models/activity_history_model.dart';
 
 class SupabaseProfileService {
   final SupabaseClient _client = Supabase.instance.client;
@@ -13,6 +12,7 @@ class SupabaseProfileService {
     String? lastName,
     String? phone,
     String? bio,
+    DateTime? dateOfBirth,
   }) async {
     try {
       final updates = <String, dynamic>{};
@@ -20,6 +20,7 @@ class SupabaseProfileService {
       if (lastName != null) updates['last_name'] = lastName;
       if (phone != null) updates['phone'] = phone;
       if (bio != null) updates['bio'] = bio;
+      if (dateOfBirth != null) updates['date_of_birth'] = dateOfBirth.toIso8601String();
 
       if (updates.isEmpty) return null;
 
@@ -29,13 +30,6 @@ class SupabaseProfileService {
           .eq('id', userId)
           .select()
           .single();
-
-      await _logActivity(
-        userId: userId,
-        actionType: 'profile_update',
-        description: 'Profil mis à jour',
-        metadata: updates,
-      );
 
       return UserModel.fromJson(data);
     } catch (e) {
@@ -68,12 +62,6 @@ class SupabaseProfileService {
         'photo_url': publicUrl,
       }).eq('id', userId);
 
-      await _logActivity(
-        userId: userId,
-        actionType: 'profile_update',
-        description: 'Photo de profil mise à jour',
-      );
-
       return publicUrl;
     } catch (e) {
       debugPrint('uploadProfilePhoto error: $e');
@@ -101,61 +89,10 @@ class SupabaseProfileService {
         'photo_url': null,
       }).eq('id', userId);
 
-      await _logActivity(
-        userId: userId,
-        actionType: 'profile_update',
-        description: 'Photo de profil supprimée',
-      );
-
       return true;
     } catch (e) {
       debugPrint('deleteProfilePhoto error: $e');
       return false;
-    }
-  }
-
-  Future<List<ActivityHistoryModel>> getUserActivity({
-    required String userId,
-    int limit = 50,
-  }) async {
-    try {
-      final data = await _client
-          .from('user_activity')
-          .select()
-          .eq('user_id', userId)
-          .order('created_at', ascending: false)
-          .limit(limit);
-
-      return data.map<ActivityHistoryModel>((json) => ActivityHistoryModel.fromJson(json)).toList();
-    } catch (e) {
-      debugPrint('getUserActivity error: $e');
-      return [];
-    }
-  }
-
-  Future<void> logLogin(String userId) async {
-    await _logActivity(
-      userId: userId,
-      actionType: 'login',
-      description: 'Connexion',
-    );
-  }
-
-  Future<void> _logActivity({
-    required String userId,
-    required String actionType,
-    required String description,
-    Map<String, dynamic>? metadata,
-  }) async {
-    try {
-      await _client.from('user_activity').insert({
-        'user_id': userId,
-        'action_type': actionType,
-        'description': description,
-        'metadata': metadata,
-      });
-    } catch (e) {
-      debugPrint('_logActivity error: $e');
     }
   }
 
@@ -184,20 +121,13 @@ class SupabaseProfileService {
           .eq('user_id', userId)
           .eq('status', 'paid');
 
-      final activityData = await _client
-          .from('user_activity')
-          .select('id')
-          .eq('user_id', userId);
-
       return {
         'cotisations_paid': cotisationsData.length,
-        'total_activities': activityData.length,
       };
     } catch (e) {
       debugPrint('getUserStats error: $e');
       return {
         'cotisations_paid': 0,
-        'total_activities': 0,
       };
     }
   }

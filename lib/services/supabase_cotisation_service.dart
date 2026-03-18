@@ -2,10 +2,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/cotisation_model.dart';
 import '../models/notification_model.dart';
 import 'supabase_notification_service.dart';
+import 'supabase_settings_service.dart';
 
 class SupabaseCotisationService {
   final SupabaseClient _client = Supabase.instance.client;
   final SupabaseNotificationService _notifService = SupabaseNotificationService();
+  final SupabaseSettingsService _settingsService = SupabaseSettingsService();
 
   /// Helper: récupérer l'admin courant (id + nom)
   Future<Map<String, String>> _getCurrentAdmin() async {
@@ -414,6 +416,12 @@ class SupabaseCotisationService {
     }
 
     return summaries;
+  }
+
+  /// Récupérer le montant total des années précédentes (avant 2025)
+  /// Montant défini par le sys_admin dans app_settings (cotisations papier)
+  Future<double> getPreviousYearsTotalAmount() async {
+    return await _settingsService.getPreviousYearsTotalAmount();
   }
 
   Map<String, dynamic> _computePaymentBreakdown(List<CotisationModel> paidCotisations) {

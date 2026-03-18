@@ -36,6 +36,17 @@ class SupabaseAuthService {
     required String password,
   }) async {
     try {
+      // Vérifier d'abord si le numéro de téléphone existe déjà
+      final existingPhone = await _client
+          .from('profiles')
+          .select('id')
+          .eq('phone', phone)
+          .maybeSingle();
+
+      if (existingPhone != null) {
+        throw Exception('PHONE_EXISTS');
+      }
+
       final email = _usernameToEmail(username);
       final response = await _client.auth.signUp(
         email: email,
@@ -72,7 +83,7 @@ class SupabaseAuthService {
       return profile;
     } catch (e) {
       debugPrint('Register error: $e');
-      return null;
+      rethrow;
     }
   }
 
@@ -121,7 +132,7 @@ class SupabaseAuthService {
         .select()
         .eq('status', 'approved')
         .neq('role', 'sys_admin')
-        .order('last_name', ascending: true);
+        .order('first_name', ascending: true);
     return data.map<UserModel>((json) => UserModel.fromJson(json)).toList();
   }
 

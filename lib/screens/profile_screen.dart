@@ -37,23 +37,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
-  String _formatActivityDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inMinutes < 1) {
-      return AppLocalizations.get('notif_just_now');
-    } else if (difference.inHours < 1) {
-      return '${AppLocalizations.get('notif_minutes_ago')} ${difference.inMinutes} ${AppLocalizations.get('notif_min')}';
-    } else if (difference.inDays < 1) {
-      return '${difference.inHours}${AppLocalizations.get('notif_hours_ago')}';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}${AppLocalizations.get('notif_days_ago')}';
-    } else {
-      return DateFormat('dd/MM/yyyy').format(date);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().currentUser;
@@ -94,8 +77,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _buildStatsSection(profileProvider),
                       const SizedBox(height: 24),
                       _buildInfoSection(user),
-                      const SizedBox(height: 24),
-                      _buildActivitySection(profileProvider),
                     ],
                   ),
                 ),
@@ -346,6 +327,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 value: user.phone,
               ),
               const Divider(height: 24),
+              if (user.dateOfBirth != null) ...[
+                _buildInfoRow(
+                  icon: Icons.cake_rounded,
+                  label: 'Date de naissance',
+                  value: _formatDate(user.dateOfBirth!),
+                ),
+                const Divider(height: 24),
+              ],
               _buildInfoRow(
                 icon: Icons.calendar_today_rounded,
                 label: AppLocalizations.get('profile_member_since'),
@@ -439,119 +428,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildActivitySection(ProfileProvider profileProvider) {
-    final activities = profileProvider.activities;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          AppLocalizations.get('profile_activity'),
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 12),
-        if (activities.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.history_rounded,
-                  size: 48,
-                  color: AppColors.textSecondary.withOpacity(0.5),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  AppLocalizations.get('profile_no_activity'),
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  AppLocalizations.get('profile_no_activity_desc'),
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          )
-        else
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: activities.length > 10 ? 10 : activities.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final activity = activities[index];
-                return ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      activity.icon,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  title: Text(
-                    activity.description,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  subtitle: Text(
-                    _formatActivityDate(activity.createdAt),
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
       ],
     );
   }

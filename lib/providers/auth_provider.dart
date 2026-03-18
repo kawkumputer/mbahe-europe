@@ -27,7 +27,7 @@ class AuthProvider extends ChangeNotifier {
 
     _isLoading = false;
     if (user == null) {
-      _errorMessage = 'Numéro de téléphone ou mot de passe incorrect';
+      _errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect';
       notifyListeners();
       return false;
     }
@@ -48,24 +48,40 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final user = await _authService.register(
-      firstName: firstName,
-      lastName: lastName,
-      phone: phone,
-      username: username,
-      password: password,
-    );
+    try {
+      final user = await _authService.register(
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        username: username,
+        password: password,
+      );
 
-    _isLoading = false;
-    if (user == null) {
-      _errorMessage = 'Ce nom d\'utilisateur est déjà utilisé';
+      _isLoading = false;
+      if (user == null) {
+        _errorMessage = 'Erreur lors de l\'inscription';
+        notifyListeners();
+        return false;
+      }
+
+      _currentUser = user;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      
+      // Déterminer le message d'erreur approprié
+      if (e.toString().contains('PHONE_EXISTS')) {
+        _errorMessage = 'Ce numéro de téléphone est déjà utilisé';
+      } else if (e.toString().contains('User already registered')) {
+        _errorMessage = 'Ce nom d\'utilisateur est déjà utilisé';
+      } else {
+        _errorMessage = 'Erreur lors de l\'inscription';
+      }
+      
       notifyListeners();
       return false;
     }
-
-    _currentUser = user;
-    notifyListeners();
-    return true;
   }
 
   Future<void> logout() async {

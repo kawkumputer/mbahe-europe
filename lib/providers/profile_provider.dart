@@ -1,20 +1,17 @@
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
-import '../models/activity_history_model.dart';
 import '../services/supabase_profile_service.dart';
 
 class ProfileProvider with ChangeNotifier {
   final SupabaseProfileService _profileService = SupabaseProfileService();
 
   UserModel? _currentProfile;
-  List<ActivityHistoryModel> _activities = [];
   Map<String, int> _stats = {};
   bool _isLoading = false;
   String? _error;
 
   UserModel? get currentProfile => _currentProfile;
-  List<ActivityHistoryModel> get activities => _activities;
   Map<String, int> get stats => _stats;
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -30,24 +27,12 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await Future.wait([
-        loadActivities(userId),
-        loadStats(userId),
-      ]);
+      await loadStats(userId);
     } catch (e) {
       _error = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();
-    }
-  }
-
-  Future<void> loadActivities(String userId) async {
-    try {
-      _activities = await _profileService.getUserActivity(userId: userId);
-      notifyListeners();
-    } catch (e) {
-      debugPrint('loadActivities error: $e');
     }
   }
 
@@ -66,6 +51,7 @@ class ProfileProvider with ChangeNotifier {
     String? lastName,
     String? phone,
     String? bio,
+    DateTime? dateOfBirth,
   }) async {
     _isLoading = true;
     _error = null;
@@ -78,11 +64,11 @@ class ProfileProvider with ChangeNotifier {
         lastName: lastName,
         phone: phone,
         bio: bio,
+        dateOfBirth: dateOfBirth,
       );
 
       if (updatedProfile != null) {
         _currentProfile = updatedProfile;
-        await loadActivities(userId);
         _isLoading = false;
         notifyListeners();
         return true;
@@ -118,7 +104,6 @@ class ProfileProvider with ChangeNotifier {
 
       if (photoUrl != null) {
         _currentProfile = _currentProfile?.copyWith(photoUrl: photoUrl);
-        await loadActivities(userId);
         _isLoading = false;
         notifyListeners();
         return true;
@@ -146,7 +131,6 @@ class ProfileProvider with ChangeNotifier {
 
       if (success) {
         _currentProfile = _currentProfile?.copyWith(photoUrl: null);
-        await loadActivities(userId);
         _isLoading = false;
         notifyListeners();
         return true;
@@ -171,7 +155,6 @@ class ProfileProvider with ChangeNotifier {
 
   void reset() {
     _currentProfile = null;
-    _activities = [];
     _stats = {};
     _isLoading = false;
     _error = null;
