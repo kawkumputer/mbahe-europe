@@ -326,51 +326,6 @@ class MemberHomeScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 28),
-
-            // Section placeholder
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.construction_rounded,
-                    size: 40,
-                    color: AppColors.textSecondary.withOpacity(0.5),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    AppLocalizations.get('home_coming_soon'),
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    AppLocalizations.get('home_coming_soon_desc'),
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                      height: 1.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),

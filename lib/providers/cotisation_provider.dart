@@ -46,27 +46,78 @@ class CotisationProvider extends ChangeNotifier {
 
   Future<void> markAsPaid(String cotisationId, String userId, PaymentMethod method) async {
     await _service.markAsPaid(cotisationId, method);
-    await loadCotisations(userId);
+    
+    // Mise à jour locale optimisée
+    final index = _cotisations.indexWhere((c) => c.id == cotisationId);
+    if (index != -1) {
+      _cotisations[index] = _cotisations[index].copyWith(
+        status: CotisationStatus.paid,
+        paymentMethod: method,
+        paidAt: DateTime.now(),
+      );
+      _updateSummaryAfterChange();
+      notifyListeners();
+    }
   }
 
   Future<void> markAsPaidWithDate(String cotisationId, String userId, PaymentMethod method, DateTime paymentDate) async {
     await _service.markAsPaidWithDate(cotisationId, method, paymentDate);
-    await loadCotisations(userId);
+    
+    // Mise à jour locale optimisée
+    final index = _cotisations.indexWhere((c) => c.id == cotisationId);
+    if (index != -1) {
+      _cotisations[index] = _cotisations[index].copyWith(
+        status: CotisationStatus.paid,
+        paymentMethod: method,
+        paidAt: paymentDate,
+      );
+      _updateSummaryAfterChange();
+      notifyListeners();
+    }
   }
 
   Future<void> markAsUnpaid(String cotisationId, String userId) async {
     await _service.markAsUnpaid(cotisationId);
-    await loadCotisations(userId);
+    
+    // Mise à jour locale optimisée
+    final index = _cotisations.indexWhere((c) => c.id == cotisationId);
+    if (index != -1) {
+      _cotisations[index] = _cotisations[index].copyWith(
+        status: CotisationStatus.unpaid,
+        paymentMethod: null,
+        paidAt: null,
+      );
+      _updateSummaryAfterChange();
+      notifyListeners();
+    }
   }
 
   Future<void> markAsExempted(String cotisationId, String userId) async {
     await _service.markAsExempted(cotisationId);
-    await loadCotisations(userId);
+    
+    // Mise à jour locale optimisée
+    final index = _cotisations.indexWhere((c) => c.id == cotisationId);
+    if (index != -1) {
+      _cotisations[index] = _cotisations[index].copyWith(
+        status: CotisationStatus.exempted,
+      );
+      _updateSummaryAfterChange();
+      notifyListeners();
+    }
   }
 
   Future<void> removeExemption(String cotisationId, String userId) async {
     await _service.removeExemption(cotisationId);
-    await loadCotisations(userId);
+    
+    // Mise à jour locale optimisée
+    final index = _cotisations.indexWhere((c) => c.id == cotisationId);
+    if (index != -1) {
+      _cotisations[index] = _cotisations[index].copyWith(
+        status: CotisationStatus.unpaid,
+      );
+      _updateSummaryAfterChange();
+      notifyListeners();
+    }
   }
 
   Future<void> generateCotisations(String userId, int year) async {
@@ -106,4 +157,38 @@ class CotisationProvider extends ChangeNotifier {
   int get paymentCountVirement => _paymentSummary['countVirement'] ?? 0;
   int get paymentCountCheque => _paymentSummary['countCheque'] ?? 0;
   int get paymentCountTotal => _paymentSummary['countTotal'] ?? 0;
+
+  /// Recalculer le résumé localement après une modification
+  void _updateSummaryAfterChange() {
+    int paid = 0;
+    int unpaid = 0;
+    int exempted = 0;
+    double totalPaid = 0.0;
+    double totalDue = 0.0;
+
+    for (final cotisation in _cotisations) {
+      if (cotisation.status == CotisationStatus.paid) {
+        paid++;
+        totalPaid += cotisation.amount;
+      } else if (cotisation.status == CotisationStatus.exempted) {
+        exempted++;
+      } else {
+        unpaid++;
+        totalDue += cotisation.amount;
+      }
+    }
+
+    final remaining = totalDue;
+    final percentage = totalDue > 0 ? (totalPaid / (totalPaid + totalDue)) * 100 : 100.0;
+
+    _summary = {
+      'paid': paid,
+      'unpaid': unpaid,
+      'exempted': exempted,
+      'totalPaid': totalPaid,
+      'totalDue': totalDue,
+      'remaining': remaining,
+      'percentage': percentage,
+    };
+  }
 }

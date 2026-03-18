@@ -116,8 +116,6 @@ class AppLocalizations {
     'home_reglement_subtitle': 'Intérieur',
     'home_about': 'À propos',
     'home_about_subtitle': 'L\'association',
-    'home_coming_soon': 'Fonctionnalités à venir',
-    'home_coming_soon_desc': 'Les modules de cotisations, événements et actualités seront disponibles prochainement.',
 
     // ===== Admin Home =====
     'admin_dashboard': 'Tableau de bord',
@@ -521,8 +519,6 @@ class AppLocalizations {
     'home_reglement_subtitle': 'Nder',
     'home_about': 'Humpito',
     'home_about_subtitle': 'Pelle ndee',
-    'home_coming_soon': 'Golle garooje',
-    'home_coming_soon_desc': 'Golle njobdiiji, kewuuji e kabaruuji mbaɗata ɗoo ko yaawi.',
 
     // ===== Admin Home =====
     'admin_dashboard': 'Tabal ardaade',
