@@ -47,11 +47,25 @@ LocaleProvider? _localeProvider;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: '.env');
+  // Charger les variables d'environnement
+  try {
+    await dotenv.load(fileName: '.env');
+    debugPrint('ENV chargé - URL: ${dotenv.env['SUPABASE_URL']}');
+    debugPrint('ENV chargé - KEY présente: ${dotenv.env['SUPABASE_ANON_KEY'] != null}');
+  } catch (e) {
+    debugPrint('Erreur chargement .env: $e');
+  }
+
+  // Utiliser les valeurs du .env ou les valeurs par défaut en fallback
+  final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? 'https://aizzeeswluqodzcmfcfz.supabase.co';
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? 'sb_publishable_uRvE7U2jch6p0KDqCrWh-w_ic5EQdjU';
+
+  debugPrint('Supabase URL: $supabaseUrl');
+  debugPrint('Supabase KEY (5 premiers): ${supabaseAnonKey.substring(0, 5)}...');
 
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
   _localeProvider = LocaleProvider();

@@ -13,16 +13,20 @@ class SupabaseAuthService {
   Future<UserModel?> login(String username, String password) async {
     try {
       final email = _usernameToEmail(username);
+      debugPrint('Login attempt: email=$email');
       final response = await _client.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
+      debugPrint('Login response: user=${response.user?.id}');
       if (response.user == null) return null;
 
       final profile = await _getProfile(response.user!.id);
+      debugPrint('Profile loaded: ${profile?.fullName}');
       return profile;
     } catch (e) {
+      debugPrint('Login error: $e');
       return null;
     }
   }
