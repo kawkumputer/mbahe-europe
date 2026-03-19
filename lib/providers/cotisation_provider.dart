@@ -178,8 +178,9 @@ class CotisationProvider extends ChangeNotifier {
       }
     }
 
+    final totalAmount = totalPaid + totalDue;
     final remaining = totalDue;
-    final percentage = totalDue > 0 ? (totalPaid / (totalPaid + totalDue)) * 100 : 100.0;
+    final percentage = totalAmount > 0 ? (totalPaid / totalAmount) * 100 : 0.0;
 
     _summary = {
       'paid': paid,

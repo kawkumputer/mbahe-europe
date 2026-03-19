@@ -3,13 +3,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseDocumentService {
   final SupabaseClient _client = Supabase.instance.client;
 
-  /// Récupérer un document par son id (statuts ou reglement)
-  Future<Map<String, dynamic>?> getDocument(String docId) async {
+  /// Récupérer un document par son type (statuts ou reglement)
+  Future<Map<String, dynamic>?> getDocument(String documentType) async {
     try {
       final data = await _client
           .from('documents')
           .select()
-          .eq('id', docId)
+          .eq('document_type', documentType)
           .single();
       return data;
     } catch (_) {
@@ -18,7 +18,7 @@ class SupabaseDocumentService {
   }
 
   /// Mettre à jour le contenu d'un document
-  Future<bool> updateDocument(String docId, String content) async {
+  Future<bool> updateDocument(String documentType, String content) async {
     try {
       final user = _client.auth.currentUser;
       if (user == null) return false;
@@ -33,9 +33,8 @@ class SupabaseDocumentService {
       await _client.from('documents').update({
         'content': content,
         'updated_at': DateTime.now().toIso8601String(),
-        'updated_by': user.id,
         'updated_by_name': adminName,
-      }).eq('id', docId);
+      }).eq('document_type', documentType);
 
       return true;
     } catch (_) {
