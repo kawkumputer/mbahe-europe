@@ -41,6 +41,8 @@ import 'screens/edit_profile_screen.dart';
 import 'screens/members_list_screen.dart';
 import 'screens/change_password_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/depenses_list_screen.dart';
+import 'providers/depense_provider.dart';
 
 LocaleProvider? _localeProvider;
 
@@ -89,6 +91,7 @@ class MbaheEuropeApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ActualiteProvider()),
         ChangeNotifierProvider(create: (_) => BureauProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => DepenseProvider()),
       ],
       child: Consumer<LocaleProvider>(
         builder: (context, locale, child) => MaterialApp(
@@ -137,6 +140,7 @@ class MbaheEuropeApp extends StatelessWidget {
             '/change-password': (context) => const ChangePasswordScreen(),
             '/members-list': (context) => const MembersListScreen(),
             '/settings': (context) => const SettingsScreen(),
+            '/depenses': (context) => const DepensesListScreen(),
           },
         ),
       ),

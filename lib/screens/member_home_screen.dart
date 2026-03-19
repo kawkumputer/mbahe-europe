@@ -230,7 +230,60 @@ class MemberHomeScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: 16),
+
+            // Alerte frais d'adhésion non payés
+            if (user != null && !user.adhesionPaid)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade100,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.warning_rounded,
+                        color: Colors.red.shade700,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.get('adhesion_unpaid'),
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: Colors.red.shade800,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${AppLocalizations.get('adhesion_fee_due')} ${user.adhesionAmount.toStringAsFixed(2)}€',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.red.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
             Text(
               AppLocalizations.get('home_quick_access'),
@@ -271,8 +324,8 @@ class MemberHomeScreen extends StatelessWidget {
                 ),
                 _buildFeatureCard(
                   icon: Icons.people_rounded,
-                  title: 'Membres',
-                  subtitle: 'Liste des membres',
+                  title: AppLocalizations.get('home_member'),
+                  subtitle: AppLocalizations.get('home_member_subtitle'),
                   color: AppColors.accent,
                   onTap: () {
                     Navigator.pushNamed(context, '/members-list');
@@ -285,6 +338,15 @@ class MemberHomeScreen extends StatelessWidget {
                   color: AppColors.accentSecondary,
                   onTap: () {
                     Navigator.pushNamed(context, '/admin-payment-dashboard');
+                  },
+                ),
+                _buildFeatureCard(
+                  icon: Icons.money_off_rounded,
+                  title: AppLocalizations.get('depenses_title'),
+                  subtitle: AppLocalizations.get('depenses_subtitle'),
+                  color: const Color(0xFFE53935),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/depenses');
                   },
                 ),
                 _buildFeatureCard(

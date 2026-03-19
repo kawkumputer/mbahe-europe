@@ -321,18 +321,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () async {
-                    await auth.approveUser(user.id);
-                    await _loadUsers();
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${user.fullName} ${AppLocalizations.get('members_approved')}'),
-                          backgroundColor: AppColors.approved,
-                        ),
-                      );
-                    }
-                  },
+                  onPressed: () => _showApproveDialog(context, user, auth),
                   icon: const Icon(Icons.check_rounded, size: 18),
                   label: Text(AppLocalizations.get('members_approve')),
                   style: ElevatedButton.styleFrom(
@@ -455,20 +444,165 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    user.statusLabel,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: statusColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: user.adhesionPaid
+                        ? AppColors.approved.withOpacity(0.1)
+                        : AppColors.error.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        user.adhesionPaid ? Icons.check_circle : Icons.warning_rounded,
+                        size: 12,
+                        color: user.adhesionPaid ? AppColors.approved : AppColors.error,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        user.adhesionPaid
+                            ? AppLocalizations.get('adhesion_paid')
+                            : AppLocalizations.get('adhesion_unpaid'),
+                        style: GoogleFonts.poppins(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w600,
+                          color: user.adhesionPaid ? AppColors.approved : AppColors.error,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showApproveDialog(BuildContext context, UserModel user, AuthProvider auth) {
+    bool adhesionPaid = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            AppLocalizations.get('members_approve_title'),
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${AppLocalizations.get('members_approve_confirm')} ${user.fullName} ?',
+                style: GoogleFonts.poppins(fontSize: 14),
               ),
-              child: Text(
-                user.statusLabel,
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: statusColor,
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: adhesionPaid,
+                      onChanged: (value) {
+                        setDialogState(() => adhesionPaid = value ?? false);
+                      },
+                      activeColor: AppColors.primary,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.get('adhesion_fee_label'),
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            '10.00€',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              if (!adhesionPaid) ...[
+                const SizedBox(height: 8),
+                Text(
+                  AppLocalizations.get('adhesion_unpaid_warning'),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    color: AppColors.warning,
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(AppLocalizations.get('cancel')),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                await auth.approveUser(user.id);
+                if (adhesionPaid) {
+                  await auth.markAdhesionPaid(user.id);
+                }
+                await _loadUsers();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${user.fullName} ${AppLocalizations.get('members_approved')}'),
+                      backgroundColor: AppColors.approved,
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.approved,
+                foregroundColor: Colors.white,
+              ),
+              child: Text(AppLocalizations.get('members_approve')),
             ),
           ],
         ),
@@ -527,6 +661,63 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                 ),
               ),
               const SizedBox(height: 20),
+              // Bouton adhésion
+              if (!isSelf && user.status == AccountStatus.approved) ...[  
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      Navigator.pop(ctx);
+                      final auth = context.read<AuthProvider>();
+                      if (user.adhesionPaid) {
+                        final success = await auth.markAdhesionUnpaid(user.id);
+                        await _loadUsers();
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(success
+                                  ? '${user.fullName} - ${AppLocalizations.get('adhesion_marked_unpaid')}'
+                                  : AppLocalizations.get('error')),
+                              backgroundColor: success ? AppColors.pending : AppColors.rejected,
+                            ),
+                          );
+                        }
+                      } else {
+                        final success = await auth.markAdhesionPaid(user.id);
+                        await _loadUsers();
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(success
+                                  ? '${user.fullName} - ${AppLocalizations.get('adhesion_marked_paid')}'
+                                  : AppLocalizations.get('error')),
+                              backgroundColor: success ? AppColors.approved : AppColors.rejected,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    icon: Icon(
+                      user.adhesionPaid ? Icons.money_off_rounded : Icons.payments_rounded,
+                      size: 20,
+                    ),
+                    label: Text(
+                      user.adhesionPaid
+                          ? AppLocalizations.get('adhesion_mark_unpaid')
+                          : AppLocalizations.get('adhesion_mark_paid'),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: user.adhesionPaid ? AppColors.pending : AppColors.approved,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      minimumSize: const Size(0, 48),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               if (!isSelf) ...[
                 SizedBox(
                   width: double.infinity,

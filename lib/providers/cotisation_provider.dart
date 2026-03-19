@@ -145,6 +145,11 @@ class CotisationProvider extends ChangeNotifier {
 
   /// Récupérer le montant total des années précédentes (2022-2024)
   /// Somme de tous les paiements effectués avant 2025
+  /// Total de TOUTES les cotisations payées (toutes années confondues)
+  Future<double> getTotalAllPaidAmount() async {
+    return await _service.getTotalAllPaidAmount();
+  }
+
   Future<double> getPreviousYearsTotalAmount() async {
     return await _service.getPreviousYearsTotalAmount();
   }

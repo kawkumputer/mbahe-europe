@@ -300,6 +300,54 @@ class SupabaseAuthService {
     }
   }
 
+  /// Marquer l'adhésion comme payée
+  Future<bool> markAdhesionPaid(String userId) async {
+    try {
+      await _client.from('profiles').update({
+        'adhesion_paid': true,
+        'adhesion_paid_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
+      return true;
+    } catch (e) {
+      debugPrint('markAdhesionPaid error: $e');
+      return false;
+    }
+  }
+
+  /// Marquer l'adhésion comme non payée
+  Future<bool> markAdhesionUnpaid(String userId) async {
+    try {
+      await _client.from('profiles').update({
+        'adhesion_paid': false,
+        'adhesion_paid_at': null,
+      }).eq('id', userId);
+      return true;
+    } catch (e) {
+      debugPrint('markAdhesionUnpaid error: $e');
+      return false;
+    }
+  }
+
+  /// Total des frais d'adhésion payés (uniquement depuis 2026)
+  /// Les adhésions avant 2026 sont déjà incluses dans previous_years_total_amount
+  Future<double> getTotalAdhesionPaid() async {
+    try {
+      final data = await _client
+          .from('profiles')
+          .select('adhesion_amount, adhesion_paid_at')
+          .eq('adhesion_paid', true)
+          .gte('adhesion_paid_at', '2026-01-01T00:00:00Z');
+      double total = 0.0;
+      for (final row in data) {
+        total += (row['adhesion_amount'] ?? 10.0).toDouble();
+      }
+      return total;
+    } catch (e) {
+      debugPrint('getTotalAdhesionPaid error: $e');
+      return 0.0;
+    }
+  }
+
   /// Convertir un username en email fictif
   /// Ex: kane_92 -> kane_92@mbahe.app
   String _usernameToEmail(String username) {

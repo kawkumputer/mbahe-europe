@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../models/compte_rendu_model.dart';
 import '../providers/cotisation_provider.dart';
 import '../providers/compte_rendu_provider.dart';
+import '../providers/depense_provider.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 
@@ -100,8 +102,17 @@ class _AdminPaymentDashboardScreenState
 
     // Calculer le total général cumulé (ordre chronologique)
     // Commencer avec le montant des années précédentes (2022-2024)
-    // Pour l'instant, on utilise une valeur fixe, mais cela pourrait être récupéré de la base de données
     double cumul = await cotisationProvider.getPreviousYearsTotalAmount();
+    
+    // Ajouter les frais d'adhésion payés
+    final authProvider = context.read<AuthProvider>();
+    final totalAdhesion = await authProvider.getTotalAdhesionPaid();
+    cumul += totalAdhesion;
+    
+    // Soustraire les dépenses validées
+    final depenseProvider = context.read<DepenseProvider>();
+    final totalDepenses = await depenseProvider.getTotalApprovedDepenses();
+    cumul -= totalDepenses;
     
     for (int i = 0; i < summaries.length; i++) {
       cumul += summaries[i].totalPaid;
@@ -237,7 +248,9 @@ class _AdminPaymentDashboardScreenState
                   ],
                 ),
                 const SizedBox(height: 6),
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
                   children: [
                     Text(
                       summary.reunion.formattedDate,
@@ -246,7 +259,6 @@ class _AdminPaymentDashboardScreenState
                         fontSize: 12,
                       ),
                     ),
-                    const SizedBox(width: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(

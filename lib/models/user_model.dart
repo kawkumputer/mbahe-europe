@@ -16,6 +16,9 @@ class UserModel {
   final String? bio;
   final DateTime? updatedAt;
   final DateTime? dateOfBirth;
+  final bool adhesionPaid;
+  final DateTime? adhesionPaidAt;
+  final double adhesionAmount;
 
   UserModel({
     required this.id,
@@ -31,6 +34,9 @@ class UserModel {
     this.bio,
     this.updatedAt,
     this.dateOfBirth,
+    this.adhesionPaid = false,
+    this.adhesionPaidAt,
+    this.adhesionAmount = 10.0,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -53,6 +59,11 @@ class UserModel {
       dateOfBirth: json['date_of_birth'] != null
           ? DateTime.parse(json['date_of_birth'])
           : null,
+      adhesionPaid: json['adhesion_paid'] ?? false,
+      adhesionPaidAt: json['adhesion_paid_at'] != null
+          ? DateTime.parse(json['adhesion_paid_at'])
+          : null,
+      adhesionAmount: (json['adhesion_amount'] ?? 10.0).toDouble(),
     );
   }
 
@@ -129,6 +140,9 @@ class UserModel {
     String? bio,
     DateTime? updatedAt,
     DateTime? dateOfBirth,
+    bool? adhesionPaid,
+    DateTime? adhesionPaidAt,
+    double? adhesionAmount,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -144,6 +158,9 @@ class UserModel {
       bio: bio ?? this.bio,
       updatedAt: updatedAt ?? this.updatedAt,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      adhesionPaid: adhesionPaid ?? this.adhesionPaid,
+      adhesionPaidAt: adhesionPaidAt ?? this.adhesionPaidAt,
+      adhesionAmount: adhesionAmount ?? this.adhesionAmount,
     );
   }
 

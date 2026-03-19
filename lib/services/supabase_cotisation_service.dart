@@ -418,6 +418,23 @@ class SupabaseCotisationService {
     return summaries;
   }
 
+  /// Récupérer le total de TOUTES les cotisations payées (toutes années confondues)
+  Future<double> getTotalAllPaidAmount() async {
+    try {
+      final data = await _client
+          .from('cotisations')
+          .select('amount')
+          .eq('status', 'paid');
+      double total = 0.0;
+      for (final row in data) {
+        total += (row['amount'] ?? 0.0).toDouble();
+      }
+      return total;
+    } catch (e) {
+      return 0.0;
+    }
+  }
+
   /// Récupérer le montant total des années précédentes (avant 2025)
   /// Montant défini par le sys_admin dans app_settings (cotisations papier)
   Future<double> getPreviousYearsTotalAmount() async {

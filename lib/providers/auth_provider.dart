@@ -123,6 +123,22 @@ class AuthProvider extends ChangeNotifier {
     return success;
   }
 
+  Future<bool> markAdhesionPaid(String userId) async {
+    final success = await _authService.markAdhesionPaid(userId);
+    if (success) notifyListeners();
+    return success;
+  }
+
+  Future<bool> markAdhesionUnpaid(String userId) async {
+    final success = await _authService.markAdhesionUnpaid(userId);
+    if (success) notifyListeners();
+    return success;
+  }
+
+  Future<double> getTotalAdhesionPaid() async {
+    return await _authService.getTotalAdhesionPaid();
+  }
+
   /// Restaurer la session existante au démarrage
   Future<void> restoreSession() async {
     final user = await _authService.getCurrentUser();
