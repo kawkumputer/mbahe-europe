@@ -33,7 +33,6 @@ class SupabaseProfileService {
 
       return UserModel.fromJson(data);
     } catch (e) {
-      debugPrint('updateProfile error: $e');
       return null;
     }
   }
@@ -64,7 +63,6 @@ class SupabaseProfileService {
 
       return publicUrl;
     } catch (e) {
-      debugPrint('uploadProfilePhoto error: $e');
       return null;
     }
   }
@@ -91,7 +89,6 @@ class SupabaseProfileService {
 
       return true;
     } catch (e) {
-      debugPrint('deleteProfilePhoto error: $e');
       return false;
     }
   }
@@ -125,7 +122,6 @@ class SupabaseProfileService {
         'cotisations_paid': cotisationsData.length,
       };
     } catch (e) {
-      debugPrint('getUserStats error: $e');
       return {
         'cotisations_paid': 0,
       };

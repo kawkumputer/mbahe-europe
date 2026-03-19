@@ -661,53 +661,31 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Bouton adhésion
-              if (!isSelf && user.status == AccountStatus.approved) ...[  
+              // Bouton adhésion (seulement si non payée)
+              if (!isSelf && user.status == AccountStatus.approved && !user.adhesionPaid) ...[  
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () async {
                       Navigator.pop(ctx);
                       final auth = context.read<AuthProvider>();
-                      if (user.adhesionPaid) {
-                        final success = await auth.markAdhesionUnpaid(user.id);
-                        await _loadUsers();
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(success
-                                  ? '${user.fullName} - ${AppLocalizations.get('adhesion_marked_unpaid')}'
-                                  : AppLocalizations.get('error')),
-                              backgroundColor: success ? AppColors.pending : AppColors.rejected,
-                            ),
-                          );
-                        }
-                      } else {
-                        final success = await auth.markAdhesionPaid(user.id);
-                        await _loadUsers();
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(success
-                                  ? '${user.fullName} - ${AppLocalizations.get('adhesion_marked_paid')}'
-                                  : AppLocalizations.get('error')),
-                              backgroundColor: success ? AppColors.approved : AppColors.rejected,
-                            ),
-                          );
-                        }
+                      final success = await auth.markAdhesionPaid(user.id);
+                      await _loadUsers();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(success
+                                ? '${user.fullName} - ${AppLocalizations.get('adhesion_marked_paid')}'
+                                : AppLocalizations.get('error')),
+                            backgroundColor: success ? AppColors.approved : AppColors.rejected,
+                          ),
+                        );
                       }
                     },
-                    icon: Icon(
-                      user.adhesionPaid ? Icons.money_off_rounded : Icons.payments_rounded,
-                      size: 20,
-                    ),
-                    label: Text(
-                      user.adhesionPaid
-                          ? AppLocalizations.get('adhesion_mark_unpaid')
-                          : AppLocalizations.get('adhesion_mark_paid'),
-                    ),
+                    icon: const Icon(Icons.payments_rounded, size: 20),
+                    label: Text(AppLocalizations.get('adhesion_mark_paid')),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: user.adhesionPaid ? AppColors.pending : AppColors.approved,
+                      backgroundColor: AppColors.approved,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

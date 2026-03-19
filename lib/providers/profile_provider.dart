@@ -41,7 +41,6 @@ class ProfileProvider with ChangeNotifier {
       _stats = await _profileService.getUserStats(userId);
       notifyListeners();
     } catch (e) {
-      debugPrint('loadStats error: $e');
     }
   }
 

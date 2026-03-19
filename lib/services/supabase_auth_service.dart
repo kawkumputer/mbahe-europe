@@ -13,20 +13,16 @@ class SupabaseAuthService {
   Future<UserModel?> login(String username, String password) async {
     try {
       final email = _usernameToEmail(username);
-      debugPrint('Login attempt: email=$email');
       final response = await _client.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
-      debugPrint('Login response: user=${response.user?.id}');
       if (response.user == null) return null;
 
       final profile = await _getProfile(response.user!.id);
-      debugPrint('Profile loaded: ${profile?.fullName}');
       return profile;
     } catch (e) {
-      debugPrint('Login error: $e');
       return null;
     }
   }
@@ -86,7 +82,6 @@ class SupabaseAuthService {
 
       return profile;
     } catch (e) {
-      debugPrint('Register error: $e');
       rethrow;
     }
   }
@@ -295,7 +290,6 @@ class SupabaseAuthService {
 
       return true;
     } catch (e) {
-      debugPrint('updateUserRole error: $e');
       return false;
     }
   }
@@ -309,7 +303,6 @@ class SupabaseAuthService {
       }).eq('id', userId);
       return true;
     } catch (e) {
-      debugPrint('markAdhesionPaid error: $e');
       return false;
     }
   }
@@ -323,7 +316,6 @@ class SupabaseAuthService {
       }).eq('id', userId);
       return true;
     } catch (e) {
-      debugPrint('markAdhesionUnpaid error: $e');
       return false;
     }
   }
@@ -343,7 +335,6 @@ class SupabaseAuthService {
       }
       return total;
     } catch (e) {
-      debugPrint('getTotalAdhesionPaid error: $e');
       return 0.0;
     }
   }
@@ -362,7 +353,6 @@ class SupabaseAuthService {
       });
       return result as bool;
     } catch (e) {
-      debugPrint('checkUsernameExists error: $e');
       return false;
     }
   }
@@ -386,7 +376,6 @@ class SupabaseAuthService {
           password: currentPassword,
         );
       } catch (e) {
-        debugPrint('Current password verification failed: $e');
         return false;
       }
 
@@ -397,7 +386,6 @@ class SupabaseAuthService {
 
       return true;
     } catch (e) {
-      debugPrint('changePassword error: $e');
       return false;
     }
   }
@@ -450,7 +438,6 @@ class SupabaseAuthService {
 
       return true;
     } catch (e) {
-      debugPrint('resetUserPassword error: $e');
       return false;
     }
   }

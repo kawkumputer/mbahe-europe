@@ -14,7 +14,6 @@ class SupabaseDepenseService {
           .order('depense_date', ascending: false);
       return (data as List).map((e) => DepenseModel.fromJson(e)).toList();
     } catch (e) {
-      debugPrint('Erreur getAllDepenses: $e');
       return [];
     }
   }
@@ -29,7 +28,6 @@ class SupabaseDepenseService {
           .order('depense_date', ascending: false);
       return (data as List).map((e) => DepenseModel.fromJson(e)).toList();
     } catch (e) {
-      debugPrint('Erreur getApprovedDepenses: $e');
       return [];
     }
   }
@@ -44,7 +42,6 @@ class SupabaseDepenseService {
           .order('created_at', ascending: false);
       return (data as List).map((e) => DepenseModel.fromJson(e)).toList();
     } catch (e) {
-      debugPrint('Erreur getPendingDepenses: $e');
       return [];
     }
   }
@@ -79,7 +76,6 @@ class SupabaseDepenseService {
 
       return DepenseModel.fromJson(data);
     } catch (e) {
-      debugPrint('Erreur createDepense: $e');
       return null;
     }
   }
@@ -98,7 +94,6 @@ class SupabaseDepenseService {
           .single();
 
       if (depense['created_by'] == user.id) {
-        debugPrint('Un admin ne peut pas valider sa propre dépense');
         return false;
       }
 
@@ -118,7 +113,6 @@ class SupabaseDepenseService {
 
       return true;
     } catch (e) {
-      debugPrint('Erreur approveDepense: $e');
       return false;
     }
   }
@@ -137,7 +131,6 @@ class SupabaseDepenseService {
           .single();
 
       if (depense['created_by'] == user.id) {
-        debugPrint('Un admin ne peut pas rejeter sa propre dépense');
         return false;
       }
 
@@ -158,7 +151,6 @@ class SupabaseDepenseService {
 
       return true;
     } catch (e) {
-      debugPrint('Erreur rejectDepense: $e');
       return false;
     }
   }
@@ -177,14 +169,12 @@ class SupabaseDepenseService {
           .single();
 
       if (depense['status'] != 'pending') {
-        debugPrint('Impossible de supprimer une dépense validée ou rejetée');
         return false;
       }
 
       await _client.from('depenses').delete().eq('id', depenseId);
       return true;
     } catch (e) {
-      debugPrint('Erreur deleteDepense: $e');
       return false;
     }
   }
@@ -202,7 +192,6 @@ class SupabaseDepenseService {
       }
       return total;
     } catch (e) {
-      debugPrint('Erreur getTotalApprovedDepenses: $e');
       return 0.0;
     }
   }
