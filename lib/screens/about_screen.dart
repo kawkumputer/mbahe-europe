@@ -20,10 +20,7 @@ class AboutScreen extends StatelessWidget {
             children: [
               // Logo
               Container(
-                width: 100,
-                height: 100,
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
@@ -33,10 +30,14 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.groups_rounded,
-                  size: 56,
-                  color: Colors.white,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset(
+                    'logo.jpeg',
+                    width: 140,
+                    height: 140,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
