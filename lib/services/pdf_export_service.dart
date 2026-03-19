@@ -3,11 +3,12 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../models/cotisation_model.dart';
 import '../models/compte_rendu_model.dart';
+import '../models/depense_model.dart';
 import '../models/user_model.dart';
 import '../l10n/app_localizations.dart';
 
 class PdfExportService {
-  static const _green = PdfColor.fromInt(0xFF1B5E20);
+  static const _primary = PdfColor.fromInt(0xFF6366F1);
   static const _grey = PdfColor.fromInt(0xFF757575);
   static const _lightGrey = PdfColor.fromInt(0xFFF5F5F5);
 
@@ -15,8 +16,8 @@ class PdfExportService {
   static pw.Font? _bold;
 
   static Future<void> _loadFonts() async {
-    _regular ??= await PdfGoogleFonts.robotoRegular();
-    _bold ??= await PdfGoogleFonts.robotoBold();
+    _regular ??= await PdfGoogleFonts.notoSansRegular();
+    _bold ??= await PdfGoogleFonts.notoSansBold();
   }
 
   static pw.TextStyle _style({
@@ -57,28 +58,7 @@ class PdfExportService {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               // Header
-              pw.Container(
-                width: double.infinity,
-                padding: const pw.EdgeInsets.all(20),
-                decoration: const pw.BoxDecoration(
-                  color: _green,
-                  borderRadius: pw.BorderRadius.all(pw.Radius.circular(8)),
-                ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      'Mbahe Europe',
-                      style: _style(fontSize: 22, color: PdfColors.white, bold: true),
-                    ),
-                    pw.SizedBox(height: 4),
-                    pw.Text(
-                      AppLocalizations.get('cotisations_title'),
-                      style: _style(fontSize: 14, color: PdfColors.white),
-                    ),
-                  ],
-                ),
-              ),
+              _buildPdfHeader(AppLocalizations.get('cotisations_title')),
               pw.SizedBox(height: 20),
 
               // Member info
@@ -156,7 +136,7 @@ class PdfExportService {
                 children: [
                   // Header row
                   pw.TableRow(
-                    decoration: const pw.BoxDecoration(color: _green),
+                    decoration: const pw.BoxDecoration(color: _primary),
                     children: [
                       _headerCell('Mois'),
                       _headerCell('Montant'),
@@ -203,7 +183,7 @@ class PdfExportService {
               // Footer
               pw.Divider(color: PdfColors.grey300),
               pw.Text(
-                'MBAHE Europe \u2014 ${_formatDate(DateTime.now())}',
+                'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
                 style: _style(fontSize: 8, color: _grey),
               ),
             ],
@@ -214,7 +194,7 @@ class PdfExportService {
 
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: 'cotisations_${member.lastName}_$year',
+      name: 'Cotisations_${member.fullName.replaceAll(' ', '_')}_$year',
     );
   }
 
@@ -242,36 +222,7 @@ class PdfExportService {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Container(
-                width: double.infinity,
-                padding: const pw.EdgeInsets.all(16),
-                decoration: const pw.BoxDecoration(
-                  color: _green,
-                  borderRadius: pw.BorderRadius.all(pw.Radius.circular(8)),
-                ),
-                child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Text(
-                          'Mbahe Europe',
-                          style: _style(fontSize: 20, color: PdfColors.white, bold: true),
-                        ),
-                        pw.Text(
-                          '${AppLocalizations.get('cotisations_title')} \u2014 $year',
-                          style: _style(fontSize: 12, color: PdfColors.white),
-                        ),
-                      ],
-                    ),
-                    pw.Text(
-                      _formatDate(DateTime.now()),
-                      style: _style(fontSize: 10, color: PdfColors.white),
-                    ),
-                  ],
-                ),
-              ),
+              _buildPdfHeader('${AppLocalizations.get('cotisations_title')} \u2014 $year'),
               pw.SizedBox(height: 16),
 
               // Table
@@ -287,7 +238,7 @@ class PdfExportService {
                 children: [
                   // Header
                   pw.TableRow(
-                    decoration: const pw.BoxDecoration(color: _green),
+                    decoration: const pw.BoxDecoration(color: _primary),
                     children: [
                       _headerCell('Membre'),
                       ...CotisationModel.cotisableMonths.map(
@@ -352,7 +303,7 @@ class PdfExportService {
 
               pw.Divider(color: PdfColors.grey300),
               pw.Text(
-                'MBAHE Europe \u2014 ${_formatDate(DateTime.now())}',
+                'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
                 style: _style(fontSize: 8, color: _grey),
               ),
             ],
@@ -363,7 +314,7 @@ class PdfExportService {
 
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: 'cotisations_tous_membres_$year',
+      name: 'Cotisations_tous_les_membres_$year',
     );
   }
 
@@ -383,28 +334,7 @@ class PdfExportService {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               // Header
-              pw.Container(
-                width: double.infinity,
-                padding: const pw.EdgeInsets.all(20),
-                decoration: const pw.BoxDecoration(
-                  color: _green,
-                  borderRadius: pw.BorderRadius.all(pw.Radius.circular(8)),
-                ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      'Mbahe Europe',
-                      style: _style(fontSize: 22, color: PdfColors.white, bold: true),
-                    ),
-                    pw.SizedBox(height: 4),
-                    pw.Text(
-                      AppLocalizations.get('cr_detail_title'),
-                      style: _style(fontSize: 14, color: PdfColors.white),
-                    ),
-                  ],
-                ),
-              ),
+              _buildPdfHeader(AppLocalizations.get('cr_detail_title')),
               pw.SizedBox(height: 24),
 
               // Title
@@ -471,10 +401,10 @@ class PdfExportService {
               // Points discutés
               pw.Text(
                 AppLocalizations.get('cr_points'),
-                style: _style(fontSize: 16, color: _green, bold: true),
+                style: _style(fontSize: 16, color: _primary, bold: true),
               ),
               pw.SizedBox(height: 8),
-              pw.Divider(color: _green, thickness: 1),
+              pw.Divider(color: _primary, thickness: 1),
               pw.SizedBox(height: 8),
 
               ...cr.points.asMap().entries.map((entry) {
@@ -487,7 +417,7 @@ class PdfExportService {
                         width: 22,
                         height: 22,
                         decoration: const pw.BoxDecoration(
-                          color: _green,
+                          color: _primary,
                           shape: pw.BoxShape.circle,
                         ),
                         alignment: pw.Alignment.center,
@@ -513,10 +443,10 @@ class PdfExportService {
                 pw.SizedBox(height: 20),
                 pw.Text(
                   AppLocalizations.get('cr_notes'),
-                  style: _style(fontSize: 16, color: _green, bold: true),
+                  style: _style(fontSize: 16, color: _primary, bold: true),
                 ),
                 pw.SizedBox(height: 8),
-                pw.Divider(color: _green, thickness: 1),
+                pw.Divider(color: _primary, thickness: 1),
                 pw.SizedBox(height: 8),
                 pw.Container(
                   width: double.infinity,
@@ -537,7 +467,7 @@ class PdfExportService {
               // Footer
               pw.Divider(color: PdfColors.grey300),
               pw.Text(
-                'MBAHE Europe \u2014 ${_formatDate(DateTime.now())}',
+                'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
                 style: _style(fontSize: 8, color: _grey),
               ),
             ],
@@ -548,7 +478,389 @@ class PdfExportService {
 
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: 'pv_${cr.type.name}_${cr.reunionDate.year}_${cr.reunionDate.month}',
+      name: 'Compte_rendu_${cr.title.replaceAll(' ', '_')}_${cr.reunionDate.day}_${cr.reunionDate.month}_${cr.reunionDate.year}',
+    );
+  }
+
+  /// Export liste des dépenses en PDF
+  static Future<void> exportDepenses({
+    required List<DepenseModel> depenses,
+  }) async {
+    await _loadFonts();
+    final pdf = pw.Document();
+
+    final approvedDepenses = depenses.where((d) => d.isApproved).toList();
+    final totalApproved = approvedDepenses.fold<double>(0.0, (sum, d) => sum + d.amount);
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(40),
+        header: (context) => pw.Column(
+          children: [
+            if (context.pageNumber == 1) ...[
+              _buildPdfHeader(AppLocalizations.get('depenses_title')),
+              pw.SizedBox(height: 20),
+              // Résumé
+              pw.Container(
+                width: double.infinity,
+                padding: const pw.EdgeInsets.all(14),
+                decoration: pw.BoxDecoration(
+                  color: const PdfColor.fromInt(0xFFFFEBEE),
+                  borderRadius: pw.BorderRadius.circular(8),
+                ),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildSummaryCell(
+                      AppLocalizations.get('depenses_total_approved'),
+                      '${totalApproved.toStringAsFixed(2)}\u20AC',
+                    ),
+                    _buildSummaryCell(
+                      AppLocalizations.get('depenses_validated'),
+                      '${approvedDepenses.length}',
+                    ),
+                    _buildSummaryCell(
+                      'Date',
+                      _formatDate(DateTime.now()),
+                    ),
+                  ],
+                ),
+              ),
+              pw.SizedBox(height: 16),
+            ],
+          ],
+        ),
+        footer: (context) => pw.Column(
+          children: [
+            pw.Divider(color: PdfColors.grey300),
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Text(
+                  'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
+                  style: _style(fontSize: 8, color: _grey),
+                ),
+                pw.Text(
+                  'Page ${context.pageNumber}/${context.pagesCount}',
+                  style: _style(fontSize: 8, color: _grey),
+                ),
+              ],
+            ),
+          ],
+        ),
+        build: (context) {
+          return [
+            // Table des dépenses
+            pw.Table(
+              border: pw.TableBorder.all(color: PdfColors.grey300),
+              columnWidths: {
+                0: const pw.FlexColumnWidth(1.5),
+                1: const pw.FlexColumnWidth(3),
+                2: const pw.FlexColumnWidth(3),
+                3: const pw.FlexColumnWidth(1.5),
+                4: const pw.FlexColumnWidth(2),
+                5: const pw.FlexColumnWidth(2),
+              },
+              children: [
+                // Header
+                pw.TableRow(
+                  decoration: const pw.BoxDecoration(color: _primary),
+                  children: [
+                    _headerCell('Date'),
+                    _headerCell(AppLocalizations.get('depenses_motif')),
+                    _headerCell(AppLocalizations.get('depenses_description')),
+                    _headerCell(AppLocalizations.get('depenses_amount')),
+                    _headerCell(AppLocalizations.get('depenses_created_by')),
+                    _headerCell(AppLocalizations.get('depenses_approved_by')),
+                  ],
+                ),
+                // Data
+                ...approvedDepenses.map((d) => pw.TableRow(
+                  children: [
+                    _dataCell(d.formattedDate),
+                    _dataCell(d.motif),
+                    _dataCell(d.description ?? ''),
+                    _dataCell(d.formattedAmount),
+                    _dataCell(d.createdByName),
+                    _dataCell(d.validatedByName ?? ''),
+                  ],
+                )),
+                // Total row
+                pw.TableRow(
+                  decoration: const pw.BoxDecoration(color: _lightGrey),
+                  children: [
+                    _dataCell(''),
+                    _dataCell(''),
+                    _dataCell('TOTAL', bold: true),
+                    _dataCell('${totalApproved.toStringAsFixed(2)}\u20AC', bold: true),
+                    _dataCell(''),
+                    _dataCell(''),
+                  ],
+                ),
+              ],
+            ),
+          ];
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(
+      onLayout: (format) => pdf.save(),
+      name: 'Depenses_validees_${DateTime.now().year}',
+    );
+  }
+
+  /// Données de récap pour une réunion (pour le PDF)
+  /// Export bilan des réunions en PDF
+  static Future<void> exportBilanReunions({
+    required List<Map<String, dynamic>> reunionSummaries,
+    required double previousYearsTotal,
+    required double totalAdhesion,
+    required double totalDepenses,
+  }) async {
+    await _loadFonts();
+    final pdf = pw.Document();
+
+    final soldeGeneral = reunionSummaries.isNotEmpty
+        ? (reunionSummaries.last['cumulativeTotal'] as double)
+        : previousYearsTotal + totalAdhesion - totalDepenses;
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(40),
+        header: (context) => pw.Column(
+          children: [
+            if (context.pageNumber == 1) ...[
+              _buildPdfHeader(AppLocalizations.get('payment_title')),
+              pw.SizedBox(height: 20),
+              // Résumé général
+              pw.Container(
+                width: double.infinity,
+                padding: const pw.EdgeInsets.all(14),
+                decoration: pw.BoxDecoration(
+                  color: _lightGrey,
+                  borderRadius: pw.BorderRadius.circular(8),
+                  border: pw.Border.all(color: const PdfColor.fromInt(0xFFBDBDBD)),
+                ),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildSummaryCell(
+                      'Solde ann\u00e9es pr\u00e9c.',
+                      '${previousYearsTotal.toStringAsFixed(0)}\u20AC',
+                    ),
+                    _buildSummaryCell(
+                      'Adh\u00e9sions',
+                      '${totalAdhesion.toStringAsFixed(0)}\u20AC',
+                    ),
+                    _buildSummaryCell(
+                      AppLocalizations.get('depenses_title'),
+                      '-${totalDepenses.toStringAsFixed(0)}\u20AC',
+                    ),
+                    _buildSummaryCell(
+                      'Solde g\u00e9n\u00e9ral',
+                      '${soldeGeneral.toStringAsFixed(0)}\u20AC',
+                    ),
+                  ],
+                ),
+              ),
+              pw.SizedBox(height: 16),
+            ],
+          ],
+        ),
+        footer: (context) => pw.Column(
+          children: [
+            pw.Divider(color: PdfColors.grey300),
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Text(
+                  'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
+                  style: _style(fontSize: 8, color: _grey),
+                ),
+                pw.Text(
+                  'Page ${context.pageNumber}/${context.pagesCount}',
+                  style: _style(fontSize: 8, color: _grey),
+                ),
+              ],
+            ),
+          ],
+        ),
+        build: (context) {
+          return [
+            // Table des réunions
+            ...reunionSummaries.map((s) {
+              final reunion = s['reunion'] as CompteRenduModel;
+              final periodLabel = s['periodLabel'] as String;
+              final totalPaid = (s['totalPaid'] as double);
+              final totalEspece = (s['totalEspece'] as double);
+              final totalVirement = (s['totalVirement'] as double);
+              final totalCheque = (s['totalCheque'] as double);
+              final countEspece = s['countEspece'] as int;
+              final countVirement = s['countVirement'] as int;
+              final countCheque = s['countCheque'] as int;
+              final countTotal = s['countTotal'] as int;
+              final cumulativeTotal = (s['cumulativeTotal'] as double);
+
+              return pw.Container(
+                margin: const pw.EdgeInsets.only(bottom: 16),
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(color: PdfColors.grey300),
+                  borderRadius: pw.BorderRadius.circular(8),
+                ),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    // Header réunion
+                    pw.Container(
+                      width: double.infinity,
+                      padding: const pw.EdgeInsets.all(12),
+                      decoration: const pw.BoxDecoration(
+                        color: _primary,
+                        borderRadius: pw.BorderRadius.only(
+                          topLeft: pw.Radius.circular(8),
+                          topRight: pw.Radius.circular(8),
+                        ),
+                      ),
+                      child: pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Expanded(
+                            child: pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Text(
+                                  reunion.title,
+                                  style: _style(fontSize: 13, color: PdfColors.white, bold: true),
+                                ),
+                                pw.Text(
+                                  '${reunion.formattedDate} \u2014 $periodLabel',
+                                  style: _style(fontSize: 9, color: PdfColors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                          pw.Text(
+                            '${totalPaid.toStringAsFixed(0)}\u20AC',
+                            style: _style(fontSize: 18, color: PdfColors.white, bold: true),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Détail paiements
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(12),
+                      child: pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildPaymentDetail(AppLocalizations.get('payment_cash'), totalEspece, countEspece, const PdfColor.fromInt(0xFF2E7D32)),
+                          _buildPaymentDetail(AppLocalizations.get('payment_transfer'), totalVirement, countVirement, const PdfColor.fromInt(0xFF1565C0)),
+                          _buildPaymentDetail(AppLocalizations.get('payment_check'), totalCheque, countCheque, const PdfColor.fromInt(0xFF6A1B9A)),
+                        ],
+                      ),
+                    ),
+                    // Cumul
+                    pw.Container(
+                      width: double.infinity,
+                      padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: const pw.BoxDecoration(
+                        color: _lightGrey,
+                        borderRadius: pw.BorderRadius.only(
+                          bottomLeft: pw.Radius.circular(8),
+                          bottomRight: pw.Radius.circular(8),
+                        ),
+                      ),
+                      child: pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text(
+                            '${AppLocalizations.get('payment_total_cumul')} \u2014 $countTotal ${AppLocalizations.get('payment_count')}',
+                            style: _style(fontSize: 10, bold: true),
+                          ),
+                          pw.Text(
+                            '${cumulativeTotal.toStringAsFixed(0)}\u20AC',
+                            style: _style(fontSize: 14, color: _primary, bold: true),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ];
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(
+      onLayout: (format) => pdf.save(),
+      name: 'Bilan_reunions_${DateTime.now().year}',
+    );
+  }
+
+  /// En-tête PDF partagé avec nom de l'association FR + Pulaar
+  static pw.Widget _buildPdfHeader(String subtitle) {
+    return pw.Container(
+      width: double.infinity,
+      padding: const pw.EdgeInsets.all(20),
+      decoration: const pw.BoxDecoration(
+        color: _primary,
+        borderRadius: pw.BorderRadius.all(pw.Radius.circular(8)),
+      ),
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.center,
+        children: [
+          pw.Text(
+            'MBAHE EUROPE',
+            style: _style(fontSize: 22, color: PdfColors.white, bold: true),
+          ),
+          pw.SizedBox(height: 4),
+          pw.Text(
+            'Association des ressortissants de M\'bah\u00e9 en Europe',
+            style: _style(fontSize: 11, color: PdfColors.white),
+          ),
+          pw.Text(
+            'Fedde renndinde \u0253esngu Mbahe e Orop',
+            style: pw.TextStyle(
+              font: _regular,
+              fontSize: 10,
+              color: PdfColors.white,
+              fontStyle: pw.FontStyle.italic,
+            ),
+          ),
+          pw.SizedBox(height: 8),
+          pw.Container(
+            padding: const pw.EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: pw.BoxDecoration(
+              color: PdfColors.white,
+              borderRadius: pw.BorderRadius.circular(12),
+            ),
+            child: pw.Text(
+              subtitle,
+              style: _style(fontSize: 12, color: _primary, bold: true),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Détail d'un mode de paiement pour le PDF bilan
+  static pw.Widget _buildPaymentDetail(String label, double total, int count, PdfColor color) {
+    return pw.Column(
+      children: [
+        pw.Text(
+          '${total.toStringAsFixed(0)}\u20AC',
+          style: _style(fontSize: 14, color: color, bold: true),
+        ),
+        pw.Text(
+          '$label ($count)',
+          style: _style(fontSize: 9, color: _grey),
+        ),
+      ],
     );
   }
 

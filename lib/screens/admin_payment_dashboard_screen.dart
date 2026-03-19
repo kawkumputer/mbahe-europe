@@ -8,6 +8,7 @@ import '../providers/depense_provider.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
+import '../services/pdf_export_service.dart';
 
 class AdminPaymentDashboardScreen extends StatefulWidget {
   const AdminPaymentDashboardScreen({super.key});
@@ -45,6 +46,9 @@ class _AdminPaymentDashboardScreenState
     extends State<AdminPaymentDashboardScreen> {
   bool _isLoading = true;
   List<_ReunionSummary> _reunionSummaries = [];
+  double _previousYearsTotal = 0;
+  double _totalAdhesion = 0;
+  double _totalDepenses = 0;
 
   @override
   void initState() {
@@ -102,17 +106,22 @@ class _AdminPaymentDashboardScreenState
 
     // Calculer le total général cumulé (ordre chronologique)
     // Commencer avec le montant des années précédentes (2022-2024)
-    double cumul = await cotisationProvider.getPreviousYearsTotalAmount();
+    final previousYears = await cotisationProvider.getPreviousYearsTotalAmount();
+    double cumul = previousYears;
     
     // Ajouter les frais d'adhésion payés
     final authProvider = context.read<AuthProvider>();
-    final totalAdhesion = await authProvider.getTotalAdhesionPaid();
-    cumul += totalAdhesion;
+    final adhesion = await authProvider.getTotalAdhesionPaid();
+    cumul += adhesion;
     
     // Soustraire les dépenses validées
     final depenseProvider = context.read<DepenseProvider>();
-    final totalDepenses = await depenseProvider.getTotalApprovedDepenses();
-    cumul -= totalDepenses;
+    final depenses = await depenseProvider.getTotalApprovedDepenses();
+    cumul -= depenses;
+    
+    _previousYearsTotal = previousYears;
+    _totalAdhesion = adhesion;
+    _totalDepenses = depenses;
     
     for (int i = 0; i < summaries.length; i++) {
       cumul += summaries[i].totalPaid;
@@ -144,11 +153,46 @@ class _AdminPaymentDashboardScreenState
     return '$fromStr — $toStr';
   }
 
+  Future<void> _exportBilanPdf() async {
+    // Remettre en ordre chronologique pour le PDF
+    final sortedSummaries = List<_ReunionSummary>.from(_reunionSummaries)
+      ..sort((a, b) => a.reunion.reunionDate.compareTo(b.reunion.reunionDate));
+
+    final reunionMaps = sortedSummaries.map((s) => {
+      'reunion': s.reunion,
+      'periodLabel': s.periodLabel,
+      'totalPaid': s.totalPaid,
+      'totalEspece': s.totalEspece,
+      'totalVirement': s.totalVirement,
+      'totalCheque': s.totalCheque,
+      'countEspece': s.countEspece,
+      'countVirement': s.countVirement,
+      'countCheque': s.countCheque,
+      'countTotal': s.countTotal,
+      'cumulativeTotal': s.cumulativeTotal,
+    }).toList();
+
+    await PdfExportService.exportBilanReunions(
+      reunionSummaries: reunionMaps,
+      previousYearsTotal: _previousYearsTotal,
+      totalAdhesion: _totalAdhesion,
+      totalDepenses: _totalDepenses,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.get('payment_title')),
+        actions: [
+          if (!_isLoading && _reunionSummaries.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.picture_as_pdf_rounded),
+              tooltip: 'Exporter PDF',
+              onPressed: _exportBilanPdf,
+            ),
+        ],
       ),
       body: SafeArea(
         child: _isLoading

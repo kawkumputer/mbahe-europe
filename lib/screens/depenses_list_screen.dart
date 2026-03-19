@@ -8,6 +8,7 @@ import '../providers/depense_provider.dart';
 import '../providers/cotisation_provider.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
+import '../services/pdf_export_service.dart';
 
 class DepensesListScreen extends StatefulWidget {
   const DepensesListScreen({super.key});
@@ -42,6 +43,17 @@ class _DepensesListScreenState extends State<DepensesListScreen> {
             ),
           ),
         ),
+        actions: [
+          if (isAdmin)
+            IconButton(
+              icon: const Icon(Icons.picture_as_pdf_rounded),
+              tooltip: 'Exporter PDF',
+              onPressed: () {
+                final depenses = context.read<DepenseProvider>().depenses;
+                PdfExportService.exportDepenses(depenses: depenses);
+              },
+            ),
+        ],
       ),
       floatingActionButton: isAdmin
           ? FloatingActionButton(
