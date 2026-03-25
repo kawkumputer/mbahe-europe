@@ -7,6 +7,8 @@ import '../providers/profile_provider.dart';
 import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
+import '../models/notification_model.dart';
+import '../services/supabase_notification_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -382,11 +384,147 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
+              const Divider(height: 24),
+              InkWell(
+                onTap: () => _showDeleteAccountDialog(),
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.rejected.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.delete_forever_rounded,
+                          color: AppColors.rejected,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Supprimer mon compte',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.rejected,
+                          ),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: AppColors.textSecondary,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ],
     );
+  }
+
+  void _showDeleteAccountDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: AppColors.rejected, size: 28),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Supprimer mon compte',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Votre demande de suppression sera envoyée aux administrateurs de l\'association.\n\n'
+          'Un administrateur traitera votre demande et toutes vos données personnelles seront supprimées conformément à la réglementation.\n\n'
+          'Voulez-vous envoyer la demande ?',
+          style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Annuler',
+              style: GoogleFonts.poppins(color: AppColors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await _sendDeleteRequest();
+            },
+            child: Text(
+              'Envoyer la demande',
+              style: GoogleFonts.poppins(
+                color: AppColors.rejected,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _sendDeleteRequest() async {
+    final user = context.read<AuthProvider>().currentUser;
+    if (user == null) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final notifService = SupabaseNotificationService();
+      await notifService.notifyAllAdmins(
+        title: 'Demande de suppression de compte',
+        body: '${user.fullName} demande la suppression de son compte.',
+        type: NotificationType.member,
+        data: {'user_id': user.id},
+      );
+
+      if (!mounted) return;
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Votre demande a été envoyée aux administrateurs.',
+            style: GoogleFonts.poppins(),
+          ),
+          backgroundColor: AppColors.approved,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Erreur lors de l\'envoi de la demande. Veuillez réessayer.',
+            style: GoogleFonts.poppins(),
+          ),
+          backgroundColor: AppColors.rejected,
+        ),
+      );
+    }
   }
 
   Widget _buildInfoRow({
