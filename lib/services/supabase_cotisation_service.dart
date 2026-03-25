@@ -181,8 +181,8 @@ class SupabaseCotisationService {
         'status': 'unpaid',
         'paid_at': null,
         'payment_method': null,
-        'updated_by': admin['id'],
-        'updated_by_name': admin['name'],
+        'updated_by': null,
+        'updated_by_name': null,
       }).eq('id', cotisationId);
       await _logAction(
         adminId: admin['id']!,
@@ -275,8 +275,8 @@ class SupabaseCotisationService {
         'status': 'unpaid',
         'paid_at': null,
         'payment_method': null,
-        'updated_by': admin['id'],
-        'updated_by_name': admin['name'],
+        'updated_by': null,
+        'updated_by_name': null,
       }).eq('id', cotisationId);
       await _logAction(
         adminId: admin['id']!,

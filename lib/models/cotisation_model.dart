@@ -86,10 +86,12 @@ class CotisationModel {
     double? amount,
     CotisationStatus? status,
     DateTime? paidAt,
+    bool clearPaidAt = false,
     PaymentMethod? paymentMethod,
     bool clearPaymentMethod = false,
     String? updatedBy,
     String? updatedByName,
+    bool clearUpdatedBy = false,
   }) {
     return CotisationModel(
       id: id ?? this.id,
@@ -98,10 +100,10 @@ class CotisationModel {
       year: year ?? this.year,
       amount: amount ?? this.amount,
       status: status ?? this.status,
-      paidAt: paidAt ?? this.paidAt,
+      paidAt: clearPaidAt ? null : (paidAt ?? this.paidAt),
       paymentMethod: clearPaymentMethod ? null : (paymentMethod ?? this.paymentMethod),
-      updatedBy: updatedBy ?? this.updatedBy,
-      updatedByName: updatedByName ?? this.updatedByName,
+      updatedBy: clearUpdatedBy ? null : (updatedBy ?? this.updatedBy),
+      updatedByName: clearUpdatedBy ? null : (updatedByName ?? this.updatedByName),
     );
   }
 

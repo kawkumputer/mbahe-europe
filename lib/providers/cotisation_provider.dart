@@ -84,8 +84,9 @@ class CotisationProvider extends ChangeNotifier {
     if (index != -1) {
       _cotisations[index] = _cotisations[index].copyWith(
         status: CotisationStatus.unpaid,
-        paymentMethod: null,
-        paidAt: null,
+        clearPaymentMethod: true,
+        clearPaidAt: true,
+        clearUpdatedBy: true,
       );
       _updateSummaryAfterChange();
       notifyListeners();
@@ -114,6 +115,9 @@ class CotisationProvider extends ChangeNotifier {
     if (index != -1) {
       _cotisations[index] = _cotisations[index].copyWith(
         status: CotisationStatus.unpaid,
+        clearPaymentMethod: true,
+        clearPaidAt: true,
+        clearUpdatedBy: true,
       );
       _updateSummaryAfterChange();
       notifyListeners();

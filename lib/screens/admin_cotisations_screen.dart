@@ -508,7 +508,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
                       color: Colors.grey.shade500,
                     ),
                   ),
-                if (cotisation.updatedByName != null)
+                if ((isPaid || isExempted) && cotisation.updatedByName != null)
                   Text(
                     '${AppLocalizations.get('cotis_by')} ${cotisation.updatedByName}',
                     style: GoogleFonts.poppins(
