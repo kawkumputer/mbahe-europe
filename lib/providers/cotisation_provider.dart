@@ -172,24 +172,21 @@ class CotisationProvider extends ChangeNotifier {
     int paid = 0;
     int unpaid = 0;
     int exempted = 0;
-    double totalPaid = 0.0;
-    double totalDue = 0.0;
 
     for (final cotisation in _cotisations) {
       if (cotisation.status == CotisationStatus.paid) {
         paid++;
-        totalPaid += cotisation.amount;
       } else if (cotisation.status == CotisationStatus.exempted) {
         exempted++;
       } else {
         unpaid++;
-        totalDue += cotisation.amount;
       }
     }
 
-    final totalAmount = totalPaid + totalDue;
-    final remaining = totalDue;
-    final percentage = totalAmount > 0 ? (totalPaid / totalAmount) * 100 : 0.0;
+    final totalPaid = paid * CotisationModel.monthlyAmount;
+    final totalDue = (CotisationModel.cotisableMonths.length - exempted) * CotisationModel.monthlyAmount;
+    final remaining = totalDue - totalPaid;
+    final percentage = totalDue > 0 ? (totalPaid / totalDue) : 0.0;
 
     _summary = {
       'paid': paid,
