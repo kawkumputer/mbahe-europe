@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
+import '../theme/association_colors.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
@@ -24,6 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  String _selectedAssociation = 'general'; // Association par défaut
 
   @override
   void dispose() {
@@ -46,6 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       phone: _phoneController.text.trim(),
       username: _usernameController.text.trim(),
       password: _passwordController.text,
+      associationType: _selectedAssociation,
     );
 
     if (!mounted) return;
@@ -210,6 +213,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
 
+                const SizedBox(height: 24),
+
+                // Sélection de l'association
+                Text(
+                  'Choisissez votre association',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildAssociationCard(
+                        type: 'general',
+                        title: 'MBAHE Europe',
+                        subtitle: 'Association générale',
+                        icon: Icons.groups,
+                        isSelected: _selectedAssociation == 'general',
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildAssociationCard(
+                        type: 'jeunes',
+                        title: 'MBAHE Jeunes',
+                        subtitle: 'Association des jeunes',
+                        icon: Icons.group,
+                        isSelected: _selectedAssociation == 'jeunes',
+                      ),
+                    ),
+                  ],
+                ),
+
                 const SizedBox(height: 8),
 
                 // Message d'erreur
@@ -292,6 +332,83 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAssociationCard({
+    required String type,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required bool isSelected,
+  }) {
+    final color = AssociationColors.getPrimaryColor(type);
+    
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedAssociation = type;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: isSelected ? AssociationColors.getGradient(type) : null,
+          color: isSelected ? null : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? color : Colors.grey.shade300,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isSelected 
+                  ? Colors.white.withOpacity(0.3)
+                  : color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? Colors.white : color,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                color: isSelected 
+                  ? Colors.white.withOpacity(0.9)
+                  : AppColors.textSecondary,
+              ),
+            ),
+            if (isSelected) ...[
+              const SizedBox(height: 8),
+              const Icon(
+                Icons.check_circle,
+                color: Colors.white,
+                size: 20,
+              ),
+            ],
+          ],
         ),
       ),
     );

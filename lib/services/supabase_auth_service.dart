@@ -34,6 +34,7 @@ class SupabaseAuthService {
     required String phone,
     required String username,
     required String password,
+    String associationType = 'general',
   }) async {
     try {
       // Vérifier d'abord si le numéro de téléphone existe déjà
@@ -57,6 +58,7 @@ class SupabaseAuthService {
           'phone': phone,
           'username': username,
           'role': 'member',
+          'association_type': associationType,
         },
       );
 

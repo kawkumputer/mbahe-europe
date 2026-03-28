@@ -63,6 +63,7 @@ class AuthProvider extends ChangeNotifier {
     required String phone,
     required String username,
     required String password,
+    String associationType = 'general',
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -75,6 +76,7 @@ class AuthProvider extends ChangeNotifier {
         phone: phone,
         username: username,
         password: password,
+        associationType: associationType,
       );
 
       _isLoading = false;
