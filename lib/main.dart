@@ -43,6 +43,7 @@ import 'screens/change_password_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/depenses_list_screen.dart';
 import 'providers/depense_provider.dart';
+import 'screens/select_association_screen.dart';
 
 LocaleProvider? _localeProvider;
 
@@ -136,6 +137,7 @@ class MbaheEuropeApp extends StatelessWidget {
             '/members-list': (context) => const MembersListScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/depenses': (context) => const DepensesListScreen(),
+            '/select-association': (context) => const SelectAssociationScreen(),
           },
         ),
       ),

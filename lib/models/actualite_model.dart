@@ -9,6 +9,7 @@ class ActualiteModel {
   final String authorName;
   final DateTime publishedAt;
   final DateTime createdAt;
+  final String associationType;
 
   ActualiteModel({
     required this.id,
@@ -19,6 +20,7 @@ class ActualiteModel {
     required this.authorName,
     required this.publishedAt,
     DateTime? createdAt,
+    this.associationType = 'general',
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory ActualiteModel.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class ActualiteModel {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
+      associationType: json['association_type'] ?? 'general',
     );
   }
 
@@ -44,6 +47,7 @@ class ActualiteModel {
       'author_id': authorId,
       'author_name': authorName,
       'published_at': publishedAt.toIso8601String(),
+      'association_type': associationType,
     };
   }
 

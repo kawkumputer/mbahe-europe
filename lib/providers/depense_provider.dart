@@ -9,28 +9,37 @@ class DepenseProvider extends ChangeNotifier {
   List<DepenseModel> _pendingDepenses = [];
   bool _isLoading = false;
   double _totalApproved = 0.0;
+  String _associationType = 'general';
 
   List<DepenseModel> get depenses => _depenses;
   List<DepenseModel> get pendingDepenses => _pendingDepenses;
   bool get isLoading => _isLoading;
   double get totalApproved => _totalApproved;
   int get pendingCount => _pendingDepenses.length;
+  String get associationType => _associationType;
+
+  void setAssociationType(String type) {
+    _associationType = type;
+    notifyListeners();
+  }
 
   /// Charger toutes les dépenses (admin voit tout, membres voient validées)
-  Future<void> loadDepenses() async {
+  Future<void> loadDepenses({String? associationType}) async {
     _isLoading = true;
     notifyListeners();
 
-    _depenses = await _service.getAllDepenses();
-    _totalApproved = await _service.getTotalApprovedDepenses();
+    final type = associationType ?? _associationType;
+    _depenses = await _service.getAllDepenses(associationType: type);
+    _totalApproved = await _service.getTotalApprovedDepenses(associationType: type);
 
     _isLoading = false;
     notifyListeners();
   }
 
   /// Charger les dépenses en attente de validation
-  Future<void> loadPendingDepenses() async {
-    _pendingDepenses = await _service.getPendingDepenses();
+  Future<void> loadPendingDepenses({String? associationType}) async {
+    final type = associationType ?? _associationType;
+    _pendingDepenses = await _service.getPendingDepenses(associationType: type);
     notifyListeners();
   }
 
@@ -40,12 +49,15 @@ class DepenseProvider extends ChangeNotifier {
     required String motif,
     String? description,
     required DateTime depenseDate,
+    String? associationType,
   }) async {
+    final type = associationType ?? _associationType;
     final depense = await _service.createDepense(
       amount: amount,
       motif: motif,
       description: description,
       depenseDate: depenseDate,
+      associationType: type,
     );
     if (depense != null) {
       _depenses.insert(0, depense);
@@ -96,7 +108,8 @@ class DepenseProvider extends ChangeNotifier {
   }
 
   /// Total des dépenses validées
-  Future<double> getTotalApprovedDepenses() async {
-    return await _service.getTotalApprovedDepenses();
+  Future<double> getTotalApprovedDepenses({String? associationType}) async {
+    final type = associationType ?? _associationType;
+    return await _service.getTotalApprovedDepenses(associationType: type);
   }
 }

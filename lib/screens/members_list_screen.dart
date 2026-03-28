@@ -36,7 +36,9 @@ class _MembersListScreenState extends State<MembersListScreen> {
 
   Future<void> _loadMembers() async {
     setState(() => _isLoading = true);
-    final members = await _authService.getAllMembers();
+    final authProvider = context.read<AuthProvider>();
+    final associationType = authProvider.currentAssociationType;
+    final members = await _authService.getAllMembers(associationType: associationType);
     setState(() {
       _allMembers = members;
       _filteredMembers = members;

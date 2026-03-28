@@ -25,9 +25,14 @@ class _MemberCotisationsScreenState extends State<MemberCotisationsScreen> {
   }
 
   void _loadData() {
-    final userId = context.read<AuthProvider>().currentUser?.id;
+    final authProvider = context.read<AuthProvider>();
+    final cotisationProvider = context.read<CotisationProvider>();
+    final userId = authProvider.currentUser?.id;
+    
     if (userId != null) {
-      context.read<CotisationProvider>().loadCotisations(userId);
+      // Synchroniser le provider avec l'association active
+      cotisationProvider.setAssociationType(authProvider.currentAssociationType);
+      cotisationProvider.loadCotisations(userId, associationType: authProvider.currentAssociationType);
     }
   }
 

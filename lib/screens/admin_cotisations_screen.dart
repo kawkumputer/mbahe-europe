@@ -40,7 +40,12 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
 
   Future<void> _loadMembers() async {
     final authProvider = context.read<AuthProvider>();
-    final allMembers = await authProvider.getAllMembers();
+    final cotisationProvider = context.read<CotisationProvider>();
+    
+    // Synchroniser avec l'association active
+    cotisationProvider.setAssociationType(authProvider.currentAssociationType);
+    
+    final allMembers = await authProvider.getAllMembers(associationType: authProvider.currentAssociationType);
     if (mounted) {
       setState(() {
         _approvedMembers = allMembers

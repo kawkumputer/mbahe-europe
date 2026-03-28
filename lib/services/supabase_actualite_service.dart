@@ -8,10 +8,11 @@ class SupabaseActualiteService {
   final SupabaseNotificationService _notifService = SupabaseNotificationService();
 
   /// Récupérer toutes les actualités
-  Future<List<ActualiteModel>> getAllActualites() async {
+  Future<List<ActualiteModel>> getAllActualites({String associationType = 'general'}) async {
     final data = await _client
         .from('actualites')
         .select()
+        .eq('association_type', associationType)
         .order('published_at', ascending: false);
 
     return data.map<ActualiteModel>(
@@ -26,6 +27,7 @@ class SupabaseActualiteService {
     required ActualiteCategory category,
     required String authorId,
     required String authorName,
+    String associationType = 'general',
   }) async {
     final actu = ActualiteModel(
       id: '',
@@ -35,6 +37,7 @@ class SupabaseActualiteService {
       authorId: authorId,
       authorName: authorName,
       publishedAt: DateTime.now(),
+      associationType: associationType,
     );
 
     final data = await _client

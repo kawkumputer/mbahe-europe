@@ -34,8 +34,9 @@ class _ManageBureauScreenState extends State<ManageBureauScreen> {
   Future<void> _loadData() async {
     final provider = context.read<BureauProvider>();
     final auth = context.read<AuthProvider>();
+    final associationType = auth.currentAssociationType;
     await provider.loadBureauMembres(_mandat.id);
-    _allMembers = await auth.getAllMembers();
+    _allMembers = await auth.getAllMembers(associationType: associationType);
     if (mounted) setState(() {});
   }
 

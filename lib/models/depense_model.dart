@@ -14,6 +14,7 @@ class DepenseModel {
   final String? validatedByName;
   final DateTime? validatedAt;
   final String? rejectionReason;
+  final String associationType;
 
   DepenseModel({
     required this.id,
@@ -29,6 +30,7 @@ class DepenseModel {
     this.validatedByName,
     this.validatedAt,
     this.rejectionReason,
+    this.associationType = 'general',
   });
 
   factory DepenseModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class DepenseModel {
       validatedByName: json['validated_by_name'],
       validatedAt: json['validated_at'] != null ? DateTime.parse(json['validated_at']) : null,
       rejectionReason: json['rejection_reason'],
+      associationType: json['association_type'] ?? 'general',
     );
   }
 
@@ -58,6 +61,7 @@ class DepenseModel {
       'created_by': createdBy,
       'created_by_name': createdByName,
       'status': status.name,
+      'association_type': associationType,
     };
   }
 

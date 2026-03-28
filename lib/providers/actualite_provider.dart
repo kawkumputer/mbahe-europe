@@ -8,17 +8,25 @@ class ActualiteProvider extends ChangeNotifier {
   List<ActualiteModel> _actualites = [];
   bool _isLoading = false;
   String? _errorMessage;
+  String _associationType = 'general';
 
   List<ActualiteModel> get actualites => _actualites;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  String get associationType => _associationType;
 
-  Future<void> loadActualites() async {
+  void setAssociationType(String type) {
+    _associationType = type;
+    notifyListeners();
+  }
+
+  Future<void> loadActualites({String? associationType}) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _actualites = await _service.getAllActualites();
+      final type = associationType ?? _associationType;
+      _actualites = await _service.getAllActualites(associationType: type);
     } catch (e) {
       _errorMessage = 'Erreur lors du chargement des actualités';
     }
@@ -45,6 +53,7 @@ class ActualiteProvider extends ChangeNotifier {
         category: category,
         authorId: authorId,
         authorName: authorName,
+        associationType: _associationType,
       );
       await loadActualites();
       return true;

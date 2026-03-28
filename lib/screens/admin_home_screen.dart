@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
+import '../theme/association_colors.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
+import '../widgets/association_switcher.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -28,8 +30,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   Future<void> _loadCounts() async {
     final auth = context.read<AuthProvider>();
-    final pending = await auth.getPendingUsers();
-    final members = await auth.getAllMembers();
+    final associationType = auth.currentAssociationType;
+    final pending = await auth.getPendingUsers(associationType: associationType);
+    final members = await auth.getAllMembers(associationType: associationType);
     if (mounted) {
       setState(() {
         _pendingCount = pending.length;
@@ -41,21 +44,31 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().currentUser;
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.currentUser;
+    final associationType = authProvider.currentAssociationType;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.get('admin_dashboard')),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+        title: Row(
+          children: [
+            Text(
+              AssociationColors.getAssociationName(associationType),
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
+          ],
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: AssociationColors.getGradient(associationType),
           ),
         ),
         actions: [
+          const AssociationSwitcher(),
           GestureDetector(
             onTap: () => context.read<LocaleProvider>().toggleLocale(),
             child: Container(
@@ -118,15 +131,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.gradientStart, AppColors.gradientEnd],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    gradient: AssociationColors.getGradient(associationType),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.3),
+                        color: AssociationColors.getPrimaryColor(associationType).withOpacity(0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -175,13 +184,44 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  AppLocalizations.get('admin_dashboard'),
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      AppLocalizations.get('admin_dashboard'),
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.25),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            AssociationColors.getAssociationIcon(associationType),
+                                            size: 12,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            associationType == 'jeunes' ? 'Jeunes' : 'Général',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 Text(
                                   user?.fullName ?? '',

@@ -113,24 +113,26 @@ class SupabaseAuthService {
   }
 
   /// Récupérer les utilisateurs en attente d'approbation
-  Future<List<UserModel>> getPendingUsers() async {
+  Future<List<UserModel>> getPendingUsers({String associationType = 'general'}) async {
     final data = await _client
         .from('profiles')
         .select()
         .eq('status', 'pending')
         .eq('role', 'member')
+        .contains('association_types', [associationType])
         .order('created_at', ascending: false);
     return data.map<UserModel>((json) => UserModel.fromJson(json)).toList();
   }
 
   /// Récupérer tous les membres (admins inclus, car ils cotisent aussi)
   /// Exclut les sys_admin qui ne participent pas aux cotisations
-  Future<List<UserModel>> getAllMembers() async {
+  Future<List<UserModel>> getAllMembers({String associationType = 'general'}) async {
     final data = await _client
         .from('profiles')
         .select()
         .eq('status', 'approved')
         .neq('role', 'sys_admin')
+        .contains('association_types', [associationType])
         .order('first_name', ascending: true);
     return data.map<UserModel>((json) => UserModel.fromJson(json)).toList();
   }

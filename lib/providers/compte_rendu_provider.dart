@@ -8,16 +8,24 @@ class CompteRenduProvider extends ChangeNotifier {
   List<CompteRenduModel> _comptesRendus = [];
   bool _isLoading = false;
   String? _errorMessage;
+  String _associationType = 'general';
 
   List<CompteRenduModel> get comptesRendus => _comptesRendus;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  String get associationType => _associationType;
 
-  Future<void> loadComptesRendus() async {
+  void setAssociationType(String type) {
+    _associationType = type;
+    notifyListeners();
+  }
+
+  Future<void> loadComptesRendus({String? associationType}) async {
     _isLoading = true;
     notifyListeners();
 
-    _comptesRendus = await _service.getAllComptesRendus();
+    final type = associationType ?? _associationType;
+    _comptesRendus = await _service.getAllComptesRendus(associationType: type);
 
     _isLoading = false;
     notifyListeners();
@@ -45,6 +53,7 @@ class CompteRenduProvider extends ChangeNotifier {
         authorName: authorName,
         points: points,
         notes: notes,
+        associationType: _associationType,
       );
       await loadComptesRendus();
       return true;

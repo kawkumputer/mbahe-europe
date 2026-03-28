@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
 import '../services/supabase_auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
   final SupabaseAuthService _authService = SupabaseAuthService();
@@ -8,6 +9,7 @@ class AuthProvider extends ChangeNotifier {
   UserModel? _currentUser;
   bool _isLoading = false;
   String? _errorMessage;
+  String _currentAssociationType = 'general';
 
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
@@ -17,6 +19,19 @@ class AuthProvider extends ChangeNotifier {
   bool get isSysAdmin => _currentUser?.role == UserRole.sysAdmin;
   bool get isAdminOrSysAdmin => isAdmin || isSysAdmin;
   bool get isApproved => _currentUser?.status == AccountStatus.approved;
+  
+  // Rôle pour l'association active
+  UserRole get currentAssociationRole => _currentUser?.getRoleForAssociation(_currentAssociationType) ?? UserRole.member;
+  bool get isAdminForCurrentAssociation => _currentUser?.isAdminForAssociation(_currentAssociationType) ?? false;
+  bool get isSysAdminForCurrentAssociation => currentAssociationRole == UserRole.sysAdmin;
+  
+  String get currentAssociationType => _currentAssociationType;
+  List<String> get userAssociationTypes => _currentUser?.associationTypes ?? ['general'];
+  bool get hasMultipleAssociations => userAssociationTypes.length > 1;
+  
+  String get associationLabel {
+    return _currentAssociationType == 'general' ? 'MBAHE Europe' : 'MBAHE Jeunes';
+  }
 
   Future<bool> login(String phone, String password) async {
     _isLoading = true;
@@ -33,6 +48,11 @@ class AuthProvider extends ChangeNotifier {
     }
 
     _currentUser = user;
+    print('DEBUG LOGIN - User loaded: ${user.fullName}');
+    print('DEBUG LOGIN - Association types from DB: ${user.associationTypes}');
+    await _loadActiveAssociation();
+    print('DEBUG LOGIN - Current association type: $_currentAssociationType');
+    print('DEBUG LOGIN - Has multiple associations: $hasMultipleAssociations');
     notifyListeners();
     return true;
   }
@@ -65,6 +85,7 @@ class AuthProvider extends ChangeNotifier {
       }
 
       _currentUser = user;
+      await _loadActiveAssociation();
       notifyListeners();
       return true;
     } catch (e) {
@@ -88,6 +109,8 @@ class AuthProvider extends ChangeNotifier {
     await _authService.logout();
     _currentUser = null;
     _errorMessage = null;
+    _currentAssociationType = 'general';
+    await _clearActiveAssociation();
     notifyListeners();
   }
 
@@ -95,6 +118,7 @@ class AuthProvider extends ChangeNotifier {
     final user = await _authService.getCurrentUser();
     if (user != null) {
       _currentUser = user;
+      await _loadActiveAssociation();
       notifyListeners();
     }
   }
@@ -104,8 +128,15 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<UserModel>> getPendingUsers() => _authService.getPendingUsers();
-  Future<List<UserModel>> getAllMembers() => _authService.getAllMembers();
+  Future<List<UserModel>> getPendingUsers({String? associationType}) async {
+    final type = associationType ?? _currentAssociationType;
+    return await _authService.getPendingUsers(associationType: type);
+  }
+
+  Future<List<UserModel>> getAllMembers({String? associationType}) async {
+    final type = associationType ?? _currentAssociationType;
+    return await _authService.getAllMembers(associationType: type);
+  }
 
   Future<void> approveUser(String userId) async {
     await _authService.approveUser(userId);
@@ -144,8 +175,61 @@ class AuthProvider extends ChangeNotifier {
     final user = await _authService.getCurrentUser();
     if (user != null) {
       _currentUser = user;
+      print('DEBUG RESTORE - User loaded: ${user.fullName}');
+      print('DEBUG RESTORE - Association types from DB: ${user.associationTypes}');
+      await _loadActiveAssociation();
+      print('DEBUG RESTORE - Current association type: $_currentAssociationType');
+      print('DEBUG RESTORE - Has multiple associations: $hasMultipleAssociations');
       notifyListeners();
     }
+  }
+
+  /// Charger l'association active depuis SharedPreferences
+  Future<void> _loadActiveAssociation() async {
+    if (_currentUser == null) return;
+    
+    final prefs = await SharedPreferences.getInstance();
+    final savedAssociation = prefs.getString('active_association_${_currentUser!.id}');
+    
+    if (savedAssociation != null && _currentUser!.associationTypes.contains(savedAssociation)) {
+      _currentAssociationType = savedAssociation;
+    } else {
+      _currentAssociationType = _currentUser!.associationTypes.first;
+    }
+  }
+
+  /// Sauvegarder l'association active dans SharedPreferences
+  Future<void> _saveActiveAssociation() async {
+    if (_currentUser == null) return;
+    
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('active_association_${_currentUser!.id}', _currentAssociationType);
+  }
+
+  /// Effacer l'association active
+  Future<void> _clearActiveAssociation() async {
+    if (_currentUser == null) return;
+    
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('active_association_${_currentUser!.id}');
+  }
+
+  /// Changer l'association active
+  Future<void> switchAssociation(String associationType) async {
+    if (_currentUser == null) return;
+    
+    if (!_currentUser!.associationTypes.contains(associationType)) {
+      throw Exception('L\'utilisateur n\'appartient pas à cette association');
+    }
+    
+    _currentAssociationType = associationType;
+    await _saveActiveAssociation();
+    notifyListeners();
+  }
+
+  /// Définir l'association active (utilisé après sélection)
+  Future<void> setActiveAssociation(String associationType) async {
+    await switchAssociation(associationType);
   }
 
   /// Changer le mot de passe de l'utilisateur connecté

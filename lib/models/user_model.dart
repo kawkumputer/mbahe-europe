@@ -19,6 +19,8 @@ class UserModel {
   final bool adhesionPaid;
   final DateTime? adhesionPaidAt;
   final double adhesionAmount;
+  final List<String> associationTypes;
+  final Map<String, UserRole> associationRoles;
 
   UserModel({
     required this.id,
@@ -37,7 +39,10 @@ class UserModel {
     this.adhesionPaid = false,
     this.adhesionPaidAt,
     this.adhesionAmount = 10.0,
-  }) : createdAt = createdAt ?? DateTime.now();
+    this.associationTypes = const ['general'],
+    Map<String, UserRole>? associationRoles,
+  }) : createdAt = createdAt ?? DateTime.now(),
+       associationRoles = associationRoles ?? {'general': UserRole.member};
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -64,6 +69,8 @@ class UserModel {
           ? DateTime.parse(json['adhesion_paid_at'])
           : null,
       adhesionAmount: (json['adhesion_amount'] ?? 10.0).toDouble(),
+      associationTypes: (json['association_types'] as List<dynamic>?)?.cast<String>() ?? ['general'],
+      associationRoles: _parseAssociationRoles(json['association_roles']),
     );
   }
 
@@ -79,6 +86,8 @@ class UserModel {
       'photo_url': photoUrl,
       'bio': bio,
       'date_of_birth': dateOfBirth?.toIso8601String(),
+      'association_types': associationTypes,
+      'association_roles': _associationRolesToJson(associationRoles),
     };
   }
 
@@ -126,6 +135,38 @@ class UserModel {
     }
   }
 
+  static Map<String, UserRole> _parseAssociationRoles(dynamic rolesJson) {
+    if (rolesJson == null) return {'general': UserRole.member};
+    
+    final Map<String, UserRole> roles = {};
+    if (rolesJson is Map) {
+      rolesJson.forEach((key, value) {
+        roles[key.toString()] = _parseRole(value.toString());
+      });
+    }
+    
+    return roles.isEmpty ? {'general': UserRole.member} : roles;
+  }
+
+  static Map<String, String> _associationRolesToJson(Map<String, UserRole> roles) {
+    final Map<String, String> result = {};
+    roles.forEach((key, value) {
+      result[key] = _roleToString(value);
+    });
+    return result;
+  }
+
+  /// Obtenir le rôle pour une association spécifique
+  UserRole getRoleForAssociation(String associationType) {
+    return associationRoles[associationType] ?? UserRole.member;
+  }
+
+  /// Vérifier si l'utilisateur est admin pour une association donnée
+  bool isAdminForAssociation(String associationType) {
+    final role = getRoleForAssociation(associationType);
+    return role == UserRole.admin || role == UserRole.sysAdmin;
+  }
+
   UserModel copyWith({
     String? id,
     String? firstName,
@@ -143,6 +184,8 @@ class UserModel {
     bool? adhesionPaid,
     DateTime? adhesionPaidAt,
     double? adhesionAmount,
+    List<String>? associationTypes,
+    Map<String, UserRole>? associationRoles,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -161,6 +204,8 @@ class UserModel {
       adhesionPaid: adhesionPaid ?? this.adhesionPaid,
       adhesionPaidAt: adhesionPaidAt ?? this.adhesionPaidAt,
       adhesionAmount: adhesionAmount ?? this.adhesionAmount,
+      associationTypes: associationTypes ?? this.associationTypes,
+      associationRoles: associationRoles ?? this.associationRoles,
     );
   }
 

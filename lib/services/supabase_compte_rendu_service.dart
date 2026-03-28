@@ -5,10 +5,11 @@ class SupabaseCompteRenduService {
   final SupabaseClient _client = Supabase.instance.client;
 
   /// Récupérer tous les comptes rendus
-  Future<List<CompteRenduModel>> getAllComptesRendus() async {
+  Future<List<CompteRenduModel>> getAllComptesRendus({String associationType = 'general'}) async {
     final data = await _client
         .from('comptes_rendus')
         .select()
+        .eq('association_type', associationType)
         .order('reunion_date', ascending: false);
 
     return data.map<CompteRenduModel>(
@@ -39,6 +40,7 @@ class SupabaseCompteRenduService {
     required String authorName,
     required List<String> points,
     String? notes,
+    String associationType = 'general',
   }) async {
     final cr = CompteRenduModel(
       id: '', // sera généré par Supabase
@@ -49,6 +51,7 @@ class SupabaseCompteRenduService {
       authorName: authorName,
       points: points,
       notes: notes,
+      associationType: associationType,
     );
 
     final data = await _client

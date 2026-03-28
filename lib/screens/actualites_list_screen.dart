@@ -19,7 +19,14 @@ class _ActualitesListScreenState extends State<ActualitesListScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ActualiteProvider>().loadActualites();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = context.read<AuthProvider>();
+      final actualiteProvider = context.read<ActualiteProvider>();
+      
+      // Synchroniser avec l'association active
+      actualiteProvider.setAssociationType(authProvider.currentAssociationType);
+      actualiteProvider.loadActualites(associationType: authProvider.currentAssociationType);
+    });
   }
 
   Color _categoryColor(ActualiteCategory cat) {

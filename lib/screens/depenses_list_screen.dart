@@ -22,7 +22,12 @@ class _DepensesListScreenState extends State<DepensesListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DepenseProvider>().loadDepenses();
+      final authProvider = context.read<AuthProvider>();
+      final depenseProvider = context.read<DepenseProvider>();
+      
+      // Synchroniser avec l'association active
+      depenseProvider.setAssociationType(authProvider.currentAssociationType);
+      depenseProvider.loadDepenses(associationType: authProvider.currentAssociationType);
     });
   }
 

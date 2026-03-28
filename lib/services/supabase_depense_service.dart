@@ -6,11 +6,12 @@ class SupabaseDepenseService {
   final SupabaseClient _client = Supabase.instance.client;
 
   /// Récupérer toutes les dépenses (admins voient tout, membres voient validées)
-  Future<List<DepenseModel>> getAllDepenses() async {
+  Future<List<DepenseModel>> getAllDepenses({String associationType = 'general'}) async {
     try {
       final data = await _client
           .from('depenses')
           .select()
+          .eq('association_type', associationType)
           .order('depense_date', ascending: false);
       return (data as List).map((e) => DepenseModel.fromJson(e)).toList();
     } catch (e) {
@@ -19,12 +20,13 @@ class SupabaseDepenseService {
   }
 
   /// Récupérer les dépenses validées uniquement
-  Future<List<DepenseModel>> getApprovedDepenses() async {
+  Future<List<DepenseModel>> getApprovedDepenses({String associationType = 'general'}) async {
     try {
       final data = await _client
           .from('depenses')
           .select()
           .eq('status', 'approved')
+          .eq('association_type', associationType)
           .order('depense_date', ascending: false);
       return (data as List).map((e) => DepenseModel.fromJson(e)).toList();
     } catch (e) {
@@ -33,12 +35,13 @@ class SupabaseDepenseService {
   }
 
   /// Récupérer les dépenses en attente de validation
-  Future<List<DepenseModel>> getPendingDepenses() async {
+  Future<List<DepenseModel>> getPendingDepenses({String associationType = 'general'}) async {
     try {
       final data = await _client
           .from('depenses')
           .select()
           .eq('status', 'pending')
+          .eq('association_type', associationType)
           .order('created_at', ascending: false);
       return (data as List).map((e) => DepenseModel.fromJson(e)).toList();
     } catch (e) {
@@ -52,6 +55,7 @@ class SupabaseDepenseService {
     required String motif,
     String? description,
     required DateTime depenseDate,
+    String associationType = 'general',
   }) async {
     try {
       final user = _client.auth.currentUser;
@@ -72,6 +76,7 @@ class SupabaseDepenseService {
         'created_by': user.id,
         'created_by_name': creatorName,
         'status': 'pending',
+        'association_type': associationType,
       }).select().single();
 
       return DepenseModel.fromJson(data);
@@ -180,12 +185,13 @@ class SupabaseDepenseService {
   }
 
   /// Total des dépenses validées
-  Future<double> getTotalApprovedDepenses() async {
+  Future<double> getTotalApprovedDepenses({String associationType = 'general'}) async {
     try {
       final data = await _client
           .from('depenses')
           .select('amount')
-          .eq('status', 'approved');
+          .eq('status', 'approved')
+          .eq('association_type', associationType);
       double total = 0.0;
       for (final row in data) {
         total += (row['amount'] ?? 0.0).toDouble();

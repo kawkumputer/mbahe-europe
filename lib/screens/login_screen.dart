@@ -47,6 +47,12 @@ class _LoginScreenState extends State<LoginScreen> {
       notifProvider.startListening();
       notifProvider.refreshUnreadCount();
 
+      // Si l'utilisateur a plusieurs associations, afficher l'écran de sélection
+      if (authProvider.hasMultipleAssociations) {
+        Navigator.pushReplacementNamed(context, '/select-association');
+        return;
+      }
+
       final user = authProvider.currentUser!;
       if (user.role == UserRole.admin || user.role == UserRole.sysAdmin) {
         Navigator.pushReplacementNamed(context, '/admin-home');

@@ -10,6 +10,7 @@ class CompteRenduModel {
   final List<String> points;
   final String? notes;
   final DateTime createdAt;
+  final String associationType;
 
   CompteRenduModel({
     required this.id,
@@ -21,6 +22,7 @@ class CompteRenduModel {
     required this.points,
     this.notes,
     DateTime? createdAt,
+    this.associationType = 'general',
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory CompteRenduModel.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class CompteRenduModel {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
+      associationType: json['association_type'] ?? 'general',
     );
   }
 
@@ -48,6 +51,7 @@ class CompteRenduModel {
       'author_name': authorName,
       'points': points,
       'notes': notes,
+      'association_type': associationType,
     };
   }
 
@@ -74,6 +78,7 @@ class CompteRenduModel {
     List<String>? points,
     String? notes,
     DateTime? createdAt,
+    String? associationType,
   }) {
     return CompteRenduModel(
       id: id ?? this.id,
@@ -85,6 +90,7 @@ class CompteRenduModel {
       points: points ?? this.points,
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
+      associationType: associationType ?? this.associationType,
     );
   }
 

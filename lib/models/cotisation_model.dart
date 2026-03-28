@@ -13,6 +13,7 @@ class CotisationModel {
   final PaymentMethod? paymentMethod;
   final String? updatedBy;
   final String? updatedByName;
+  final String associationType;
 
   CotisationModel({
     required this.id,
@@ -25,6 +26,7 @@ class CotisationModel {
     this.paymentMethod,
     this.updatedBy,
     this.updatedByName,
+    this.associationType = 'general',
   });
 
   factory CotisationModel.fromJson(Map<String, dynamic> json) {
@@ -39,6 +41,7 @@ class CotisationModel {
       paymentMethod: _parsePaymentMethod(json['payment_method']),
       updatedBy: json['updated_by'],
       updatedByName: json['updated_by_name'],
+      associationType: json['association_type'] ?? 'general',
     );
   }
 
@@ -51,6 +54,7 @@ class CotisationModel {
       'status': status.name,
       'paid_at': paidAt?.toIso8601String(),
       'payment_method': paymentMethod?.name,
+      'association_type': associationType,
     };
   }
 
@@ -92,6 +96,7 @@ class CotisationModel {
     String? updatedBy,
     String? updatedByName,
     bool clearUpdatedBy = false,
+    String? associationType,
   }) {
     return CotisationModel(
       id: id ?? this.id,
@@ -104,6 +109,7 @@ class CotisationModel {
       paymentMethod: clearPaymentMethod ? null : (paymentMethod ?? this.paymentMethod),
       updatedBy: clearUpdatedBy ? null : (updatedBy ?? this.updatedBy),
       updatedByName: clearUpdatedBy ? null : (updatedByName ?? this.updatedByName),
+      associationType: associationType ?? this.associationType,
     );
   }
 

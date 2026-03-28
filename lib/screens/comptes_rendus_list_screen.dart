@@ -20,7 +20,12 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CompteRenduProvider>().loadComptesRendus();
+      final authProvider = context.read<AuthProvider>();
+      final compteRenduProvider = context.read<CompteRenduProvider>();
+      
+      // Synchroniser avec l'association active
+      compteRenduProvider.setAssociationType(authProvider.currentAssociationType);
+      compteRenduProvider.loadComptesRendus(associationType: authProvider.currentAssociationType);
     });
   }
 

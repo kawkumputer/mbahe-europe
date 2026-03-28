@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
+import '../theme/association_colors.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
+import '../widgets/association_switcher.dart';
 
 class MemberHomeScreen extends StatelessWidget {
   const MemberHomeScreen({super.key});
@@ -51,21 +53,31 @@ class MemberHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().currentUser;
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.currentUser;
+    final associationType = authProvider.currentAssociationType;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.get('app_name')),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+        title: Row(
+          children: [
+            Text(
+              AssociationColors.getAssociationName(associationType),
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
+          ],
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: AssociationColors.getGradient(associationType),
           ),
         ),
         actions: [
+          const AssociationSwitcher(),
           GestureDetector(
             onTap: () => context.read<LocaleProvider>().toggleLocale(),
             child: Container(
@@ -116,15 +128,11 @@ class MemberHomeScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.gradientStart, AppColors.gradientEnd],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                gradient: AssociationColors.getGradient(associationType),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AssociationColors.getPrimaryColor(associationType).withOpacity(0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -176,12 +184,43 @@ class MemberHomeScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              AppLocalizations.get('home_welcome'),
-                              style: GoogleFonts.poppins(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: 13,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  AppLocalizations.get('home_welcome'),
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.25),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        AssociationColors.getAssociationIcon(associationType),
+                                        size: 10,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        associationType == 'jeunes' ? 'Jeunes' : 'Général',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                             Text(
                               user?.fullName ?? '',

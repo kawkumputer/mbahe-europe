@@ -35,8 +35,12 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
 
   Future<void> _loadUsers() async {
     final auth = context.read<AuthProvider>();
-    final pending = await auth.getPendingUsers();
-    final members = await auth.getAllMembers();
+    final associationType = auth.currentAssociationType;
+    
+    // Charger les utilisateurs filtrés par association
+    final pending = await auth.getPendingUsers(associationType: associationType);
+    final members = await auth.getAllMembers(associationType: associationType);
+    
     if (mounted) {
       setState(() {
         _pendingUsers = pending;

@@ -10,12 +10,14 @@ class CotisationProvider extends ChangeNotifier {
   Map<String, dynamic> _paymentSummary = {};
   bool _isLoading = false;
   int _selectedYear = DateTime.now().year;
+  String _associationType = 'general';
 
   List<CotisationModel> get cotisations => _cotisations;
   Map<String, dynamic> get summary => _summary;
   Map<String, dynamic> get paymentSummary => _paymentSummary;
   bool get isLoading => _isLoading;
   int get selectedYear => _selectedYear;
+  String get associationType => _associationType;
 
   int get paidCount => _summary['paid'] ?? 0;
   int get unpaidCount => _summary['unpaid'] ?? 0;
@@ -30,15 +32,22 @@ class CotisationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadCotisations(String userId) async {
+  void setAssociationType(String type) {
+    _associationType = type;
+    notifyListeners();
+  }
+
+  Future<void> loadCotisations(String userId, {String? associationType}) async {
     _isLoading = true;
     notifyListeners();
 
+    final type = associationType ?? _associationType;
     _cotisations = await _service.getCotisationsByUserAndYear(
       userId,
       _selectedYear,
+      associationType: type,
     );
-    _summary = await _service.getUserYearlySummary(userId, _selectedYear);
+    _summary = await _service.getUserYearlySummary(userId, _selectedYear, associationType: type);
 
     _isLoading = false;
     notifyListeners();
@@ -124,38 +133,44 @@ class CotisationProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> generateCotisations(String userId, int year) async {
-    await _service.generateCotisationsForUser(userId, year);
-    await loadCotisations(userId);
+  Future<void> generateCotisations(String userId, int year, {String? associationType}) async {
+    final type = associationType ?? _associationType;
+    await _service.generateCotisationsForUser(userId, year, associationType: type);
+    await loadCotisations(userId, associationType: type);
   }
 
-  Future<void> loadPaymentSummary(int year) async {
+  Future<void> loadPaymentSummary(int year, {String? associationType}) async {
     _isLoading = true;
     notifyListeners();
 
-    _paymentSummary = await _service.getPaymentSummaryByYear(year);
+    final type = associationType ?? _associationType;
+    _paymentSummary = await _service.getPaymentSummaryByYear(year, associationType: type);
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>> getPaymentSummaryForPeriod(int year, List<int> months) async {
-    return await _service.getPaymentSummaryForPeriod(year, months);
+  Future<Map<String, dynamic>> getPaymentSummaryForPeriod(int year, List<int> months, {String? associationType}) async {
+    final type = associationType ?? _associationType;
+    return await _service.getPaymentSummaryForPeriod(year, months, associationType: type);
   }
 
-  Future<Map<String, dynamic>> getPaymentSummaryByDateRange(DateTime from, DateTime to) async {
-    return await _service.getPaymentSummaryByDateRange(from, to);
+  Future<Map<String, dynamic>> getPaymentSummaryByDateRange(DateTime from, DateTime to, {String? associationType}) async {
+    final type = associationType ?? _associationType;
+    return await _service.getPaymentSummaryByDateRange(from, to, associationType: type);
   }
 
   /// Récupérer le montant total des années précédentes (2022-2024)
   /// Somme de tous les paiements effectués avant 2025
   /// Total de TOUTES les cotisations payées (toutes années confondues)
-  Future<double> getTotalAllPaidAmount() async {
-    return await _service.getTotalAllPaidAmount();
+  Future<double> getTotalAllPaidAmount({String? associationType}) async {
+    final type = associationType ?? _associationType;
+    return await _service.getTotalAllPaidAmount(associationType: type);
   }
 
-  Future<double> getPreviousYearsTotalAmount() async {
-    return await _service.getPreviousYearsTotalAmount();
+  Future<double> getPreviousYearsTotalAmount({String? associationType}) async {
+    final type = associationType ?? _associationType;
+    return await _service.getPreviousYearsTotalAmount(associationType: type);
   }
 
   double get paymentTotalPaid => (_paymentSummary['totalPaid'] ?? 0.0).toDouble();

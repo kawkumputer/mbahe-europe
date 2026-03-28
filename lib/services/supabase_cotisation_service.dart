@@ -84,17 +84,19 @@ class SupabaseCotisationService {
   /// Génère automatiquement les cotisations si elles n'existent pas
   Future<List<CotisationModel>> getCotisationsByUserAndYear(
     String userId,
-    int year,
-  ) async {
+    int year, {
+    String associationType = 'general',
+  }) async {
     // Vérifier si les cotisations existent
     final existing = await _client
         .from('cotisations')
         .select()
         .eq('user_id', userId)
-        .eq('year', year);
+        .eq('year', year)
+        .eq('association_type', associationType);
 
     if (existing.isEmpty) {
-      await generateCotisationsForUser(userId, year);
+      await generateCotisationsForUser(userId, year, associationType: associationType);
     }
 
     final data = await _client
@@ -102,6 +104,7 @@ class SupabaseCotisationService {
         .select()
         .eq('user_id', userId)
         .eq('year', year)
+        .eq('association_type', associationType)
         .order('month', ascending: true);
 
     return data.map<CotisationModel>((json) => CotisationModel.fromJson(json)).toList();
@@ -315,19 +318,21 @@ class SupabaseCotisationService {
   }
 
   /// Générer les cotisations pour un adhérent (appel de la fonction SQL)
-  Future<void> generateCotisationsForUser(String userId, int year) async {
+  Future<void> generateCotisationsForUser(String userId, int year, {String associationType = 'general'}) async {
     await _client.rpc('generate_cotisations', params: {
       'p_user_id': userId,
       'p_year': year,
+      'p_association_type': associationType,
     });
   }
 
   /// Résumé des cotisations d'un adhérent pour une année
   Future<Map<String, dynamic>> getUserYearlySummary(
     String userId,
-    int year,
-  ) async {
-    final cotisations = await getCotisationsByUserAndYear(userId, year);
+    int year, {
+    String associationType = 'general',
+  }) async {
+    final cotisations = await getCotisationsByUserAndYear(userId, year, associationType: associationType);
     final paid = cotisations.where((c) => c.isPaid).length;
     final exempted = cotisations.where((c) => c.isExempted).length;
     final unpaid = cotisations.where((c) => c.status == CotisationStatus.unpaid).length;
@@ -346,12 +351,13 @@ class SupabaseCotisationService {
   }
 
   /// Résumé des paiements par mode pour une année donnée
-  Future<Map<String, dynamic>> getPaymentSummaryByYear(int year) async {
+  Future<Map<String, dynamic>> getPaymentSummaryByYear(int year, {String associationType = 'general'}) async {
     final data = await _client
         .from('cotisations')
         .select()
         .eq('year', year)
-        .eq('status', 'paid');
+        .eq('status', 'paid')
+        .eq('association_type', associationType);
 
     final paidCotisations = data.map<CotisationModel>(
       (json) => CotisationModel.fromJson(json),
@@ -363,13 +369,15 @@ class SupabaseCotisationService {
   /// Résumé des paiements par mode pour une période donnée
   Future<Map<String, dynamic>> getPaymentSummaryForPeriod(
     int year,
-    List<int> months,
-  ) async {
+    List<int> months, {
+    String associationType = 'general',
+  }) async {
     final data = await _client
         .from('cotisations')
         .select()
         .eq('year', year)
         .eq('status', 'paid')
+        .eq('association_type', associationType)
         .inFilter('month', months);
 
     final paidCotisations = data.map<CotisationModel>(
@@ -382,12 +390,14 @@ class SupabaseCotisationService {
   /// Résumé des paiements effectués entre deux dates (basé sur paidAt)
   Future<Map<String, dynamic>> getPaymentSummaryByDateRange(
     DateTime from,
-    DateTime to,
-  ) async {
+    DateTime to, {
+    String associationType = 'general',
+  }) async {
     final data = await _client
         .from('cotisations')
         .select()
         .eq('status', 'paid')
+        .eq('association_type', associationType)
         .not('paid_at', 'is', null)
         .gte('paid_at', from.toIso8601String())
         .lte('paid_at', to.add(const Duration(days: 1)).toIso8601String());
@@ -419,12 +429,13 @@ class SupabaseCotisationService {
   }
 
   /// Récupérer le total de TOUTES les cotisations payées (toutes années confondues)
-  Future<double> getTotalAllPaidAmount() async {
+  Future<double> getTotalAllPaidAmount({String associationType = 'general'}) async {
     try {
       final data = await _client
           .from('cotisations')
           .select('amount')
-          .eq('status', 'paid');
+          .eq('status', 'paid')
+          .eq('association_type', associationType);
       double total = 0.0;
       for (final row in data) {
         total += (row['amount'] ?? 0.0).toDouble();
@@ -437,7 +448,7 @@ class SupabaseCotisationService {
 
   /// Récupérer le montant total des années précédentes (avant 2025)
   /// Montant défini par le sys_admin dans app_settings (cotisations papier)
-  Future<double> getPreviousYearsTotalAmount() async {
+  Future<double> getPreviousYearsTotalAmount({String associationType = 'general'}) async {
     return await _settingsService.getPreviousYearsTotalAmount();
   }
 
