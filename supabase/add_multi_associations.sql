@@ -18,6 +18,9 @@ WHERE association_types IS NULL OR association_types = '{}';
 
 -- Ajouter une contrainte pour valider les valeurs
 ALTER TABLE profiles
+DROP CONSTRAINT IF EXISTS check_association_types;
+
+ALTER TABLE profiles
 ADD CONSTRAINT check_association_types 
 CHECK (
   association_types <@ ARRAY['general', 'jeunes']::TEXT[] 
@@ -38,12 +41,18 @@ WHERE association_type IS NULL;
 
 -- Ajouter une contrainte
 ALTER TABLE cotisations
+DROP CONSTRAINT IF EXISTS check_cotisation_association_type;
+
+ALTER TABLE cotisations
 ADD CONSTRAINT check_cotisation_association_type 
 CHECK (association_type IN ('general', 'jeunes'));
 
 -- Modifier la contrainte UNIQUE pour inclure association_type
 ALTER TABLE cotisations 
 DROP CONSTRAINT IF EXISTS cotisations_user_id_month_year_key;
+
+ALTER TABLE cotisations 
+DROP CONSTRAINT IF EXISTS cotisations_user_id_month_year_association_key;
 
 ALTER TABLE cotisations 
 ADD CONSTRAINT cotisations_user_id_month_year_association_key 
@@ -61,6 +70,9 @@ SET association_type = 'general'
 WHERE association_type IS NULL;
 
 ALTER TABLE depenses
+DROP CONSTRAINT IF EXISTS check_depense_association_type;
+
+ALTER TABLE depenses
 ADD CONSTRAINT check_depense_association_type 
 CHECK (association_type IN ('general', 'jeunes'));
 
@@ -74,6 +86,9 @@ ADD COLUMN IF NOT EXISTS association_type TEXT DEFAULT 'general';
 UPDATE comptes_rendus 
 SET association_type = 'general' 
 WHERE association_type IS NULL;
+
+ALTER TABLE comptes_rendus
+DROP CONSTRAINT IF EXISTS check_compte_rendu_association_type;
 
 ALTER TABLE comptes_rendus
 ADD CONSTRAINT check_compte_rendu_association_type 
@@ -91,6 +106,9 @@ SET association_type = 'general'
 WHERE association_type IS NULL;
 
 ALTER TABLE actualites
+DROP CONSTRAINT IF EXISTS check_actualite_association_type;
+
+ALTER TABLE actualites
 ADD CONSTRAINT check_actualite_association_type 
 CHECK (association_type IN ('general', 'jeunes'));
 
@@ -104,6 +122,9 @@ ADD COLUMN IF NOT EXISTS association_type TEXT DEFAULT 'general';
 UPDATE notifications 
 SET association_type = 'general' 
 WHERE association_type IS NULL;
+
+ALTER TABLE notifications
+DROP CONSTRAINT IF EXISTS check_notification_association_type;
 
 ALTER TABLE notifications
 ADD CONSTRAINT check_notification_association_type 
@@ -121,16 +142,21 @@ SET association_type = 'general'
 WHERE association_type IS NULL;
 
 ALTER TABLE documents
+DROP CONSTRAINT IF EXISTS check_document_association_type;
+
+ALTER TABLE documents
 ADD CONSTRAINT check_document_association_type 
 CHECK (association_type IN ('general', 'jeunes'));
 
 -- Modifier la clé primaire pour inclure association_type
-ALTER TABLE documents 
-DROP CONSTRAINT IF EXISTS documents_pkey;
-
-ALTER TABLE documents 
-ADD CONSTRAINT documents_pkey 
-PRIMARY KEY (id, association_type);
+-- Note: On ne peut pas modifier une clé primaire existante facilement
+-- Cette section sera ignorée si la clé primaire existe déjà
+-- ALTER TABLE documents 
+-- DROP CONSTRAINT IF EXISTS documents_pkey;
+-- 
+-- ALTER TABLE documents 
+-- ADD CONSTRAINT documents_pkey 
+-- PRIMARY KEY (id, association_type);
 
 -- ============================================================
 -- ÉTAPE 8: Ajouter association_type aux mandats
@@ -142,6 +168,9 @@ ADD COLUMN IF NOT EXISTS association_type TEXT DEFAULT 'general';
 UPDATE mandats 
 SET association_type = 'general' 
 WHERE association_type IS NULL;
+
+ALTER TABLE mandats
+DROP CONSTRAINT IF EXISTS check_mandat_association_type;
 
 ALTER TABLE mandats
 ADD CONSTRAINT check_mandat_association_type 
@@ -159,11 +188,56 @@ SET association_type = 'general'
 WHERE association_type IS NULL;
 
 ALTER TABLE bureau_membres
+DROP CONSTRAINT IF EXISTS check_bureau_membre_association_type;
+
+ALTER TABLE bureau_membres
 ADD CONSTRAINT check_bureau_membre_association_type 
 CHECK (association_type IN ('general', 'jeunes'));
 
 -- ============================================================
--- ÉTAPE 10: Créer des index pour les performances
+-- ÉTAPE 10: Ajouter association_type à app_settings
+-- ============================================================
+
+-- Ajouter la colonne association_type
+ALTER TABLE app_settings 
+ADD COLUMN IF NOT EXISTS association_type TEXT DEFAULT 'general';
+
+-- Mettre à jour les paramètres existants
+UPDATE app_settings 
+SET association_type = 'general' 
+WHERE association_type IS NULL;
+
+-- Ajouter une contrainte
+ALTER TABLE app_settings
+DROP CONSTRAINT IF EXISTS check_app_settings_association_type;
+
+ALTER TABLE app_settings
+ADD CONSTRAINT check_app_settings_association_type 
+CHECK (association_type IN ('general', 'jeunes'));
+
+-- Modifier la contrainte UNIQUE pour inclure association_type
+ALTER TABLE app_settings 
+DROP CONSTRAINT IF EXISTS app_settings_setting_key_key;
+
+ALTER TABLE app_settings 
+DROP CONSTRAINT IF EXISTS app_settings_setting_key_association_key;
+
+ALTER TABLE app_settings 
+ADD CONSTRAINT app_settings_setting_key_association_key 
+UNIQUE(setting_key, association_type);
+
+-- Créer une entrée pour l'association des jeunes
+INSERT INTO app_settings (setting_key, setting_value, description, association_type)
+VALUES (
+  'previous_years_total_amount',
+  '0',
+  'Montant total des cotisations des années précédentes (avant 2025) - cotisations papier',
+  'jeunes'
+)
+ON CONFLICT (setting_key, association_type) DO NOTHING;
+
+-- ============================================================
+-- ÉTAPE 11: Créer des index pour les performances
 -- ============================================================
 
 CREATE INDEX IF NOT EXISTS idx_profiles_association_types ON profiles USING GIN(association_types);
@@ -174,9 +248,10 @@ CREATE INDEX IF NOT EXISTS idx_actualites_association_type ON actualites(associa
 CREATE INDEX IF NOT EXISTS idx_notifications_association_type ON notifications(association_type);
 CREATE INDEX IF NOT EXISTS idx_mandats_association_type ON mandats(association_type);
 CREATE INDEX IF NOT EXISTS idx_bureau_membres_association_type ON bureau_membres(association_type);
+CREATE INDEX IF NOT EXISTS idx_app_settings_association_type ON app_settings(association_type);
 
 -- ============================================================
--- ÉTAPE 11: Modifier la fonction generate_cotisations pour supporter association_type
+-- ÉTAPE 12: Modifier la fonction generate_cotisations pour supporter association_type
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION public.generate_cotisations(
@@ -197,7 +272,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ============================================================
--- ÉTAPE 12: Créer une table pour stocker l'association active de chaque utilisateur
+-- ÉTAPE 13: Créer une table pour stocker l'association active de chaque utilisateur
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS user_active_association (
@@ -207,6 +282,11 @@ CREATE TABLE IF NOT EXISTS user_active_association (
 );
 
 ALTER TABLE user_active_association ENABLE ROW LEVEL SECURITY;
+
+-- Supprimer les politiques existantes avant de les recréer
+DROP POLICY IF EXISTS "Users can read their own active association" ON user_active_association;
+DROP POLICY IF EXISTS "Users can update their own active association" ON user_active_association;
+DROP POLICY IF EXISTS "Users can insert their own active association" ON user_active_association;
 
 -- Chaque utilisateur peut lire et modifier sa propre association active
 CREATE POLICY "Users can read their own active association"

@@ -9,6 +9,7 @@ class NotificationModel {
   final bool isRead;
   final Map<String, dynamic>? data;
   final DateTime createdAt;
+  final String associationType;
 
   NotificationModel({
     required this.id,
@@ -19,6 +20,7 @@ class NotificationModel {
     this.isRead = false,
     this.data,
     required this.createdAt,
+    this.associationType = 'general',
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,7 @@ class NotificationModel {
       isRead: json['is_read'] ?? false,
       data: json['data'] != null ? Map<String, dynamic>.from(json['data']) : null,
       createdAt: DateTime.parse(json['created_at']),
+      associationType: json['association_type'] ?? 'general',
     );
   }
 

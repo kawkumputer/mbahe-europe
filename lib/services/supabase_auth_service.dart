@@ -328,16 +328,20 @@ class SupabaseAuthService {
 
   /// Total des frais d'adhésion payés (uniquement depuis 2026)
   /// Les adhésions avant 2026 sont déjà incluses dans previous_years_total_amount
-  Future<double> getTotalAdhesionPaid() async {
+  Future<double> getTotalAdhesionPaid({String associationType = 'general'}) async {
     try {
       final data = await _client
           .from('profiles')
-          .select('adhesion_amount, adhesion_paid_at')
+          .select('adhesion_amount, adhesion_paid_at, association_types')
           .eq('adhesion_paid', true)
           .gte('adhesion_paid_at', '2026-01-01T00:00:00Z');
       double total = 0.0;
       for (final row in data) {
-        total += (row['adhesion_amount'] ?? 10.0).toDouble();
+        // Vérifier si le profil appartient à cette association
+        final associationTypes = List<String>.from(row['association_types'] ?? ['general']);
+        if (associationTypes.contains(associationType)) {
+          total += (row['adhesion_amount'] ?? 10.0).toDouble();
+        }
       }
       return total;
     } catch (e) {

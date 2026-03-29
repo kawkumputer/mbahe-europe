@@ -4,12 +4,13 @@ class SupabaseSettingsService {
   final SupabaseClient _client = Supabase.instance.client;
 
   /// Récupérer une valeur de paramètre par sa clé
-  Future<String?> getSetting(String key) async {
+  Future<String?> getSetting(String key, {String associationType = 'general'}) async {
     try {
       final data = await _client
           .from('app_settings')
           .select('setting_value')
           .eq('setting_key', key)
+          .eq('association_type', associationType)
           .maybeSingle();
 
       return data?['setting_value'] as String?;
@@ -19,9 +20,9 @@ class SupabaseSettingsService {
   }
 
   /// Récupérer le montant total des années précédentes
-  Future<double> getPreviousYearsTotalAmount() async {
+  Future<double> getPreviousYearsTotalAmount({String associationType = 'general'}) async {
     try {
-      final value = await getSetting('previous_years_total_amount');
+      final value = await getSetting('previous_years_total_amount', associationType: associationType);
       return value != null ? double.tryParse(value) ?? 0.0 : 0.0;
     } catch (e) {
       return 0.0;
@@ -29,7 +30,7 @@ class SupabaseSettingsService {
   }
 
   /// Mettre à jour le montant total des années précédentes (sys_admin uniquement)
-  Future<bool> updatePreviousYearsTotalAmount(double amount) async {
+  Future<bool> updatePreviousYearsTotalAmount(double amount, {String associationType = 'general'}) async {
     try {
       final userId = _client.auth.currentUser?.id;
       if (userId == null) return false;
@@ -41,7 +42,8 @@ class SupabaseSettingsService {
             'updated_at': DateTime.now().toIso8601String(),
             'updated_by': userId,
           })
-          .eq('setting_key', 'previous_years_total_amount');
+          .eq('setting_key', 'previous_years_total_amount')
+          .eq('association_type', associationType);
 
       return true;
     } catch (e) {

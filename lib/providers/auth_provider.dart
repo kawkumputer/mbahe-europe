@@ -164,8 +164,8 @@ class AuthProvider extends ChangeNotifier {
     return success;
   }
 
-  Future<double> getTotalAdhesionPaid() async {
-    return await _authService.getTotalAdhesionPaid();
+  Future<double> getTotalAdhesionPaid({String associationType = 'general'}) async {
+    return await _authService.getTotalAdhesionPaid(associationType: associationType);
   }
 
   /// Restaurer la session existante au démarrage

@@ -43,9 +43,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (success) {
       // Démarrer l'écoute Realtime des notifications
+      final authProvider = context.read<AuthProvider>();
       final notifProvider = context.read<NotificationProvider>();
-      notifProvider.startListening();
-      notifProvider.refreshUnreadCount();
+      notifProvider.setAssociationType(authProvider.currentAssociationType);
 
       // Si l'utilisateur a plusieurs associations, afficher l'écran de sélection
       if (authProvider.hasMultipleAssociations) {

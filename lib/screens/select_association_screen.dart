@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
 import '../models/user_model.dart';
 
 class SelectAssociationScreen extends StatelessWidget {
@@ -63,6 +64,9 @@ class SelectAssociationScreen extends StatelessWidget {
                         onTap: () async {
                           await authProvider.setActiveAssociation(associationType);
                           if (context.mounted) {
+                            // Synchroniser les notifications avec la nouvelle association
+                            final notifProvider = context.read<NotificationProvider>();
+                            notifProvider.setAssociationType(associationType);
                             _navigateToHome(context, authProvider);
                           }
                         },

@@ -112,16 +112,17 @@ class _AdminPaymentDashboardScreenState
 
     // Calculer le total général cumulé (ordre chronologique)
     // Commencer avec le montant des années précédentes (2022-2024)
-    final previousYears = await cotisationProvider.getPreviousYearsTotalAmount();
+    final associationType = authProvider.currentAssociationType;
+    final previousYears = await cotisationProvider.getPreviousYearsTotalAmount(associationType: associationType);
     double cumul = previousYears;
     
     // Ajouter les frais d'adhésion payés
-    final adhesion = await authProvider.getTotalAdhesionPaid();
+    final adhesion = await authProvider.getTotalAdhesionPaid(associationType: associationType);
     cumul += adhesion;
     
     // Soustraire les dépenses validées
     final depenseProvider = context.read<DepenseProvider>();
-    final depenses = await depenseProvider.getTotalApprovedDepenses();
+    final depenses = await depenseProvider.getTotalApprovedDepenses(associationType: associationType);
     cumul -= depenses;
     
     _previousYearsTotal = previousYears;

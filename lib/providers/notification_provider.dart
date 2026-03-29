@@ -12,10 +12,21 @@ class NotificationProvider extends ChangeNotifier {
   int _unreadCount = 0;
   bool _isLoading = false;
   RealtimeChannel? _channel;
+  String _currentAssociationType = 'general';
 
   List<NotificationModel> get notifications => _notifications;
   int get unreadCount => _unreadCount;
   bool get isLoading => _isLoading;
+
+  /// Définir l'association active
+  void setAssociationType(String associationType) {
+    if (_currentAssociationType != associationType) {
+      _currentAssociationType = associationType;
+      loadNotifications();
+      refreshUnreadCount();
+      startListening();
+    }
+  }
 
   /// Démarrer l'écoute Realtime des nouvelles notifications
   void startListening() {
@@ -24,7 +35,7 @@ class NotificationProvider extends ChangeNotifier {
 
     _channel?.unsubscribe();
     _channel = _client
-        .channel('notifications:${user.id}')
+        .channel('notifications:${user.id}:$_currentAssociationType')
         .onPostgresChanges(
           event: PostgresChangeEvent.insert,
           schema: 'public',
@@ -36,11 +47,14 @@ class NotificationProvider extends ChangeNotifier {
           ),
           callback: (payload) {
             final newNotif = NotificationModel.fromJson(payload.newRecord);
-            _notifications.insert(0, newNotif);
-            _unreadCount++;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              notifyListeners();
-            });
+            // Ne traiter que les notifications de l'association active
+            if (newNotif.associationType == _currentAssociationType) {
+              _notifications.insert(0, newNotif);
+              _unreadCount++;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                notifyListeners();
+              });
+            }
           },
         )
         .subscribe();
@@ -56,7 +70,7 @@ class NotificationProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _notifications = await _service.getMyNotifications();
+    _notifications = await _service.getMyNotifications(associationType: _currentAssociationType);
     _unreadCount = _notifications.where((n) => !n.isRead).length;
 
     _isLoading = false;
@@ -64,7 +78,7 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   Future<void> refreshUnreadCount() async {
-    _unreadCount = await _service.getUnreadCount();
+    _unreadCount = await _service.getUnreadCount(associationType: _currentAssociationType);
     notifyListeners();
   }
 
@@ -87,6 +101,7 @@ class NotificationProvider extends ChangeNotifier {
         isRead: true,
         data: _notifications[index].data,
         createdAt: _notifications[index].createdAt,
+        associationType: _notifications[index].associationType,
       );
       _unreadCount = _notifications.where((n) => !n.isRead).length;
       notifyListeners();
@@ -94,7 +109,7 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   Future<void> markAllAsRead() async {
-    await _service.markAllAsRead();
+    await _service.markAllAsRead(associationType: _currentAssociationType);
     _notifications = _notifications.map((n) => NotificationModel(
       id: n.id,
       recipientId: n.recipientId,
@@ -104,6 +119,7 @@ class NotificationProvider extends ChangeNotifier {
       isRead: true,
       data: n.data,
       createdAt: n.createdAt,
+      associationType: n.associationType,
     )).toList();
     _unreadCount = 0;
     notifyListeners();

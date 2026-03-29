@@ -241,7 +241,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Expanded(
                       child: _buildAssociationCard(
                         type: 'jeunes',
-                        title: 'MBAHE Jeunes',
+                        title: 'La jeunesse de M\'bahé',
                         subtitle: 'Association des jeunes',
                         icon: Icons.group,
                         isSelected: _selectedAssociation == 'jeunes',

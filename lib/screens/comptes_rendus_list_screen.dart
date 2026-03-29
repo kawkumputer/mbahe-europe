@@ -31,7 +31,7 @@ class _ComptesRendusListScreenState extends State<ComptesRendusListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.watch<AuthProvider>().isAdminOrSysAdmin;
+    final isAdmin = context.watch<AuthProvider>().isAdminForCurrentAssociation;
     final provider = context.watch<CompteRenduProvider>();
 
     return Scaffold(

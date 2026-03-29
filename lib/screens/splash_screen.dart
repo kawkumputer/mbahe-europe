@@ -52,8 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
       // Démarrer l'écoute Realtime des notifications
       if (mounted) {
         final notifProvider = context.read<NotificationProvider>();
-        notifProvider.startListening();
-        notifProvider.refreshUnreadCount();
+        notifProvider.setAssociationType(auth.currentAssociationType);
       }
 
       // Si l'utilisateur a plusieurs associations, afficher l'écran de sélection

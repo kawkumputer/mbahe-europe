@@ -34,7 +34,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadSettings() async {
     setState(() => _isLoading = true);
-    final amount = await _settingsService.getPreviousYearsTotalAmount();
+    final authProvider = context.read<AuthProvider>();
+    final associationType = authProvider.currentAssociationType;
+    final amount = await _settingsService.getPreviousYearsTotalAmount(associationType: associationType);
     setState(() {
       _currentAmount = amount;
       _amountController.text = amount.toStringAsFixed(0);
@@ -58,7 +60,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     setState(() => _isSaving = true);
-    final success = await _settingsService.updatePreviousYearsTotalAmount(amount);
+    final authProvider = context.read<AuthProvider>();
+    final associationType = authProvider.currentAssociationType;
+    final success = await _settingsService.updatePreviousYearsTotalAmount(amount, associationType: associationType);
     setState(() => _isSaving = false);
 
     if (mounted) {

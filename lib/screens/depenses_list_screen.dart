@@ -33,8 +33,9 @@ class _DepensesListScreenState extends State<DepensesListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().currentUser;
-    final isAdmin = user?.role == UserRole.admin || user?.role == UserRole.sysAdmin;
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.currentUser;
+    final isAdmin = authProvider.isAdminForCurrentAssociation;
 
     return Scaffold(
       appBar: AppBar(
@@ -170,9 +171,9 @@ class _DepensesListScreenState extends State<DepensesListScreen> {
                   // Total général restant (même calcul que le bilan des réunions)
                   FutureBuilder<List<double>>(
                     future: Future.wait([
-                      context.read<CotisationProvider>().getPreviousYearsTotalAmount(),
-                      context.read<CotisationProvider>().getTotalAllPaidAmount(),
-                      context.read<AuthProvider>().getTotalAdhesionPaid(),
+                      context.read<CotisationProvider>().getPreviousYearsTotalAmount(associationType: authProvider.currentAssociationType),
+                      context.read<CotisationProvider>().getTotalAllPaidAmount(associationType: authProvider.currentAssociationType),
+                      context.read<AuthProvider>().getTotalAdhesionPaid(associationType: authProvider.currentAssociationType),
                     ]),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) return const SizedBox.shrink();

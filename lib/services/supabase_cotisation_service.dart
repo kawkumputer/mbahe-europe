@@ -449,7 +449,7 @@ class SupabaseCotisationService {
   /// Récupérer le montant total des années précédentes (avant 2025)
   /// Montant défini par le sys_admin dans app_settings (cotisations papier)
   Future<double> getPreviousYearsTotalAmount({String associationType = 'general'}) async {
-    return await _settingsService.getPreviousYearsTotalAmount();
+    return await _settingsService.getPreviousYearsTotalAmount(associationType: associationType);
   }
 
   Map<String, dynamic> _computePaymentBreakdown(List<CotisationModel> paidCotisations) {
