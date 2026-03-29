@@ -194,9 +194,10 @@ class PdfExportService {
     );
 
     final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
+    final memberName = member.fullName.replaceAll(' ', '_');
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: '${associationName}_Cotisations_${member.fullName.replaceAll(' ', '_')}_$year',
+      name: '${associationName}_Cotisations_${memberName}_$year.pdf',
     );
   }
 
@@ -216,16 +217,22 @@ class PdfExportService {
       'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
     ];
 
-    // Page récapitulative
-    pdf.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.a4.landscape,
-        margin: const pw.EdgeInsets.all(30),
-        build: (context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              _buildPdfHeader('Cotisations — $year', associationType: associationType),
+    // Diviser les membres en groupes de 25 pour éviter le débordement
+    const membersPerPage = 25;
+    final totalPages = (members.length / membersPerPage).ceil();
+
+    for (int pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+      final startIndex = pageIndex * membersPerPage;
+      final endIndex = (startIndex + membersPerPage).clamp(0, members.length);
+      final pageMembers = members.sublist(startIndex, endIndex);
+
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4.landscape,
+          margin: const pw.EdgeInsets.all(30),
+          build: (context) {
+            return [
+              _buildPdfHeader('Cotisations — $year (Page ${pageIndex + 1}/$totalPages)', associationType: associationType),
               pw.SizedBox(height: 16),
 
               // Table
@@ -252,7 +259,7 @@ class PdfExportService {
                     ],
                   ),
                   // Data
-                  ...members.map((member) {
+                  ...pageMembers.map((member) {
                     final cotisations = cotisationsByUser[member.id] ?? [];
                     final summary = summariesByUser[member.id] ?? {};
                     return pw.TableRow(
@@ -301,24 +308,25 @@ class PdfExportService {
                   _legendItem(const PdfColor.fromInt(0xFFE3F2FD), 'E ${AppLocalizations.get('cotis_legend_exempted')}'),
                 ],
               ),
-
-              pw.Spacer(),
-
+            ];
+          },
+          footer: (context) => pw.Column(
+            children: [
               pw.Divider(color: PdfColors.grey300),
               pw.Text(
                 _getFooterText(associationType),
                 style: _style(fontSize: 8, color: _grey),
               ),
             ],
-          );
-        },
-      ),
-    );
+          ),
+        ),
+      );
+    }
 
     final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: '${associationName}_Cotisations_$year',
+      name: '${associationName}_Toutes_Cotisations_$year.pdf',
     );
   }
 
@@ -331,25 +339,126 @@ class PdfExportService {
     final pdf = pw.Document();
 
     pdf.addPage(
-      pw.Page(
+      pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(40),
         build: (context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              // Header
-              _buildPdfHeader(AppLocalizations.get('cr_detail_title'), associationType: associationType),
-              pw.SizedBox(height: 24),
+          return [
+            // Header
+            _buildPdfHeader(AppLocalizations.get('cr_detail_title'), associationType: associationType),
+            pw.SizedBox(height: 24),
 
-              // Title
+            // Title
+            pw.Text(
+              cr.title,
+              style: _style(fontSize: 20, bold: true),
+            ),
+            pw.SizedBox(height: 8),
+
+            // Meta info
+            pw.Container(
+              width: double.infinity,
+              padding: const pw.EdgeInsets.all(12),
+              decoration: pw.BoxDecoration(
+                color: _lightGrey,
+                borderRadius: pw.BorderRadius.circular(6),
+              ),
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Row(
+                    children: [
+                      pw.Text(
+                        '${AppLocalizations.get('cr_reunion_type')}: ',
+                        style: _style(fontSize: 11, bold: true),
+                      ),
+                      pw.Text(
+                        cr.typeLabel,
+                        style: _style(fontSize: 11),
+                      ),
+                    ],
+                  ),
+                  pw.SizedBox(height: 4),
+                  pw.Row(
+                    children: [
+                      pw.Text(
+                        '${AppLocalizations.get('cr_reunion_date_label')}: ',
+                        style: _style(fontSize: 11, bold: true),
+                      ),
+                      pw.Text(
+                        cr.formattedDate,
+                        style: _style(fontSize: 11),
+                      ),
+                    ],
+                  ),
+                  pw.SizedBox(height: 4),
+                  pw.Row(
+                    children: [
+                      pw.Text(
+                        'Auteur: ',
+                        style: _style(fontSize: 11, bold: true),
+                      ),
+                      pw.Text(
+                        cr.authorName,
+                        style: _style(fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            pw.SizedBox(height: 24),
+
+            // Points discutés
+            pw.Text(
+              AppLocalizations.get('cr_points'),
+              style: _style(fontSize: 16, color: _primary, bold: true),
+            ),
+            pw.SizedBox(height: 8),
+            pw.Divider(color: _primary, thickness: 1),
+            pw.SizedBox(height: 8),
+
+            ...cr.points.asMap().entries.map((entry) {
+              return pw.Padding(
+                padding: const pw.EdgeInsets.only(bottom: 8),
+                child: pw.Row(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Container(
+                      width: 22,
+                      height: 22,
+                      decoration: const pw.BoxDecoration(
+                        color: _primary,
+                        shape: pw.BoxShape.circle,
+                      ),
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(
+                        '${entry.key + 1}',
+                        style: _style(fontSize: 10, color: PdfColors.white, bold: true),
+                      ),
+                    ),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                      child: pw.Text(
+                        entry.value,
+                        style: _style(fontSize: 11),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+
+            // Notes
+            if (cr.notes != null && cr.notes!.isNotEmpty) ...[
+              pw.SizedBox(height: 20),
               pw.Text(
-                cr.title,
-                style: _style(fontSize: 20, bold: true),
+                AppLocalizations.get('cr_notes'),
+                style: _style(fontSize: 16, color: _primary, bold: true),
               ),
               pw.SizedBox(height: 8),
-
-              // Meta info
+              pw.Divider(color: _primary, thickness: 1),
+              pw.SizedBox(height: 8),
               pw.Container(
                 width: double.infinity,
                 padding: const pw.EdgeInsets.all(12),
@@ -357,134 +466,31 @@ class PdfExportService {
                   color: _lightGrey,
                   borderRadius: pw.BorderRadius.circular(6),
                 ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Row(
-                      children: [
-                        pw.Text(
-                          '${AppLocalizations.get('cr_reunion_type')}: ',
-                          style: _style(fontSize: 11, bold: true),
-                        ),
-                        pw.Text(
-                          cr.typeLabel,
-                          style: _style(fontSize: 11),
-                        ),
-                      ],
-                    ),
-                    pw.SizedBox(height: 4),
-                    pw.Row(
-                      children: [
-                        pw.Text(
-                          '${AppLocalizations.get('cr_reunion_date_label')}: ',
-                          style: _style(fontSize: 11, bold: true),
-                        ),
-                        pw.Text(
-                          cr.formattedDate,
-                          style: _style(fontSize: 11),
-                        ),
-                      ],
-                    ),
-                    pw.SizedBox(height: 4),
-                    pw.Row(
-                      children: [
-                        pw.Text(
-                          'Auteur: ',
-                          style: _style(fontSize: 11, bold: true),
-                        ),
-                        pw.Text(
-                          cr.authorName,
-                          style: _style(fontSize: 11),
-                        ),
-                      ],
-                    ),
-                  ],
+                child: pw.Text(
+                  _cleanText(cr.notes!),
+                  style: _style(fontSize: 11),
                 ),
-              ),
-              pw.SizedBox(height: 24),
-
-              // Points discutés
-              pw.Text(
-                AppLocalizations.get('cr_points'),
-                style: _style(fontSize: 16, color: _primary, bold: true),
-              ),
-              pw.SizedBox(height: 8),
-              pw.Divider(color: _primary, thickness: 1),
-              pw.SizedBox(height: 8),
-
-              ...cr.points.asMap().entries.map((entry) {
-                return pw.Padding(
-                  padding: const pw.EdgeInsets.only(bottom: 8),
-                  child: pw.Row(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Container(
-                        width: 22,
-                        height: 22,
-                        decoration: const pw.BoxDecoration(
-                          color: _primary,
-                          shape: pw.BoxShape.circle,
-                        ),
-                        alignment: pw.Alignment.center,
-                        child: pw.Text(
-                          '${entry.key + 1}',
-                          style: _style(fontSize: 10, color: PdfColors.white, bold: true),
-                        ),
-                      ),
-                      pw.SizedBox(width: 10),
-                      pw.Expanded(
-                        child: pw.Text(
-                          entry.value,
-                          style: _style(fontSize: 11),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-
-              // Notes
-              if (cr.notes != null && cr.notes!.isNotEmpty) ...[
-                pw.SizedBox(height: 20),
-                pw.Text(
-                  AppLocalizations.get('cr_notes'),
-                  style: _style(fontSize: 16, color: _primary, bold: true),
-                ),
-                pw.SizedBox(height: 8),
-                pw.Divider(color: _primary, thickness: 1),
-                pw.SizedBox(height: 8),
-                pw.Container(
-                  width: double.infinity,
-                  padding: const pw.EdgeInsets.all(12),
-                  decoration: pw.BoxDecoration(
-                    color: _lightGrey,
-                    borderRadius: pw.BorderRadius.circular(6),
-                  ),
-                  child: pw.Text(
-                    cr.notes!,
-                    style: _style(fontSize: 11),
-                  ),
-                ),
-              ],
-
-              pw.Spacer(),
-
-              // Footer
-              pw.Divider(color: PdfColors.grey300),
-              pw.Text(
-                _getFooterText(associationType),
-                style: _style(fontSize: 8, color: _grey),
               ),
             ],
-          );
+          ];
         },
+        footer: (context) => pw.Column(
+          children: [
+            pw.Divider(color: PdfColors.grey300),
+            pw.Text(
+              _getFooterText(associationType),
+              style: _style(fontSize: 8, color: _grey),
+            ),
+          ],
+        ),
       ),
     );
 
     final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
+    final dateStr = '${cr.reunionDate.day.toString().padLeft(2, '0')}_${cr.reunionDate.month.toString().padLeft(2, '0')}_${cr.reunionDate.year}';
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: '${associationName}_Compte_rendu_${cr.reunionDate.day}_${cr.reunionDate.month}_${cr.reunionDate.year}',
+      name: '${associationName}_Compte_Rendu_$dateStr.pdf',
     );
   }
 
@@ -615,7 +621,7 @@ class PdfExportService {
     final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: '${associationName}_Depenses_${DateTime.now().year}',
+      name: '${associationName}_Depenses_${DateTime.now().year}.pdf',
     );
   }
 
@@ -807,7 +813,7 @@ class PdfExportService {
     final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: '${associationName}_Bilan_reunions_${DateTime.now().year}',
+      name: '${associationName}_Bilan_Reunions_${DateTime.now().year}.pdf',
     );
   }
 
@@ -882,6 +888,16 @@ class PdfExportService {
   }
 
   // Helpers
+  /// Nettoie le texte en supprimant les caractères invisibles (Word Joiner, Zero Width Space, etc.)
+  static String _cleanText(String text) {
+    return text
+        .replaceAll('\u2060', '') // Word Joiner
+        .replaceAll('\u200B', '') // Zero Width Space
+        .replaceAll('\u200C', '') // Zero Width Non-Joiner
+        .replaceAll('\u200D', '') // Zero Width Joiner
+        .replaceAll('\uFEFF', ''); // Zero Width No-Break Space (BOM)
+  }
+
   static pw.Widget _headerCell(String text) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(6),

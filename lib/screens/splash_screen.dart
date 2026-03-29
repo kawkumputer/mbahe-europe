@@ -56,14 +56,8 @@ class _SplashScreenState extends State<SplashScreen>
         notifProvider.refreshUnreadCount();
       }
 
-      // Debug: afficher les associations de l'utilisateur
-      print('DEBUG - User associations: ${auth.userAssociationTypes}');
-      print('DEBUG - Has multiple associations: ${auth.hasMultipleAssociations}');
-      print('DEBUG - Current association type: ${auth.currentAssociationType}');
-
       // Si l'utilisateur a plusieurs associations, afficher l'écran de sélection
       if (auth.hasMultipleAssociations) {
-        print('DEBUG - Navigating to select-association screen');
         Navigator.pushReplacementNamed(context, '/select-association');
       } else if (auth.currentUser!.status != AccountStatus.approved) {
         Navigator.pushReplacementNamed(context, '/pending-approval');
