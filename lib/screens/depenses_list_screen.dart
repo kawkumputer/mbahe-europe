@@ -55,7 +55,11 @@ class _DepensesListScreenState extends State<DepensesListScreen> {
               tooltip: 'Exporter PDF',
               onPressed: () {
                 final depenses = context.read<DepenseProvider>().depenses;
-                PdfExportService.exportDepenses(depenses: depenses);
+                final authProvider = context.read<AuthProvider>();
+                PdfExportService.exportDepenses(
+                  depenses: depenses,
+                  associationType: authProvider.currentAssociationType,
+                );
               },
             ),
         ],

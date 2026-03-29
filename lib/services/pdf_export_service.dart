@@ -40,6 +40,7 @@ class PdfExportService {
     required List<CotisationModel> cotisations,
     required int year,
     required Map<String, dynamic> summary,
+    String associationType = 'general',
   }) async {
     await _loadFonts();
     final pdf = pw.Document();
@@ -58,7 +59,7 @@ class PdfExportService {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               // Header
-              _buildPdfHeader(AppLocalizations.get('cotisations_title')),
+              _buildPdfHeader(AppLocalizations.get('cotisations_title'), associationType: associationType),
               pw.SizedBox(height: 20),
 
               // Member info
@@ -183,7 +184,7 @@ class PdfExportService {
               // Footer
               pw.Divider(color: PdfColors.grey300),
               pw.Text(
-                'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
+                _getFooterText(associationType),
                 style: _style(fontSize: 8, color: _grey),
               ),
             ],
@@ -192,18 +193,20 @@ class PdfExportService {
       ),
     );
 
+    final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: 'Cotisations_${member.fullName.replaceAll(' ', '_')}_$year',
+      name: '${associationName}_Cotisations_${member.fullName.replaceAll(' ', '_')}_$year',
     );
   }
 
-  /// Export toutes les cotisations de tous les membres pour une année
+  /// Export toutes les cotisations pour tous les membres
   static Future<void> exportAllCotisations({
     required List<UserModel> members,
     required Map<String, List<CotisationModel>> cotisationsByUser,
     required Map<String, Map<String, dynamic>> summariesByUser,
     required int year,
+    String associationType = 'general',
   }) async {
     await _loadFonts();
     final pdf = pw.Document();
@@ -222,7 +225,7 @@ class PdfExportService {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              _buildPdfHeader('${AppLocalizations.get('cotisations_title')} \u2014 $year'),
+              _buildPdfHeader('Cotisations — $year', associationType: associationType),
               pw.SizedBox(height: 16),
 
               // Table
@@ -303,7 +306,7 @@ class PdfExportService {
 
               pw.Divider(color: PdfColors.grey300),
               pw.Text(
-                'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
+                _getFooterText(associationType),
                 style: _style(fontSize: 8, color: _grey),
               ),
             ],
@@ -312,15 +315,17 @@ class PdfExportService {
       ),
     );
 
+    final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: 'Cotisations_tous_les_membres_$year',
+      name: '${associationName}_Cotisations_$year',
     );
   }
 
   /// Export un compte rendu en PDF
   static Future<void> exportCompteRendu({
     required CompteRenduModel cr,
+    String associationType = 'general',
   }) async {
     await _loadFonts();
     final pdf = pw.Document();
@@ -334,7 +339,7 @@ class PdfExportService {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               // Header
-              _buildPdfHeader(AppLocalizations.get('cr_detail_title')),
+              _buildPdfHeader(AppLocalizations.get('cr_detail_title'), associationType: associationType),
               pw.SizedBox(height: 24),
 
               // Title
@@ -467,7 +472,7 @@ class PdfExportService {
               // Footer
               pw.Divider(color: PdfColors.grey300),
               pw.Text(
-                'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
+                _getFooterText(associationType),
                 style: _style(fontSize: 8, color: _grey),
               ),
             ],
@@ -476,15 +481,17 @@ class PdfExportService {
       ),
     );
 
+    final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: 'Compte_rendu_${cr.title.replaceAll(' ', '_')}_${cr.reunionDate.day}_${cr.reunionDate.month}_${cr.reunionDate.year}',
+      name: '${associationName}_Compte_rendu_${cr.reunionDate.day}_${cr.reunionDate.month}_${cr.reunionDate.year}',
     );
   }
 
   /// Export liste des dépenses en PDF
   static Future<void> exportDepenses({
     required List<DepenseModel> depenses,
+    String associationType = 'general',
   }) async {
     await _loadFonts();
     final pdf = pw.Document();
@@ -499,7 +506,7 @@ class PdfExportService {
         header: (context) => pw.Column(
           children: [
             if (context.pageNumber == 1) ...[
-              _buildPdfHeader(AppLocalizations.get('depenses_title')),
+              _buildPdfHeader(AppLocalizations.get('depenses_title'), associationType: associationType),
               pw.SizedBox(height: 20),
               // Résumé
               pw.Container(
@@ -538,7 +545,7 @@ class PdfExportService {
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
                 pw.Text(
-                  'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
+                  _getFooterText(associationType),
                   style: _style(fontSize: 8, color: _grey),
                 ),
                 pw.Text(
@@ -605,9 +612,10 @@ class PdfExportService {
       ),
     );
 
+    final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: 'Depenses_validees_${DateTime.now().year}',
+      name: '${associationName}_Depenses_${DateTime.now().year}',
     );
   }
 
@@ -618,6 +626,7 @@ class PdfExportService {
     required double previousYearsTotal,
     required double totalAdhesion,
     required double totalDepenses,
+    String associationType = 'general',
   }) async {
     await _loadFonts();
     final pdf = pw.Document();
@@ -633,7 +642,7 @@ class PdfExportService {
         header: (context) => pw.Column(
           children: [
             if (context.pageNumber == 1) ...[
-              _buildPdfHeader(AppLocalizations.get('payment_title')),
+              _buildPdfHeader(AppLocalizations.get('payment_title'), associationType: associationType),
               pw.SizedBox(height: 20),
               // Résumé général
               pw.Container(
@@ -677,7 +686,7 @@ class PdfExportService {
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
                 pw.Text(
-                  'Association des ressortissants de M\'bah\u00e9 en Europe \u2014 ${_formatDate(DateTime.now())}',
+                  _getFooterText(associationType),
                   style: _style(fontSize: 8, color: _grey),
                 ),
                 pw.Text(
@@ -795,14 +804,20 @@ class PdfExportService {
       ),
     );
 
+    final associationName = associationType == 'jeunes' ? 'MBAHE_Jeunes' : 'MBAHE_Europe';
     await Printing.layoutPdf(
       onLayout: (format) => pdf.save(),
-      name: 'Bilan_reunions_${DateTime.now().year}',
+      name: '${associationName}_Bilan_reunions_${DateTime.now().year}',
     );
   }
 
   /// En-tête PDF partagé avec nom de l'association FR + Pulaar
-  static pw.Widget _buildPdfHeader(String subtitle) {
+  static pw.Widget _buildPdfHeader(String subtitle, {String associationType = 'general'}) {
+    final isJeunes = associationType == 'jeunes';
+    final mainTitle = isJeunes ? 'LA JEUNESSE DE M\'BAHÉ' : 'MBAHE EUROPE';
+    final subTitle = isJeunes ? 'La Jeunesse de M\'bahé en France' : 'Association des ressortissants de M\'bahé en Europe';
+    final pulaarText = isJeunes ? null : 'Fedde renndinde ɓesngu Mbahe e Orop';
+    
     return pw.Container(
       width: double.infinity,
       padding: const pw.EdgeInsets.all(20),
@@ -814,23 +829,25 @@ class PdfExportService {
         crossAxisAlignment: pw.CrossAxisAlignment.center,
         children: [
           pw.Text(
-            'MBAHE EUROPE',
+            mainTitle,
             style: _style(fontSize: 22, color: PdfColors.white, bold: true),
           ),
           pw.SizedBox(height: 4),
           pw.Text(
-            'Association des ressortissants de M\'bah\u00e9 en Europe',
+            subTitle,
             style: _style(fontSize: 11, color: PdfColors.white),
           ),
-          pw.Text(
-            'Fedde renndinde \u0253esngu Mbahe e Orop',
-            style: pw.TextStyle(
-              font: _regular,
-              fontSize: 10,
-              color: PdfColors.white,
-              fontStyle: pw.FontStyle.italic,
+          if (pulaarText != null) ...[
+            pw.Text(
+              pulaarText,
+              style: pw.TextStyle(
+                font: _regular,
+                fontSize: 10,
+                color: PdfColors.white,
+                fontStyle: pw.FontStyle.italic,
+              ),
             ),
-          ),
+          ],
           pw.SizedBox(height: 8),
           pw.Container(
             padding: const pw.EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -913,6 +930,14 @@ class PdfExportService {
         pw.Text(text, style: _style(fontSize: 9)),
       ],
     );
+  }
+
+  static String _getFooterText(String associationType) {
+    final date = _formatDate(DateTime.now());
+    if (associationType == 'jeunes') {
+      return 'La Jeunesse de M\'bahé en France — $date';
+    }
+    return 'Association des ressortissants de M\'bahé en Europe — $date';
   }
 
   static String _formatDate(DateTime date) {

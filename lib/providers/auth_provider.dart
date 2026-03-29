@@ -48,11 +48,7 @@ class AuthProvider extends ChangeNotifier {
     }
 
     _currentUser = user;
-    print('DEBUG LOGIN - User loaded: ${user.fullName}');
-    print('DEBUG LOGIN - Association types from DB: ${user.associationTypes}');
     await _loadActiveAssociation();
-    print('DEBUG LOGIN - Current association type: $_currentAssociationType');
-    print('DEBUG LOGIN - Has multiple associations: $hasMultipleAssociations');
     notifyListeners();
     return true;
   }
@@ -177,11 +173,7 @@ class AuthProvider extends ChangeNotifier {
     final user = await _authService.getCurrentUser();
     if (user != null) {
       _currentUser = user;
-      print('DEBUG RESTORE - User loaded: ${user.fullName}');
-      print('DEBUG RESTORE - Association types from DB: ${user.associationTypes}');
       await _loadActiveAssociation();
-      print('DEBUG RESTORE - Current association type: $_currentAssociationType');
-      print('DEBUG RESTORE - Has multiple associations: $hasMultipleAssociations');
       notifyListeners();
     }
   }

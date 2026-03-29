@@ -748,6 +748,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
 
   Future<void> _exportMemberPdf(BuildContext context) async {
     final provider = context.read<CotisationProvider>();
+    final authProvider = context.read<AuthProvider>();
     final member = _selectedMember!;
 
     await PdfExportService.exportMemberCotisations(
@@ -755,12 +756,15 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
       cotisations: provider.cotisations,
       year: _selectedYear,
       summary: provider.summary,
+      associationType: authProvider.currentAssociationType,
     );
   }
 
   Future<void> _exportAllPdf(BuildContext context) async {
     final nav = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    final authProvider = context.read<AuthProvider>();
+    final currentAssociation = authProvider.currentAssociationType;
 
     showDialog(
       context: context,
@@ -777,10 +781,12 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
         final cotisations = await service.getCotisationsByUserAndYear(
           member.id,
           _selectedYear,
+          associationType: currentAssociation,
         );
         final summary = await service.getUserYearlySummary(
           member.id,
           _selectedYear,
+          associationType: currentAssociation,
         );
         cotisationsByUser[member.id] = cotisations;
         summariesByUser[member.id] = summary;
@@ -793,6 +799,7 @@ class _AdminCotisationsScreenState extends State<AdminCotisationsScreen> {
         cotisationsByUser: cotisationsByUser,
         summariesByUser: summariesByUser,
         year: _selectedYear,
+        associationType: currentAssociation,
       );
     } catch (e) {
       if (mounted) {

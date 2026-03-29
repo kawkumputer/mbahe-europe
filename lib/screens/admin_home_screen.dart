@@ -69,32 +69,34 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         ),
         actions: [
           const AssociationSwitcher(),
-          GestureDetector(
-            onTap: () => context.read<LocaleProvider>().toggleLocale(),
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.language_rounded, size: 16, color: Colors.white),
-                  const SizedBox(width: 4),
-                  Text(
-                    context.watch<LocaleProvider>().isFrench ? 'Pr' : 'FR',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+          // Bouton de traduction (caché pour l'association des jeunes)
+          if (context.watch<AuthProvider>().currentAssociationType != 'jeunes')
+            GestureDetector(
+              onTap: () => context.read<LocaleProvider>().toggleLocale(),
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.language_rounded, size: 16, color: Colors.white),
+                    const SizedBox(width: 4),
+                    Text(
+                      context.watch<LocaleProvider>().isFrench ? 'Pr' : 'FR',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
           _buildNotificationIcon(),
           if (context.watch<AuthProvider>().isSysAdmin)
             IconButton(

@@ -192,10 +192,12 @@ class SupabaseAuthService {
     try {
       final admin = await _getCurrentAdmin();
       final memberName = await _getUserName(userId);
+      
       await _client
           .from('profiles')
           .update({'status': 'approved'})
           .eq('id', userId);
+      
       await _logAction(
         adminId: admin['id']!,
         adminName: admin['name']!,

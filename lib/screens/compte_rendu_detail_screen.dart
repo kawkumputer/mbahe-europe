@@ -40,7 +40,13 @@ class CompteRenduDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.picture_as_pdf_rounded),
             tooltip: AppLocalizations.get('pdf_export_cr'),
-            onPressed: () => PdfExportService.exportCompteRendu(cr: cr),
+            onPressed: () {
+              final authProvider = context.read<AuthProvider>();
+              PdfExportService.exportCompteRendu(
+                cr: cr,
+                associationType: authProvider.currentAssociationType,
+              );
+            },
           ),
           if (isAdmin)
             IconButton(

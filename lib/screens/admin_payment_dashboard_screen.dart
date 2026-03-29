@@ -61,10 +61,16 @@ class _AdminPaymentDashboardScreenState
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
 
+    final authProvider = context.read<AuthProvider>();
+    final currentAssociation = authProvider.currentAssociationType;
     final compteRenduProvider = context.read<CompteRenduProvider>();
     final cotisationProvider = context.read<CotisationProvider>();
 
-    await compteRenduProvider.loadComptesRendus();
+    // Synchroniser avec l'association active
+    compteRenduProvider.setAssociationType(currentAssociation);
+    cotisationProvider.setAssociationType(currentAssociation);
+
+    await compteRenduProvider.loadComptesRendus(associationType: currentAssociation);
     final reunions = compteRenduProvider.comptesRendus;
 
     // Trier par date croissante pour calculer les plages entre réunions
@@ -110,7 +116,6 @@ class _AdminPaymentDashboardScreenState
     double cumul = previousYears;
     
     // Ajouter les frais d'adhésion payés
-    final authProvider = context.read<AuthProvider>();
     final adhesion = await authProvider.getTotalAdhesionPaid();
     cumul += adhesion;
     
@@ -172,11 +177,13 @@ class _AdminPaymentDashboardScreenState
       'cumulativeTotal': s.cumulativeTotal,
     }).toList();
 
+    final authProvider = context.read<AuthProvider>();
     await PdfExportService.exportBilanReunions(
       reunionSummaries: reunionMaps,
       previousYearsTotal: _previousYearsTotal,
       totalAdhesion: _totalAdhesion,
       totalDepenses: _totalDepenses,
+      associationType: authProvider.currentAssociationType,
     );
   }
 
