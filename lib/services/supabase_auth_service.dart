@@ -259,7 +259,64 @@ class SupabaseAuthService {
     }
   }
 
-  /// Mettre à jour le rôle d'un utilisateur (admin/member)
+  /// Mettre à jour le rôle d'un utilisateur pour une association spécifique
+  Future<bool> updateUserRoleForAssociation(String userId, String role, String associationType) async {
+    try {
+      final admin = await _getCurrentAdmin();
+      final memberName = await _getUserName(userId);
+      
+      // Récupérer les association_roles actuels
+      final profileData = await _client
+          .from('profiles')
+          .select('association_roles')
+          .eq('id', userId)
+          .single();
+      
+      final Map<String, dynamic> currentRoles = 
+          Map<String, dynamic>.from(profileData['association_roles'] ?? {});
+      
+      // Mettre à jour le rôle pour l'association spécifique
+      currentRoles[associationType] = role;
+      
+      await _client
+          .from('profiles')
+          .update({'association_roles': currentRoles})
+          .eq('id', userId);
+      
+      await _logAction(
+        adminId: admin['id']!,
+        adminName: admin['name']!,
+        action: 'update_role_for_association',
+        targetTable: 'profiles',
+        targetId: userId,
+        details: {'new_role': role, 'association_type': associationType},
+      );
+
+      // Notifier l'utilisateur concerné
+      final roleLabel = role == 'admin' ? 'Admin' : 'Membre';
+      await _notifService.notifyUser(
+        recipientId: userId,
+        title: 'Changement de rôle',
+        body: 'Vous êtes maintenant $roleLabel dans l\'association $associationType.',
+        type: NotificationType.role,
+      );
+      // Notifier les autres admins de cette association
+      await _notifService.notifyAllAdmins(
+        title: 'Changement de rôle',
+        body: '${admin['name']} a promu $memberName en $roleLabel dans $associationType.',
+        type: NotificationType.role,
+        data: {'user_id': userId, 'new_role': role, 'association_type': associationType},
+        excludeAdminId: admin['id'],
+        associationType: associationType,
+      );
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Mettre à jour le rôle d'un utilisateur (admin/member) - ancienne fonction pour compatibilité
   Future<bool> updateUserRole(String userId, String role) async {
     try {
       final admin = await _getCurrentAdmin();

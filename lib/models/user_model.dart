@@ -136,17 +136,14 @@ class UserModel {
   }
 
   static Map<String, UserRole> _parseAssociationRoles(dynamic rolesJson) {
-    print('DEBUG _parseAssociationRoles: rolesJson = $rolesJson (type: ${rolesJson.runtimeType})');
     if (rolesJson == null) return {'general': UserRole.member};
     
     final Map<String, UserRole> roles = {};
     if (rolesJson is Map) {
       rolesJson.forEach((key, value) {
-        print('DEBUG _parseAssociationRoles: key=$key, value=$value');
         roles[key.toString()] = _parseRole(value.toString());
       });
     }
-    print('DEBUG _parseAssociationRoles: result = $roles');
     
     return roles.isEmpty ? {'general': UserRole.member} : roles;
   }

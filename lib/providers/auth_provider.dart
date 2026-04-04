@@ -146,6 +146,14 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Mettre à jour le rôle d'un utilisateur pour une association spécifique
+  Future<bool> updateUserRoleForAssociation(String userId, String role) async {
+    final success = await _authService.updateUserRoleForAssociation(userId, role, currentAssociationType);
+    if (success) notifyListeners();
+    return success;
+  }
+
+  /// Mettre à jour le rôle d'un utilisateur (admin/member) - ancienne fonction pour compatibilité
   Future<bool> updateUserRole(String userId, String role) async {
     final success = await _authService.updateUserRole(userId, role);
     if (success) notifyListeners();
@@ -188,7 +196,13 @@ class AuthProvider extends ChangeNotifier {
     if (savedAssociation != null && _currentUser!.associationTypes.contains(savedAssociation)) {
       _currentAssociationType = savedAssociation;
     } else {
-      _currentAssociationType = _currentUser!.associationTypes.first;
+      // Priorité à l'association où l'utilisateur est admin
+      final adminAssociation = _currentUser!.associationRoles.entries
+          .where((e) => e.value == UserRole.admin || e.value == UserRole.sysAdmin)
+          .map((e) => e.key)
+          .where((k) => _currentUser!.associationTypes.contains(k))
+          .firstOrNull;
+      _currentAssociationType = adminAssociation ?? _currentUser!.associationTypes.first;
     }
   }
 

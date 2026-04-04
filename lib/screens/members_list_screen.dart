@@ -64,6 +64,7 @@ class _MembersListScreenState extends State<MembersListScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final isAdmin = auth.isAdminForCurrentAssociation;
+    final currentAssociation = auth.currentAssociationType;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -152,7 +153,7 @@ class _MembersListScreenState extends State<MembersListScreen> {
                           itemCount: _filteredMembers.length,
                           itemBuilder: (context, index) {
                             final member = _filteredMembers[index];
-                            return _buildMemberCard(member, isAdmin);
+                            return _buildMemberCard(member, isAdmin, currentAssociation);
                           },
                         ),
                       ),
@@ -162,15 +163,7 @@ class _MembersListScreenState extends State<MembersListScreen> {
     );
   }
 
-  Widget _buildMemberCard(UserModel member, bool isAdmin) {
-    final auth = context.read<AuthProvider>();
-    final currentAssociation = auth.currentAssociationType;
-    
-    print('DEBUG: Member ${member.fullName} (${member.phone})');
-    print('DEBUG: association_roles = ${member.associationRoles}');
-    print('DEBUG: currentAssociation = $currentAssociation');
-    print('DEBUG: isAdminForAssociation($currentAssociation) = ${member.isAdminForAssociation(currentAssociation)}');
-    
+  Widget _buildMemberCard(UserModel member, bool isAdmin, String currentAssociation) {
     final isMemberAdminForCurrentAssociation = member.isAdminForAssociation(currentAssociation);
     
     return Container(

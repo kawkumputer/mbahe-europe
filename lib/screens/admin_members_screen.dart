@@ -359,7 +359,10 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
         break;
     }
 
-    final isUserAdmin = user.role == UserRole.admin;
+    // Utiliser le rôle pour l'association active au lieu du rôle global
+    final auth = context.read<AuthProvider>();
+    final currentAssociation = auth.currentAssociationType;
+    final isUserAdmin = user.isAdminForAssociation(currentAssociation);
 
     return GestureDetector(
       onTap: () => _showMemberOptions(user),
@@ -615,8 +618,10 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
   }
 
   void _showMemberOptions(UserModel user) {
-    final isUserAdmin = user.role == UserRole.admin;
-    final currentUser = context.read<AuthProvider>().currentUser;
+    final auth = context.read<AuthProvider>();
+    final currentAssociation = auth.currentAssociationType;
+    final isUserAdmin = user.isAdminForAssociation(currentAssociation);
+    final currentUser = auth.currentUser;
 
     // Ne pas permettre de se rétrograder soi-même
     final isSelf = currentUser?.id == user.id;
@@ -710,7 +715,7 @@ class _AdminMembersScreenState extends State<AdminMembersScreen> {
                       final newRole = isUserAdmin ? 'member' : 'admin';
                       final confirm = await _confirmRoleChange(user, newRole);
                       if (confirm == true) {
-                        final success = await auth.updateUserRole(user.id, newRole);
+                        final success = await auth.updateUserRoleForAssociation(user.id, newRole);
                         await _loadUsers();
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
