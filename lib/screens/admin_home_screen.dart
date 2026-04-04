@@ -52,12 +52,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Text(
-              AssociationColors.getAssociationName(associationType),
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+            Expanded(
+              child: Text(
+                AssociationColors.getAssociationName(associationType),
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -188,12 +191,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
-                                      AppLocalizations.get('admin_dashboard'),
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white.withOpacity(0.9),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
+                                    Expanded(
+                                      child: Text(
+                                        AppLocalizations.get('admin_dashboard'),
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     const SizedBox(width: 8),

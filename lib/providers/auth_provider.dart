@@ -137,12 +137,12 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> approveUser(String userId) async {
-    await _authService.approveUser(userId);
+    await _authService.approveUser(userId, associationType: currentAssociationType);
     notifyListeners();
   }
 
   Future<void> rejectUser(String userId) async {
-    await _authService.rejectUser(userId);
+    await _authService.rejectUser(userId, associationType: currentAssociationType);
     notifyListeners();
   }
 
@@ -156,6 +156,19 @@ class AuthProvider extends ChangeNotifier {
   /// Mettre à jour le rôle d'un utilisateur (admin/member) - ancienne fonction pour compatibilité
   Future<bool> updateUserRole(String userId, String role) async {
     final success = await _authService.updateUserRole(userId, role);
+    if (success) notifyListeners();
+    return success;
+  }
+
+  Future<bool> resetUserPassword({
+    required String userId,
+    required String newPassword,
+  }) async {
+    final success = await _authService.resetUserPassword(
+      userId: userId, 
+      newPassword: newPassword,
+      associationType: currentAssociationType,
+    );
     if (success) notifyListeners();
     return success;
   }
@@ -259,19 +272,6 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = 'Mot de passe actuel incorrect';
     }
     notifyListeners();
-    return success;
-  }
-
-  /// Réinitialiser le mot de passe d'un utilisateur (admin uniquement)
-  Future<bool> resetUserPassword({
-    required String userId,
-    required String newPassword,
-  }) async {
-    final success = await _authService.resetUserPassword(
-      userId: userId,
-      newPassword: newPassword,
-    );
-    if (success) notifyListeners();
     return success;
   }
 }

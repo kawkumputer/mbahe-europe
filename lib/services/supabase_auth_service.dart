@@ -139,17 +139,38 @@ class SupabaseAuthService {
     return data.map<UserModel>((json) => UserModel.fromJson(json)).toList();
   }
 
-  /// Helper: récupérer l'admin courant (id + nom)
-  Future<Map<String, String>> _getCurrentAdmin() async {
+  /// Helper: récupérer l'admin courant (id + nom) pour une association spécifique
+  Future<Map<String, String>> _getCurrentAdmin({String? associationType}) async {
     final user = _client.auth.currentUser;
     if (user == null) return {'id': '', 'name': ''};
+    
     final profile = await _client
         .from('profiles')
-        .select('id, first_name, last_name')
+        .select('id, first_name, last_name, association_roles, role')
         .eq('id', user.id)
         .single();
+    
+    // Vérifier si l'utilisateur est admin pour l'association spécifiée
+    if (associationType != null) {
+      final roles = profile['association_roles'] as Map<String, dynamic>?;
+      if (roles == null || !roles.containsKey(associationType) || 
+          roles[associationType] != 'admin') {
+        throw Exception('Permission refusée: vous n\'êtes pas admin de cette association');
+      }
+    } else {
+      // Vérification par défaut avec l'ancienne colonne role pour compatibilité
+      if (profile['role'] != 'admin') {
+        throw Exception('Permission refusée: vous n\'êtes pas admin');
+      }
+    }
+    
     final name = '${profile['first_name']} ${profile['last_name']}';
     return {'id': user.id, 'name': name};
+  }
+
+  /// Ancienne fonction pour compatibilité (utilise l'ancienne colonne role)
+  Future<Map<String, String>> _getCurrentAdminLegacy() async {
+    return await _getCurrentAdmin();
   }
 
   /// Helper: enregistrer une action dans audit_log
@@ -188,9 +209,9 @@ class SupabaseAuthService {
   }
 
   /// Approuver un utilisateur
-  Future<bool> approveUser(String userId) async {
+  Future<bool> approveUser(String userId, {String? associationType}) async {
     try {
-      final admin = await _getCurrentAdmin();
+      final admin = await _getCurrentAdmin(associationType: associationType);
       final memberName = await _getUserName(userId);
       
       await _client
@@ -229,9 +250,9 @@ class SupabaseAuthService {
   }
 
   /// Rejeter un utilisateur
-  Future<bool> rejectUser(String userId) async {
+  Future<bool> rejectUser(String userId, {String? associationType}) async {
     try {
-      final admin = await _getCurrentAdmin();
+      final admin = await _getCurrentAdmin(associationType: associationType);
       final memberName = await _getUserName(userId);
       await _client
           .from('profiles')
@@ -262,7 +283,7 @@ class SupabaseAuthService {
   /// Mettre à jour le rôle d'un utilisateur pour une association spécifique
   Future<bool> updateUserRoleForAssociation(String userId, String role, String associationType) async {
     try {
-      final admin = await _getCurrentAdmin();
+      final admin = await _getCurrentAdmin(associationType: associationType);
       final memberName = await _getUserName(userId);
       
       // Récupérer les association_roles actuels
@@ -462,16 +483,18 @@ class SupabaseAuthService {
   Future<bool> resetUserPassword({
     required String userId,
     required String newPassword,
+    String? associationType,
   }) async {
     try {
-      final admin = await _getCurrentAdmin();
+      final admin = await _getCurrentAdmin(associationType: associationType);
       final memberName = await _getUserName(userId);
 
-      // Appeler une fonction RPC Supabase pour réinitialiser le mot de passe
-      // Cette fonction doit être créée dans Supabase avec les permissions appropriées
-      final result = await _client.rpc('admin_reset_user_password', params: {
+      // Appeler la nouvelle fonction RPC Supabase pour réinitialiser le mot de passe
+      // Cette fonction utilise association_roles pour vérifier les permissions
+      final result = await _client.rpc('admin_reset_user_password_v2', params: {
         'target_user_id': userId,
         'new_password': newPassword,
+        'association_type': associationType ?? 'general',
       });
 
       if (result == null || result == false) {
@@ -484,6 +507,7 @@ class SupabaseAuthService {
         action: 'reset_password',
         targetTable: 'profiles',
         targetId: userId,
+        details: associationType != null ? {'association_type': associationType} : null,
       );
 
       // Notifier l'utilisateur
