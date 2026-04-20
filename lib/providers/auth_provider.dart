@@ -15,9 +15,9 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _currentUser != null;
-  bool get isAdmin => _currentUser?.role == UserRole.admin;
-  bool get isSysAdmin => _currentUser?.role == UserRole.sysAdmin;
-  bool get isAdminOrSysAdmin => isAdmin || isSysAdmin;
+  bool get isAdmin => isAdminForCurrentAssociation;
+  bool get isSysAdmin => currentAssociationRole == UserRole.sysAdmin;
+  bool get isAdminOrSysAdmin => isAdminForCurrentAssociation;
   bool get isApproved => _currentUser?.status == AccountStatus.approved;
   
   // Rôle pour l'association active

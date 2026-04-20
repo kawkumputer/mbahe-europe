@@ -180,7 +180,7 @@ class _ReglementScreenState extends State<ReglementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<AuthProvider>().currentUser?.role == UserRole.admin;
+    final isAdmin = context.read<AuthProvider>().isAdminForCurrentAssociation;
 
     return Scaffold(
       appBar: AppBar(

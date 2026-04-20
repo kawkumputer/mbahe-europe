@@ -179,7 +179,7 @@ class _StatutsScreenState extends State<StatutsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<AuthProvider>().currentUser?.role == UserRole.admin;
+    final isAdmin = context.read<AuthProvider>().isAdminForCurrentAssociation;
 
     return Scaffold(
       appBar: AppBar(

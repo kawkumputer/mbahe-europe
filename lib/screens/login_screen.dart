@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       final user = authProvider.currentUser!;
-      if (user.role == UserRole.admin || user.role == UserRole.sysAdmin) {
+      if (authProvider.isAdminForCurrentAssociation) {
         Navigator.pushReplacementNamed(context, '/admin-home');
       } else if (user.status == AccountStatus.approved) {
         Navigator.pushReplacementNamed(context, '/member-home');

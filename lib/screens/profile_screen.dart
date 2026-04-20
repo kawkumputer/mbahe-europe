@@ -74,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildProfileHeader(user),
+                      _buildProfileHeader(user, context.read<AuthProvider>().isAdminForCurrentAssociation),
                       const SizedBox(height: 24),
                       _buildStatsSection(profileProvider),
                       const SizedBox(height: 24),
@@ -87,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileHeader(user) {
+  Widget _buildProfileHeader(user, bool isAdmin) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -163,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              user.role == UserRole.admin
+              isAdmin
                   ? AppLocalizations.get('members_role_admin')
                   : AppLocalizations.get('members_role_member'),
               style: GoogleFonts.poppins(

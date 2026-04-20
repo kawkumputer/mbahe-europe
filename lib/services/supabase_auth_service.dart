@@ -120,7 +120,6 @@ class SupabaseAuthService {
         .from('profiles')
         .select()
         .eq('status', 'pending')
-        .eq('role', 'member')
         .contains('association_types', [associationType])
         .order('created_at', ascending: false);
     return data.map<UserModel>((json) => UserModel.fromJson(json)).toList();
@@ -133,7 +132,6 @@ class SupabaseAuthService {
         .from('profiles')
         .select()
         .eq('status', 'approved')
-        .neq('role', 'sys_admin')
         .contains('association_types', [associationType])
         .order('first_name', ascending: true);
     return data.map<UserModel>((json) => UserModel.fromJson(json)).toList();
@@ -158,8 +156,10 @@ class SupabaseAuthService {
         throw Exception('Permission refusée: vous n\'êtes pas admin de cette association');
       }
     } else {
-      // Vérification par défaut avec l'ancienne colonne role pour compatibilité
-      if (profile['role'] != 'admin') {
+      // Vérifier si admin dans n'importe quelle association
+      final roles = profile['association_roles'] as Map<String, dynamic>?;
+      final isAdminInAny = roles?.values.any((v) => v == 'admin' || v == 'sys_admin') ?? false;
+      if (!isAdminInAny) {
         throw Exception('Permission refusée: vous n\'êtes pas admin');
       }
     }

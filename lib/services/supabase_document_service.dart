@@ -30,11 +30,12 @@ class SupabaseDocumentService {
           .single();
       final adminName = '${profile['first_name']} ${profile['last_name']}';
 
-      await _client.from('documents').update({
+      await _client.from('documents').upsert({
+        'document_type': documentType,
         'content': content,
         'updated_at': DateTime.now().toIso8601String(),
         'updated_by_name': adminName,
-      }).eq('document_type', documentType);
+      }, onConflict: 'document_type');
 
       return true;
     } catch (_) {
